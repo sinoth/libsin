@@ -52,9 +52,24 @@
 					<Add option="-s" />
 				</Linker>
 			</Target>
+			<Target title="ui">
+				<Option output="..\lib\libsinui" prefix_auto="1" extension_auto="1" />
+				<Option working_dir="" />
+				<Option object_output="obj\Release\" />
+				<Option type="2" />
+				<Option compiler="gcc" />
+				<Option createDefFile="1" />
+				<Compiler>
+					<Add option="-O2" />
+					<Add directory="..\..\glfw\include" />
+				</Compiler>
+				<Linker>
+					<Add option="-s" />
+				</Linker>
+			</Target>
 		</Build>
 		<VirtualTargets>
-			<Add alias="all" targets="zlib_util;font;timer;" />
+			<Add alias="all" targets="zlib_util;font;timer;ui;" />
 		</VirtualTargets>
 		<Compiler>
 			<Add option="-Wall" />
@@ -70,6 +85,12 @@
 		</Unit>
 		<Unit filename="timer\timer.cpp">
 			<Option target="timer" />
+		</Unit>
+		<Unit filename="ui\sinui.h">
+			<Option target="ui" />
+		</Unit>
+		<Unit filename="ui\ui.cpp">
+			<Option target="ui" />
 		</Unit>
 		<Unit filename="zutil\sinzutil.h">
 			<Option target="zlib_util" />
