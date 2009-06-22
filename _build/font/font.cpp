@@ -1,5 +1,5 @@
 
-#include "font.h"
+#include "sinfont.h"
 
 
 glyph_info::glyph_info( char a, char b, float c, float d, float e, float f, short int g, short int h, short int i, char j ) {

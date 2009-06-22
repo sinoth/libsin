@@ -5,6 +5,7 @@
 		<Option title="libsin" />
 		<Option pch_mode="2" />
 		<Option compiler="gcc" />
+		<Option virtualFolders="font\;timer\;ui\;zutil\;" />
 		<Build>
 			<Target title="zlib_util">
 				<Option output="..\lib\libsinz" prefix_auto="1" extension_auto="1" />
@@ -73,29 +74,38 @@
 		</VirtualTargets>
 		<Compiler>
 			<Add option="-Wall" />
+			<Add directory="..\include" />
 		</Compiler>
 		<Unit filename="font\font.cpp">
+			<Option virtualFolder="font\" />
 			<Option target="font" />
-		</Unit>
-		<Unit filename="font\sinfont.h">
-			<Option target="font" />
-		</Unit>
-		<Unit filename="timer\sintimer.h">
-			<Option target="timer" />
 		</Unit>
 		<Unit filename="timer\timer.cpp">
+			<Option virtualFolder="timer\" />
 			<Option target="timer" />
 		</Unit>
-		<Unit filename="ui\sinui.h">
-			<Option target="ui" />
-		</Unit>
 		<Unit filename="ui\ui.cpp">
+			<Option virtualFolder="ui\" />
 			<Option target="ui" />
-		</Unit>
-		<Unit filename="zutil\sinzutil.h">
-			<Option target="zlib_util" />
 		</Unit>
 		<Unit filename="zutil\zlib_util.cpp">
+			<Option virtualFolder="zutil\" />
+			<Option target="zlib_util" />
+		</Unit>
+		<Unit filename="..\include\sinfont.h">
+			<Option virtualFolder="font\" />
+			<Option target="font" />
+		</Unit>
+		<Unit filename="..\include\sintimer.h">
+			<Option virtualFolder="timer\" />
+			<Option target="timer" />
+		</Unit>
+		<Unit filename="..\include\sinui.h">
+			<Option virtualFolder="ui\" />
+			<Option target="ui" />
+		</Unit>
+		<Unit filename="..\include\sinzutil.h">
+			<Option virtualFolder="zutil\" />
 			<Option target="zlib_util" />
 		</Unit>
 		<Extensions>
