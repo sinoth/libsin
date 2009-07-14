@@ -43,14 +43,15 @@ typedef struct glyph_matrixs {
 class freetype_font {
 public:
 
-    int init(char*,int,bool);
-    int createText( char *, std::vector<GLfloat>*, float, int, int, int );
+    int init(const char*,int,bool);
+    int createText( const char*, std::vector<GLfloat>*, float, int, int, int );
     glyph_matrix* returnCharMatrix( char );
     int checkLength( char *, float );
     int returnOffset( char*, int, float );
     int clipText( char *, char **, char **, float, int);
     int clipTextMulti( char *, std::list<char*>*, float, int);
     static void repositionText( std::vector<GLfloat>*, int, int );
+    GLuint getTextureID() { return atlas_texture; }
 
 
 private:
@@ -87,7 +88,7 @@ public:
 
 private:
 
-    std::map<GLuint, font_pointers>
+    //std::map<GLuint, font_pointers>
 
 
 };

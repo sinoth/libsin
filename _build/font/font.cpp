@@ -7,7 +7,7 @@ x_offset = a; y_offset = b; x_left = c; x_right = d; y_top = e; y_bottom = f; ad
 
 
 
-int freetype_font::init( char *infile, int insize, bool origin ) {
+int freetype_font::init( const char *infile, int insize, bool origin ) {
 
     int error;
     int x_width = 0;
@@ -204,7 +204,7 @@ int freetype_font::init( char *infile, int insize, bool origin ) {
 
 
 
-int freetype_font::createText( char *intext, std::vector<GLfloat> *invec, float inscale, int inx, int iny, int inmax ) {
+int freetype_font::createText( const char *intext, std::vector<GLfloat> *invec, float inscale, int inx, int iny, int inmax ) {
 static int a, i_glyph;
 static float x_left, x_right;
 static float y_top, y_bottom;
