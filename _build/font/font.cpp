@@ -213,11 +213,28 @@ static int x_off, y_off;
 static int phrase_len;
 static int old_inx;
 static int keep_inx;
+static int ver_count;
+
+static std::vector<GLfloat> *vec_vertex;
+static std::vector<GLfloat> *vec_texture;
+static std::vector<GLfloat> *vec_color;
 
 old_inx = inx;
 phrase_len = strlen(intext);
+ver_count = 0;
+
 //invec->clear();
 //uses GL_T2F_V3F
+
+  if ( invec == NULL ) {
+      vec_vertex = my_list->vec_vertex;
+      vec_texture = my_list->vec_texture;
+      vec_color = my_list->vec_color;
+  } else {
+      vec_vertex = invec;
+      vec_texture = invec;
+      vec_color = NULL;
+  }
 
   if ( origin_topleft ) {
 
@@ -240,61 +257,68 @@ phrase_len = strlen(intext);
         x_off  = (int)((float)x_off  * inscale);
         y_off  = (int)((float)y_off  * inscale);
 
-        if ( a==0 && invec->size()!=0 ) {
+        if ( a==0 && vec_vertex->size()!=0 ) {
 
-            invec->push_back(x_left);
-            invec->push_back(y_top);
+            vec_texture->push_back(x_left);
+            vec_texture->push_back(y_top);
             //####//
-            invec->push_back( inx + x_off );
-            invec->push_back( iny + y_off );
-            invec->push_back( 0 );
+            vec_vertex->push_back( inx + x_off );
+            vec_vertex->push_back( iny + y_off );
+            vec_vertex->push_back( 0 );
+            ver_count++;
 
-            invec->push_back(x_left);
-            invec->push_back(y_top);
+            vec_texture->push_back(x_left);
+            vec_texture->push_back(y_top);
             //####//
-            invec->push_back( inx + x_off );
-            invec->push_back( iny + y_off );
-            invec->push_back( 0 );
+            vec_vertex->push_back( inx + x_off );
+            vec_vertex->push_back( iny + y_off );
+            vec_vertex->push_back( 0 );
+            ver_count++;
 
-            invec->push_back( x_right );
-            invec->push_back( y_top );
+            vec_texture->push_back( x_right );
+            vec_texture->push_back( y_top );
             //####//
-            invec->push_back( inx + x_off + width );
-            invec->push_back( iny + y_off );
-            invec->push_back( 0 );
+            vec_vertex->push_back( inx + x_off + width );
+            vec_vertex->push_back( iny + y_off );
+            vec_vertex->push_back( 0 );
+            ver_count++;
         }
 
-        invec->push_back(x_left);
-        invec->push_back(y_top);
+        vec_texture->push_back(x_left);
+        vec_texture->push_back(y_top);
         //####//
-        invec->push_back( inx + x_off );
-        invec->push_back( iny + y_off );
-        invec->push_back( 0 );
+        vec_vertex->push_back( inx + x_off );
+        vec_vertex->push_back( iny + y_off );
+        vec_vertex->push_back( 0 );
+        ver_count++;
 
-        invec->push_back( x_right );
-        invec->push_back( y_top );
+        vec_texture->push_back( x_right );
+        vec_texture->push_back( y_top );
         //####//
-        invec->push_back( inx + x_off + width );
-        invec->push_back( iny + y_off );
-        invec->push_back( 0 );
+        vec_vertex->push_back( inx + x_off + width );
+        vec_vertex->push_back( iny + y_off );
+        vec_vertex->push_back( 0 );
+        ver_count++;
 
-        invec->push_back( x_left );
-        invec->push_back( y_bottom );
+        vec_texture->push_back( x_left );
+        vec_texture->push_back( y_bottom );
         //####//
-        invec->push_back( inx + x_off );
-        invec->push_back( iny + y_off - height);
-        invec->push_back( 0 );
+        vec_vertex->push_back( inx + x_off );
+        vec_vertex->push_back( iny + y_off - height);
+        vec_vertex->push_back( 0 );
+        ver_count++;
 
         //####//
         //####//
         //####//
 
-        invec->push_back( x_right );
-        invec->push_back( y_bottom );
+        vec_texture->push_back( x_right );
+        vec_texture->push_back( y_bottom );
         //####//
-        invec->push_back( inx + x_off + width );
-        invec->push_back( iny + y_off - height);
-        invec->push_back( 0 );
+        vec_vertex->push_back( inx + x_off + width );
+        vec_vertex->push_back( iny + y_off - height);
+        vec_vertex->push_back( 0 );
+        ver_count++;
 
         keep_inx = inx;
         inx+=(int)(glyphs[i_glyph].advance * inscale );
@@ -305,12 +329,13 @@ phrase_len = strlen(intext);
 
     }
 
-        invec->push_back( x_right );
-        invec->push_back( y_bottom );
+        vec_texture->push_back( x_right );
+        vec_texture->push_back( y_bottom );
         //####//
-        invec->push_back( keep_inx + x_off + width );
-        invec->push_back( iny + y_off - height);
-        invec->push_back( 0 );
+        vec_vertex->push_back( keep_inx + x_off + width );
+        vec_vertex->push_back( iny + y_off - height);
+        vec_vertex->push_back( 0 );
+        ver_count++;
 
   } else { //origin bottom left
 
@@ -335,62 +360,69 @@ phrase_len = strlen(intext);
         y_off  = (int)((float)y_off  * inscale);
 
 
-        if ( a==0 && invec->size()!=0 ) {
+        if ( a==0 && vec_vertex->size()!=0 ) {
 
-            invec->push_back(x_left);
-            invec->push_back(y_top);
+            vec_texture->push_back(x_left);
+            vec_texture->push_back(y_top);
             //####//
-            invec->push_back( inx + x_off );
-            invec->push_back( iny - y_off );
-            invec->push_back( 0 );
+            vec_vertex->push_back( inx + x_off );
+            vec_vertex->push_back( iny - y_off );
+            vec_vertex->push_back( 0 );
+            ver_count++;
 
-            invec->push_back(x_left);
-            invec->push_back(y_top);
+            vec_texture->push_back(x_left);
+            vec_texture->push_back(y_top);
             //####//
-            invec->push_back( inx + x_off );
-            invec->push_back( iny - y_off );
-            invec->push_back( 0 );
+            vec_vertex->push_back( inx + x_off );
+            vec_vertex->push_back( iny - y_off );
+            vec_vertex->push_back( 0 );
+            ver_count++;
 
-            invec->push_back( x_right );
-            invec->push_back( y_top );
+            vec_texture->push_back( x_right );
+            vec_texture->push_back( y_top );
             //####//
-            invec->push_back( inx + x_off + width );
-            invec->push_back( iny - y_off );
-            invec->push_back( 0 );
+            vec_vertex->push_back( inx + x_off + width );
+            vec_vertex->push_back( iny - y_off );
+            vec_vertex->push_back( 0 );
+            ver_count++;
 
         }
 
-        invec->push_back(x_left);
-        invec->push_back(y_top);
+        vec_texture->push_back(x_left);
+        vec_texture->push_back(y_top);
         //####//
-        invec->push_back( inx + x_off );
-        invec->push_back( iny - y_off );
-        invec->push_back( 0 );
+        vec_vertex->push_back( inx + x_off );
+        vec_vertex->push_back( iny - y_off );
+        vec_vertex->push_back( 0 );
+        ver_count++;
 
-        invec->push_back( x_right );
-        invec->push_back( y_top );
+        vec_texture->push_back( x_right );
+        vec_texture->push_back( y_top );
         //####//
-        invec->push_back( inx + x_off + width );
-        invec->push_back( iny - y_off );
-        invec->push_back( 0 );
+        vec_vertex->push_back( inx + x_off + width );
+        vec_vertex->push_back( iny - y_off );
+        vec_vertex->push_back( 0 );
+        ver_count++;
 
-        invec->push_back( x_left );
-        invec->push_back( y_bottom );
+        vec_texture->push_back( x_left );
+        vec_texture->push_back( y_bottom );
         //####//
-        invec->push_back( inx + x_off );
-        invec->push_back( iny - y_off + height);
-        invec->push_back( 0 );
+        vec_vertex->push_back( inx + x_off );
+        vec_vertex->push_back( iny - y_off + height);
+        vec_vertex->push_back( 0 );
+        ver_count++;
 
         //####//
         //####//
         //####//
 
-        invec->push_back( x_right );
-        invec->push_back( y_bottom );
+        vec_texture->push_back( x_right );
+        vec_texture->push_back( y_bottom );
         //####//
-        invec->push_back( inx + x_off + width );
-        invec->push_back( iny - y_off + height);
-        invec->push_back( 0 );
+        vec_vertex->push_back( inx + x_off + width );
+        vec_vertex->push_back( iny - y_off + height);
+        vec_vertex->push_back( 0 );
+        ver_count++;
 
         keep_inx = inx;
         inx+=(int)(glyphs[i_glyph].advance * inscale );
@@ -401,15 +433,25 @@ phrase_len = strlen(intext);
 
     }
 
-    invec->push_back( x_right );
-    invec->push_back( y_bottom );
+    vec_texture->push_back( x_right );
+    vec_texture->push_back( y_bottom );
     //####//
-    invec->push_back( keep_inx + x_off + width );
-    invec->push_back( iny - y_off + height);
-    invec->push_back( 0 );
+    vec_vertex->push_back( keep_inx + x_off + width );
+    vec_vertex->push_back( iny - y_off + height);
+    vec_vertex->push_back( 0 );
+    ver_count++;
 
 
   } //end origin selection
+
+  if ( vec_color != NULL ) {
+      for ( int i=0; i < ver_count; i++ ) {
+          vec_color->push_back(r);
+          vec_color->push_back(g);
+          vec_color->push_back(b);
+          vec_color->push_back(a);
+      }
+  }
 
   return inx-old_inx;
 }
