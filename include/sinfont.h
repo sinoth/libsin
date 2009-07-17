@@ -128,11 +128,13 @@ public:
                 font_list_pointers *new_fontp = new font_list_pointers;
                 new_fontp->setPointers( new std::vector<GLfloat>, new std::vector<GLfloat>, new std::vector<GLfloat> );
                 all_fonts[in->getTextureID()] = new_fontp;
+                printf("* FONT - Adding new font texture %d\n", in->getTextureID() );
                 return *new_fontp;
             }
 
             //already exists
             all_fonts[in->getTextureID()]->setStart();
+            printf("* FONT - Existing font texture %d\n", in->getTextureID() );
             return *all_fonts[in->getTextureID()];
         }
 
