@@ -83,6 +83,7 @@ public:
     void setColor( float inr, float ing, float inb, float ina ) { r=inr; g=ing; b=inb; a=ina; }
     void setPointerList( font_list_pointers *in ) { my_list = in; }
     freetype_font() { my_list = NULL; }
+    int getHeight() { return max_height; }
 
 private:
 
@@ -114,35 +115,50 @@ public:
 
     void render() {
             for ( it=all_fonts.begin(); it != all_fonts.end(); it++ ) {
+
                 glBindTexture( GL_TEXTURE_2D, (*it).first );
-                glVertexPointer(3, GL_FLOAT, 0, (*it).second->vec_vertex );
-                glTexCoordPointer(2, GL_FLOAT, 0, (*it).second->vec_texture );
-                glColorPointer(4, GL_FLOAT, 0, (*it).second->vec_color );
-                glDrawArrays(GL_TRIANGLE_STRIP, 0, (*it).second->vec_vertex->size()/3 );
+
+                //for every font in the list, we have to go through every set of pointers
+                for (lit=(*it).second.begin(); lit != (*it).second.end(); lit++ ) {
+                    glVertexPointer(3, GL_FLOAT, 0, (*lit)->vec_vertex );
+                    glTexCoordPointer(2, GL_FLOAT, 0, (*lit)->vec_texture );
+                    glColorPointer(4, GL_FLOAT, 0, (*lit)->vec_color );
+                    glDrawArrays(GL_TRIANGLE_STRIP, 0, (*lit)->vec_vertex->size()/3 );
+                }
             }
         }
 
-    font_list_pointers registerFont( freetype_font *in ) {
-            if ( all_fonts.find( in->getTextureID() ) == all_fonts.end() ) {
-                //not in the map
+    font_list_pointers registerFont( freetype_font *in, bool is_static ) {
+            if ( is_static ) {
+                if ( all_fonts.find( in->getTextureID() ) == all_fonts.end() ) {
+                    //not in the map
+                    font_list_pointers *new_fontp = new font_list_pointers;
+                    new_fontp->setPointers( new std::vector<GLfloat>, new std::vector<GLfloat>, new std::vector<GLfloat> );
+                    all_fonts[in->getTextureID()].push_front(new_fontp);
+                    printf("* FONT - Adding new font texture %d [static]\n", in->getTextureID() );
+                    return *new_fontp;
+                }
+                //already exists
+                all_fonts[in->getTextureID()].front()->setStart();
+                printf("* FONT - Existing font texture %d [static]\n", in->getTextureID() );
+                return *all_fonts[in->getTextureID()].front();
+
+            } else {
+                //not static, give it a new list
                 font_list_pointers *new_fontp = new font_list_pointers;
                 new_fontp->setPointers( new std::vector<GLfloat>, new std::vector<GLfloat>, new std::vector<GLfloat> );
-                all_fonts[in->getTextureID()] = new_fontp;
-                printf("* FONT - Adding new font texture %d\n", in->getTextureID() );
+                all_fonts[in->getTextureID()].push_back(new_fontp);
+                printf("* FONT - Adding new font texture %d [dynamic]\n", in->getTextureID() );
                 return *new_fontp;
             }
-
-            //already exists
-            all_fonts[in->getTextureID()]->setStart();
-            printf("* FONT - Existing font texture %d\n", in->getTextureID() );
-            return *all_fonts[in->getTextureID()];
         }
 
 
 private:
 
-    std::map<GLuint, font_list_pointers*> all_fonts;
-    std::map<GLuint, font_list_pointers*>::iterator it;
+    std::map<GLuint, std::list<font_list_pointers*> > all_fonts;
+    std::map<GLuint, std::list<font_list_pointers*> >::iterator it;
+    std::list<font_list_pointers*>::iterator lit;
 
 
 };
