@@ -459,7 +459,7 @@ ver_count = 0;
 
 
 
-int freetype_font::checkLength( char *intext, float inscale ) {
+int freetype_font::checkLength( const char *intext, float inscale ) {
 
     int moved_x, a, phrase_len;
 

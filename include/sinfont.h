@@ -60,6 +60,10 @@ typedef struct font_list_pointerss {
                       start_texture = vec_texture->size();
                       start_color = vec_color->size(); }
 
+    void clearAll() { vec_vertex->clear();
+                      vec_texture->clear();
+                      vec_color->clear(); }
+
     void setPointers( std::vector<GLfloat> *invec, std::vector<GLfloat> *intex, std::vector<GLfloat> *incol ) {
             vec_vertex = invec; vec_texture = intex; vec_color = incol; }
 
@@ -74,7 +78,7 @@ public:
     int init(const char*,int,bool);
     int createText( const char*, std::vector<GLfloat>*, float, int, int, int );
     glyph_matrix* returnCharMatrix( char );
-    int checkLength( char *, float );
+    int checkLength( const char *, float );
     int returnOffset( char*, int, float );
     int clipText( char *, char **, char **, float, int);
     int clipTextMulti( char *, std::list<char*>*, float, int);
@@ -114,18 +118,33 @@ class freetype_font_controller {
 public:
 
     void render() {
+
+            glEnable(GL_TEXTURE_2D);
+            glEnable(GL_BLEND);
+            glEnableClientState(GL_VERTEX_ARRAY);
+            //glEnableClientState(GL_COLOR_ARRAY);
+            glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+
             for ( it=all_fonts.begin(); it != all_fonts.end(); it++ ) {
 
                 glBindTexture( GL_TEXTURE_2D, (*it).first );
 
                 //for every font in the list, we have to go through every set of pointers
                 for (lit=(*it).second.begin(); lit != (*it).second.end(); lit++ ) {
-                    glVertexPointer(3, GL_FLOAT, 0, (*lit)->vec_vertex );
-                    glTexCoordPointer(2, GL_FLOAT, 0, (*lit)->vec_texture );
-                    glColorPointer(4, GL_FLOAT, 0, (*lit)->vec_color );
+                    glVertexPointer(3, GL_FLOAT, 0, &(*lit)->vec_vertex[0] );
+                    glTexCoordPointer(2, GL_FLOAT, 0, &(*lit)->vec_texture[0] );
+                    //glColorPointer(4, GL_FLOAT, 0, (*lit)->vec_color );
                     glDrawArrays(GL_TRIANGLE_STRIP, 0, (*lit)->vec_vertex->size()/3 );
+                    //printf("%d %d %d\n", (*lit)->vec_vertex->size(), (*lit)->vec_color->size(), (*lit)->vec_texture->size() );
+                    //printf("%d ", (*it).first);
                 }
             }
+
+            glDisableClientState(GL_VERTEX_ARRAY);
+            //glDisableClientState(GL_COLOR_ARRAY);
+            glDisableClientState(GL_TEXTURE_COORD_ARRAY);
+            glDisable(GL_BLEND);
+            glDisable(GL_TEXTURE_2D);
         }
 
     font_list_pointers registerFont( freetype_font *in, bool is_static ) {
