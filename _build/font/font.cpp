@@ -54,6 +54,7 @@ int freetype_font::init( const char *infile, int insize, bool origin ) {
 
         bitmap = (FT_Bitmap*)&slot->bitmap;
         x_width += ((FT_Bitmap*)&slot->bitmap)->width;
+
         count++;
         if ( count == 10 ) {
             //printf("%d\n",x_width);
@@ -230,6 +231,10 @@ ver_count = 0;
       vec_vertex = my_list->vec_vertex;
       vec_texture = my_list->vec_texture;
       vec_color = my_list->vec_color;
+      //vec_vertex = my_list->vec_vertex;
+      //vec_texture = my_list->vec_vertex;
+      //vec_color = NULL;
+
   } else {
       vec_vertex = invec;
       vec_texture = invec;

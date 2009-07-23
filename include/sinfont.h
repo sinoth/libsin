@@ -122,7 +122,7 @@ public:
             glEnable(GL_TEXTURE_2D);
             glEnable(GL_BLEND);
             glEnableClientState(GL_VERTEX_ARRAY);
-            //glEnableClientState(GL_COLOR_ARRAY);
+            glEnableClientState(GL_COLOR_ARRAY);
             glEnableClientState(GL_TEXTURE_COORD_ARRAY);
 
             for ( it=all_fonts.begin(); it != all_fonts.end(); it++ ) {
@@ -131,20 +131,20 @@ public:
 
                 //for every font in the list, we have to go through every set of pointers
                 for (lit=(*it).second.begin(); lit != (*it).second.end(); lit++ ) {
-                    glVertexPointer(3, GL_FLOAT, 0, &(*lit)->vec_vertex[0] );
-                    glTexCoordPointer(2, GL_FLOAT, 0, &(*lit)->vec_texture[0] );
-                    //glColorPointer(4, GL_FLOAT, 0, (*lit)->vec_color );
+                    glVertexPointer(3, GL_FLOAT, 0, &(*lit)->vec_vertex->at(0) );
+                    glTexCoordPointer(2, GL_FLOAT, 0, &(*lit)->vec_texture->at(0) );
+                    glColorPointer(4, GL_FLOAT, 0, &(*lit)->vec_color->at(0) );
                     glDrawArrays(GL_TRIANGLE_STRIP, 0, (*lit)->vec_vertex->size()/3 );
-                    //printf("%d %d %d\n", (*lit)->vec_vertex->size(), (*lit)->vec_color->size(), (*lit)->vec_texture->size() );
-                    //printf("%d ", (*it).first);
+                    //glInterleavedArrays(GL_T2F_V3F,0,&(*lit)->vec_vertex->at(0) );
                 }
             }
 
             glDisableClientState(GL_VERTEX_ARRAY);
-            //glDisableClientState(GL_COLOR_ARRAY);
+            glDisableClientState(GL_COLOR_ARRAY);
             glDisableClientState(GL_TEXTURE_COORD_ARRAY);
             glDisable(GL_BLEND);
             glDisable(GL_TEXTURE_2D);
+
         }
 
     font_list_pointers registerFont( freetype_font *in, bool is_static ) {
@@ -172,13 +172,11 @@ public:
             }
         }
 
-
 private:
 
     std::map<GLuint, std::list<font_list_pointers*> > all_fonts;
     std::map<GLuint, std::list<font_list_pointers*> >::iterator it;
     std::list<font_list_pointers*>::iterator lit;
-
 
 };
 
