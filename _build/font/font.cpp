@@ -12,13 +12,12 @@ int freetype_font::init( const char *infile, int insize, bool origin ) {
     int error;
     int x_width = 0;
     int y_height = 0;
-    int x_max_width = 0;
+    //int x_max_width = 0;
     int y_max_height = 0;
     int y_max_top = 0;
     int tex_width=0;
     int tex_height=0;
     int max_tot_height=0;
-    int count=0;
     int pen_x=0;
     int pen_y=2;
     int pen_offset;
@@ -53,31 +52,33 @@ int freetype_font::init( const char *infile, int insize, bool origin ) {
         if ( error ) { printf("ERROR in FreeType - FT_Load_Char\n"); }
 
         bitmap = (FT_Bitmap*)&slot->bitmap;
-        x_width += ((FT_Bitmap*)&slot->bitmap)->width;
+        x_width += ((FT_Bitmap*)&slot->bitmap)->width + 1 ;
+        //y_height += ((FT_Bitmap*)&slot->bitmap)->rows + 1 ;
 
-        count++;
-        if ( count == 10 ) {
-            //printf("%d\n",x_width);
-            if ( x_width > x_max_width ) { x_max_width = x_width; }
-            count = 0;
-            x_width=0;
-            }
+        if ( ((FT_Bitmap*)&slot->bitmap)->rows > y_max_height ) { y_max_height = ((FT_Bitmap*)&slot->bitmap)->rows; }
 
-        y_height = ((FT_Bitmap*)&slot->bitmap)->rows;
-        if ( y_height > y_max_height ) { y_max_height = y_height; }
-
-        if ( slot->bitmap_top > y_max_top ) { y_max_top = slot->bitmap_top; }
-
-        if ( -1*((bitmap->rows - y_max_top)+(slot->bitmap_top - bitmap->rows))+y_height > max_tot_height ) {
-            max_tot_height = -1*((bitmap->rows - y_max_top)+(slot->bitmap_top - bitmap->rows))+y_height; }
+        //if ( slot->bitmap_top > y_max_top ) { y_max_top = slot->bitmap_top; }
+        //if ( -1*((bitmap->rows - y_max_top)+(slot->bitmap_top - bitmap->rows))+y_height > max_tot_height ) {
+        //    max_tot_height = -1*((bitmap->rows - y_max_top)+(slot->bitmap_top - bitmap->rows))+y_height; }
 
     }
+
+
+    // ok... start by finding area that will hold the guessed area, start at 32x8 and go up (step up each by a power)
+    // once you get required area, do a dry run of placement to see if it will fit
+    // if not, increase the Y by a power and be done with it
+
+    printf("\naccum width: %d, max height: %d\n", x_width, y_max_height);
+
+    printf("guessed area: %2.2f\n", x_width * (y_max_height+1) );
+
+    exit(1);
 
     //printf("\nmax width: %d (%d) ",x_max_width,next_p2(x_max_width));
     //printf("max height: %d (%d) ",y_max_height,next_p2(y_max_height*10));
     //printf("max top: %d\n",y_max_top);
 
-    tex_width = next_p2(x_max_width+10); //BUG: +10 cause i was getting segfaults here
+//    tex_width = next_p2(x_max_width+10); //BUG: +10 cause i was getting segfaults here
     tex_height = next_p2(y_max_height*8);
 
     atlas_data = new GLubyte[ 2 * tex_width * tex_height ];
