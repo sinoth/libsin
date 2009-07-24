@@ -11,10 +11,10 @@ int freetype_font::init( const char *infile, int insize, bool origin ) {
 
     int error;
     int x_width = 0;
-    int y_height = 0;
+    //int y_height = 0;
     //int x_max_width = 0;
     int y_max_height = 0;
-    int y_max_top = 0;
+    //int y_max_top = 0;
     int tex_width=0;
     int tex_height=0;
     int max_tot_height=0;
@@ -26,7 +26,7 @@ int freetype_font::init( const char *infile, int insize, bool origin ) {
 
     printf("* INIT: Trying to init FreeType... ");
 
-    my_matrix = new glyph_matrix[95];
+    //my_matrix = new glyph_matrix[95];
 
     error = FT_Init_FreeType( &library );
     if ( error )
@@ -44,7 +44,7 @@ int freetype_font::init( const char *infile, int insize, bool origin ) {
 
     slot = face->glyph;
 
-    printf("past main inits... ");
+    //printf("past main inits... ");
 
     //find the width of texture
     for ( int char_offset = 0; char_offset < 94; char_offset++ ) {
@@ -63,77 +63,83 @@ int freetype_font::init( const char *infile, int insize, bool origin ) {
 
     }
 
-
-    // ok... start by finding area that will hold the guessed area, start at 32x8 and go up (step up each by a power)
+    // ok... start by finding area that will hold the guessed area, start at 32x32 and go up (step up each by a power)
     // once you get required area, do a dry run of placement to see if it will fit
     // if not, increase the Y by a power and be done with it
 
-    printf("\naccum width: %d, max height: %d\n", x_width, y_max_height);
+    tex_width = 32;
+    tex_height = 32;
 
-    printf("guessed area: %2.2f\n", x_width * (y_max_height+1) );
+    while ( tex_width*tex_height < x_width * (y_max_height+1) ) {
+        tex_width <<= 1;
+        if ( tex_width*tex_height < x_width * (y_max_height+1) )
+            tex_height <<= 1;
+    }
 
-    exit(1);
+    //printf("\naccum width: %d, max height: %d\n", x_width, y_max_height);
+    //printf("guessed area: %d\n", x_width * (y_max_height+1) );
+    //printf("calc area: %d [%d x %d]\n", tex_width * tex_height, tex_width, tex_height );
 
-    //printf("\nmax width: %d (%d) ",x_max_width,next_p2(x_max_width));
-    //printf("max height: %d (%d) ",y_max_height,next_p2(y_max_height*10));
-    //printf("max top: %d\n",y_max_top);
+    //dry run here, need real run first though
+    for ( int char_offset = 0; char_offset <= 94; char_offset++ ) {
+        error = FT_Load_Char( face, 32+char_offset, FT_LOAD_RENDER );
+        if ( error ) { printf("ERROR in FreeType - FT_Load_Char\n"); }
+        bitmap = &slot->bitmap;
+            if ( (pen_x + bitmap->width) > (tex_width-1) ) {
+                pen_y += y_max_height+1; pen_x = 0;
+            }
+            pen_x += bitmap->width + 1;
+    }
 
-//    tex_width = next_p2(x_max_width+10); //BUG: +10 cause i was getting segfaults here
-    tex_height = next_p2(y_max_height*8);
+    if ( pen_y >= tex_height ) {
+        //texture was too small, need to make bigger
+        printf("eep.. ");
+        if ( tex_width == tex_height )
+            tex_width <<= 1;
+        else
+            tex_height <<= 1;
+    }
+
+    printf("[%dx%d].. ", tex_width, tex_height);
 
     atlas_data = new GLubyte[ 2 * tex_width * tex_height ];
     for (int i=0; i < tex_height*tex_width; i++) {
         //default alpha value
         atlas_data[i] = 0; }
 
-    pen_x=1; pen_y=1;
+    pen_x=0; pen_y=0;
     for ( int char_offset = 0; char_offset <= 94; char_offset++ ) {
         error = FT_Load_Char( face, 32+char_offset, FT_LOAD_RENDER );
         if ( error ) { printf("ERROR in FreeType - FT_Load_Char\n"); }
         bitmap = &slot->bitmap;
 
-            if ( (pen_x + bitmap->width) > (tex_width-2) ) {
-                pen_y += y_max_height+1; pen_x = 1;
+            if ( (pen_x + bitmap->width) > (tex_width-1) ) {
+                pen_y += y_max_height+1; pen_x = 0;
             }
 
-            //printf("%d %d %d %d %d | ",pen_x,pen_y,tex_width, bitmap->width, (slot->advance.x >> 6));
-            //printf("%d ",bitmap->num_grays);
-
-            my_matrix[char_offset].bools = new bool[bitmap->width * bitmap->rows];
-
-            //printf("%d %d = %d\n",bitmap->rows, pen_y, (bitmap->rows-1-pen_y)*tex_width);
             pen_offset = pen_x + ((tex_height-y_max_height-pen_y) * tex_width);
-            for(int j=0; j <bitmap->rows;j++) {
+            for(int j=0; j <bitmap->rows; j++) {
                 for(int i=0; i < bitmap->width; i++){
                     atlas_data[(pen_offset+i+(bitmap->rows-1-j)*tex_width)] = bitmap->buffer[i + bitmap->width*j];
-                    //atlas_data[1+2*(pen_offset+i+(bitmap->rows-1-j)*tex_width)] = bitmap->buffer[i + bitmap->width*j];
-                    my_matrix[char_offset].bools[i+j*bitmap->width] = ( bitmap->buffer[i + bitmap->width*j] >= 64 ? true : false );
-                    //printf("%d\n", bitmap->buffer[i + bitmap->width*j] );
                 }
             }
 
-
-            my_matrix[char_offset].w = bitmap->width;
-            my_matrix[char_offset].h = bitmap->rows;
-            my_matrix[char_offset].xoffset = slot->bitmap_left;
-            my_matrix[char_offset].yoffset = (bitmap->rows - y_max_top)+(slot->bitmap_top - bitmap->rows);
-            my_matrix[char_offset].advance = slot->advance.x >> 6;
-
             glyphs.push_back( glyph_info( slot->bitmap_left,               // x_offset
-                                          (bitmap->rows - y_max_top)+(slot->bitmap_top - bitmap->rows), // y_offset
+                                          //slot->bitmap_top - y_max_height, // y_offset
+                                          slot->bitmap_top - y_max_height + (y_max_height-bitmap->rows), // y_offset
                                           (float)(pen_x)/(float)tex_width, //left
                                           (float)(pen_x+bitmap->width)/(float)tex_width, //right
-                                          1.0-(float)(pen_y + (y_max_height-bitmap->rows))/(float)tex_height, //top
+                                          //1.0-(float)(pen_y + (y_max_height-bitmap->rows))/(float)tex_height, //top
+                                          1.0-(float)(pen_y + (y_max_height-y_max_height))/(float)tex_height, //top
                                           1.0-(float)(pen_y + y_max_height )/(float)tex_height, //bottom
                                           slot->advance.x >> 6,            // advance
-                                          bitmap->rows,                    // height
+                                          //bitmap->rows,                    // height
+                                          y_max_height,                    // height
                                           bitmap->width,                   // width
                                           32+char_offset                   //ascii char
                                           ) );
 
-            pen_x += -slot->bitmap_left+2+(slot->advance.x >> 6);
-
-    //printf("yar: %+3d %+3d %+3d\n",(bitmap->rows - y_max_height), (slot->bitmap_top - bitmap->rows), (bitmap->rows - y_max_height)+(slot->bitmap_top - bitmap->rows));
+            pen_x += bitmap->width + 1;
 
     }
 
@@ -580,11 +586,11 @@ static int veclength;
 
 
 
-
+/*
 glyph_matrix* freetype_font::returnCharMatrix( char inchar ) {
 
     return &my_matrix[inchar-32];
 
 
 }
-
+*/

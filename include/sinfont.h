@@ -30,7 +30,7 @@ public:
 };
 
 typedef struct glyph_matrixs {
-    bool *bools;
+//    bool *bools;
     int w;
     int h;
     int xoffset;
@@ -77,7 +77,7 @@ public:
 
     int init(const char*,int,bool);
     int createText( const char*, std::vector<GLfloat>*, float, int, int, int );
-    glyph_matrix* returnCharMatrix( char );
+    //glyph_matrix* returnCharMatrix( char );
     int checkLength( const char *, float );
     int returnOffset( char*, int, float );
     int clipText( char *, char **, char **, float, int);
@@ -99,7 +99,7 @@ private:
     GLubyte*      atlas_data;
     short int     max_height;
     bool          origin_topleft;
-    glyph_matrix  *my_matrix;
+    //glyph_matrix  *my_matrix;
     GLfloat       r,g,b,a;
 
     std::vector<glyph_info> glyphs;
