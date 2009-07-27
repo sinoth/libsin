@@ -14,8 +14,9 @@ int freetype_font::init( const char *infile, int insize, bool origin ) {
     int tex_width=0;
     int tex_height=0;
     int pen_x=0;
-    int pen_y=2;
+    int pen_y=0;
     int pen_offset;
+    unsigned int glyph_index = 0;
 
     origin_topleft = origin;
 
@@ -42,14 +43,17 @@ int freetype_font::init( const char *infile, int insize, bool origin ) {
     //printf("past main inits... ");
 
     //find the width of texture
-    for ( int char_offset = 0; char_offset < 94; char_offset++ ) {
-        error = FT_Load_Char( face, 32+char_offset, FT_LOAD_RENDER );
-        if ( error ) { printf("ERROR in FreeType - FT_Load_Char\n"); }
+    for ( int char_offset = 0; char_offset < 590; char_offset++ ) {
+        glyph_index = FT_Get_Char_Index( face, char_offset);
+        if ( glyph_index != 0 ) {
+            error = FT_Load_Glyph( face, glyph_index, FT_LOAD_RENDER );
+            if ( error ) { printf("ERROR in FreeType - FT_Load_Glyph\n"); }
 
-        bitmap = (FT_Bitmap*)&slot->bitmap;
-        x_width += ((FT_Bitmap*)&slot->bitmap)->width + 1 ;
+            bitmap = (FT_Bitmap*)&slot->bitmap;
+            x_width += ((FT_Bitmap*)&slot->bitmap)->width + 1 ;
 
-        if ( ((FT_Bitmap*)&slot->bitmap)->rows > max_height ) { max_height = ((FT_Bitmap*)&slot->bitmap)->rows; }
+            if ( ((FT_Bitmap*)&slot->bitmap)->rows > max_height ) { max_height = ((FT_Bitmap*)&slot->bitmap)->rows; }
+        }
 
     }
 
@@ -70,17 +74,21 @@ int freetype_font::init( const char *infile, int insize, bool origin ) {
     //printf("calc area: %d [%d x %d]\n", tex_width * tex_height, tex_width, tex_height );
 
     //dry run here to make sure it all fits
-    for ( int char_offset = 0; char_offset <= 94; char_offset++ ) {
-        error = FT_Load_Char( face, 32+char_offset, FT_LOAD_RENDER );
-        if ( error ) { printf("ERROR in FreeType - FT_Load_Char\n"); }
-        bitmap = &slot->bitmap;
-            if ( (pen_x + bitmap->width) > (tex_width-1) ) {
-                pen_y += max_height+1; pen_x = 0;
-            }
-            pen_x += bitmap->width + 1;
+    pen_x=0; pen_y=0;
+    for ( int char_offset = 0; char_offset <= 590; char_offset++ ) {
+        glyph_index = FT_Get_Char_Index( face, char_offset);
+        if ( glyph_index != 0 ) {
+            error = FT_Load_Glyph( face, glyph_index, FT_LOAD_RENDER );
+            if ( error ) { printf("ERROR in FreeType - FT_Load_Glyph\n"); }
+            bitmap = &slot->bitmap;
+                if ( (pen_x + bitmap->width) > (tex_width-1) ) {
+                    pen_y += max_height+1; pen_x = 0;
+                }
+                pen_x += bitmap->width + 1;
+        }
     }
 
-    if ( pen_y >= tex_height ) {
+    if ( pen_y >= tex_height - max_height ) {
         //texture was too small, need to make bigger
         printf("eep.. ");
         if ( tex_width == tex_height )
@@ -97,10 +105,14 @@ int freetype_font::init( const char *infile, int insize, bool origin ) {
         atlas_data[i] = 0; }
 
     pen_x=0; pen_y=0;
-    for ( int char_offset = 0; char_offset <= 94; char_offset++ ) {
-        error = FT_Load_Char( face, 32+char_offset, FT_LOAD_RENDER );
-        if ( error ) { printf("ERROR in FreeType - FT_Load_Char\n"); }
-        bitmap = &slot->bitmap;
+//    for ( int char_offset = 0; char_offset <= 94; char_offset++ ) {
+//        error = FT_Load_Char( face, 32+char_offset, FT_LOAD_RENDER );
+    for ( int char_offset = 0; char_offset <= 590; char_offset++ ) {
+        glyph_index = FT_Get_Char_Index( face, char_offset);
+        if ( glyph_index != 0 ) {
+            error = FT_Load_Glyph( face, glyph_index, FT_LOAD_RENDER );
+            if ( error ) { printf("ERROR in FreeType - FT_Load_Glyph\n"); }
+            bitmap = &slot->bitmap;
 
             if ( (pen_x + bitmap->width) > (tex_width-1) ) {
                 pen_y += max_height+1; pen_x = 0;
@@ -130,6 +142,7 @@ int freetype_font::init( const char *infile, int insize, bool origin ) {
 
             pen_x += bitmap->width + 1;
 
+        }
     }
 
 
@@ -145,8 +158,8 @@ int freetype_font::init( const char *infile, int insize, bool origin ) {
 
     //glTexParameteri( GL_TEXTURE_2D, GL_GENERATE_MIPMAP, GL_TRUE);
 
-	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_LINEAR);
-	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_NEAREST);
 
     // the texture wraps over at the edges (repeat)
     //glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT );
