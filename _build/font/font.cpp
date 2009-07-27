@@ -11,13 +11,8 @@ int freetype_font::init( const char *infile, int insize, bool origin ) {
 
     int error;
     int x_width = 0;
-    //int y_height = 0;
-    //int x_max_width = 0;
-    int y_max_height = 0;
-    //int y_max_top = 0;
     int tex_width=0;
     int tex_height=0;
-    int max_tot_height=0;
     int pen_x=0;
     int pen_y=2;
     int pen_offset;
@@ -53,13 +48,8 @@ int freetype_font::init( const char *infile, int insize, bool origin ) {
 
         bitmap = (FT_Bitmap*)&slot->bitmap;
         x_width += ((FT_Bitmap*)&slot->bitmap)->width + 1 ;
-        //y_height += ((FT_Bitmap*)&slot->bitmap)->rows + 1 ;
 
-        if ( ((FT_Bitmap*)&slot->bitmap)->rows > y_max_height ) { y_max_height = ((FT_Bitmap*)&slot->bitmap)->rows; }
-
-        //if ( slot->bitmap_top > y_max_top ) { y_max_top = slot->bitmap_top; }
-        //if ( -1*((bitmap->rows - y_max_top)+(slot->bitmap_top - bitmap->rows))+y_height > max_tot_height ) {
-        //    max_tot_height = -1*((bitmap->rows - y_max_top)+(slot->bitmap_top - bitmap->rows))+y_height; }
+        if ( ((FT_Bitmap*)&slot->bitmap)->rows > max_height ) { max_height = ((FT_Bitmap*)&slot->bitmap)->rows; }
 
     }
 
@@ -67,26 +57,25 @@ int freetype_font::init( const char *infile, int insize, bool origin ) {
     // once you get required area, do a dry run of placement to see if it will fit
     // if not, increase the Y by a power and be done with it
 
-    tex_width = 32;
-    tex_height = 32;
+    tex_width = 32; tex_height = 32;
 
-    while ( tex_width*tex_height < x_width * (y_max_height+1) ) {
+    while ( tex_width*tex_height < x_width * (max_height+1) ) {
         tex_width <<= 1;
-        if ( tex_width*tex_height < x_width * (y_max_height+1) )
+        if ( tex_width*tex_height < x_width * (max_height+1) )
             tex_height <<= 1;
     }
 
-    //printf("\naccum width: %d, max height: %d\n", x_width, y_max_height);
-    //printf("guessed area: %d\n", x_width * (y_max_height+1) );
+    //printf("\naccum width: %d, max height: %d\n", x_width, max_height);
+    //printf("guessed area: %d\n", x_width * (max_height+1) );
     //printf("calc area: %d [%d x %d]\n", tex_width * tex_height, tex_width, tex_height );
 
-    //dry run here, need real run first though
+    //dry run here to make sure it all fits
     for ( int char_offset = 0; char_offset <= 94; char_offset++ ) {
         error = FT_Load_Char( face, 32+char_offset, FT_LOAD_RENDER );
         if ( error ) { printf("ERROR in FreeType - FT_Load_Char\n"); }
         bitmap = &slot->bitmap;
             if ( (pen_x + bitmap->width) > (tex_width-1) ) {
-                pen_y += y_max_height+1; pen_x = 0;
+                pen_y += max_height+1; pen_x = 0;
             }
             pen_x += bitmap->width + 1;
     }
@@ -114,10 +103,10 @@ int freetype_font::init( const char *infile, int insize, bool origin ) {
         bitmap = &slot->bitmap;
 
             if ( (pen_x + bitmap->width) > (tex_width-1) ) {
-                pen_y += y_max_height+1; pen_x = 0;
+                pen_y += max_height+1; pen_x = 0;
             }
 
-            pen_offset = pen_x + ((tex_height-y_max_height-pen_y) * tex_width);
+            pen_offset = pen_x + ((tex_height-max_height-pen_y) * tex_width);
             for(int j=0; j <bitmap->rows; j++) {
                 for(int i=0; i < bitmap->width; i++){
                     atlas_data[(pen_offset+i+(bitmap->rows-1-j)*tex_width)] = bitmap->buffer[i + bitmap->width*j];
@@ -125,16 +114,16 @@ int freetype_font::init( const char *infile, int insize, bool origin ) {
             }
 
             glyphs.push_back( glyph_info( slot->bitmap_left,               // x_offset
-                                          //slot->bitmap_top - y_max_height, // y_offset
-                                          slot->bitmap_top - y_max_height + (y_max_height-bitmap->rows), // y_offset
+                                          //slot->bitmap_top - max_height, // y_offset
+                                          slot->bitmap_top - max_height + (max_height-bitmap->rows), // y_offset
                                           (float)(pen_x)/(float)tex_width, //left
                                           (float)(pen_x+bitmap->width)/(float)tex_width, //right
-                                          //1.0-(float)(pen_y + (y_max_height-bitmap->rows))/(float)tex_height, //top
-                                          1.0-(float)(pen_y + (y_max_height-y_max_height))/(float)tex_height, //top
-                                          1.0-(float)(pen_y + y_max_height )/(float)tex_height, //bottom
+                                          //1.0-(float)(pen_y + (max_height-bitmap->rows))/(float)tex_height, //top
+                                          1.0-(float)(pen_y + (max_height-max_height))/(float)tex_height, //top
+                                          1.0-(float)(pen_y + max_height )/(float)tex_height, //bottom
                                           slot->advance.x >> 6,            // advance
                                           //bitmap->rows,                    // height
-                                          y_max_height,                    // height
+                                          max_height,                    // height
                                           bitmap->width,                   // width
                                           32+char_offset                   //ascii char
                                           ) );
@@ -170,41 +159,7 @@ int freetype_font::init( const char *infile, int insize, bool origin ) {
 
 	delete [] atlas_data;
 
-    max_height = max_tot_height;
-
     printf("done.\n");
-
-/*
-        error = FT_Load_Char( face, '5', FT_LOAD_RENDER );
-        if ( error ) { printf("ERROR in FreeType - FT_Load_Char\n"); }
-        bitmap = &slot->bitmap;
-
-        printf("\na:\nwidth: %d, height: %d, pitch: %d\n",bitmap->width, bitmap->rows, bitmap->pitch);
-
-            for(int j=0; j <bitmap->rows;j++) {
-                for(int i=0; i < bitmap->width; i++){
-                    //for (k=0; k < 8; k++) {
-                    //if ( bitmap->buffer[
-                    if ( 1 || (bitmap->buffer[bitmap->pitch*j+i]) > 128)
-                        //printf("*");
-                        printf("%3d ",bitmap->buffer[bitmap->pitch*j+i]);
-                    else if ( (bitmap->buffer[bitmap->pitch*j+i]) > 64 )
-                        printf("+");
-                    else if ( (bitmap->buffer[bitmap->pitch*j+i]) > 1 )
-                        printf("'");
-                    else
-                        printf(" ");
-                    //}
-
-                    //atlas_data[16*j+i] = bitmap->buffer[bitmap->pitch*j+i];
-
-
-                }
-                printf("\n");
-            }
-
-        printf("pitch: %d, left: %d, top: %d, rows: %d \n", bitmap->pitch, slot->bitmap_left,  slot->bitmap_top, bitmap->rows);
-*/
 
     return 0;
 

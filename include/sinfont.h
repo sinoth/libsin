@@ -23,7 +23,6 @@ public:
     short int advance;
     short int height;
     short int width;
-    short int max_height;
 
     glyph_info( char, char, float, float, float, float, short int, short int, short int, char );
 
@@ -86,8 +85,9 @@ public:
     GLuint getTextureID() { return atlas_texture; }
     void setColor( float inr, float ing, float inb, float ina ) { r=inr; g=ing; b=inb; a=ina; }
     void setPointerList( font_list_pointers *in ) { my_list = in; }
-    freetype_font() { my_list = NULL; }
-    int getHeight() { return max_height; }
+    int getMaxHeight() { return max_height; }
+
+    freetype_font() { my_list = NULL; max_height = 0;}
 
 private:
 
@@ -97,10 +97,10 @@ private:
     FT_Bitmap*    bitmap;
     GLuint        atlas_texture;
     GLubyte*      atlas_data;
-    short int     max_height;
     bool          origin_topleft;
     //glyph_matrix  *my_matrix;
     GLfloat       r,g,b,a;
+    int           max_height;
 
     std::vector<glyph_info> glyphs;
 
