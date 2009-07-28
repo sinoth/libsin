@@ -9,16 +9,23 @@ x_offset = a; y_offset = b; x_left = c; x_right = d; y_top = e; y_bottom = f; ad
 
 int freetype_font::init( const char *infile, int insize, bool origin ) {
 
+    FT_Library    library;
+    FT_Face       face;
+    FT_GlyphSlot  slot;
+    FT_Bitmap*    bitmap;
+
     int error;
-    int x_width = 0;
-    int tex_width=0;
-    int tex_height=0;
-    int pen_x=0;
-    int pen_y=0;
+    int x_width;
+    int tex_width;
+    int tex_height;
+    int pen_x;
+    int pen_y;
     int pen_offset;
-    unsigned int glyph_index = 0;
+    unsigned int glyph_index;
 
     origin_topleft = origin;
+
+    my_languages.populate_list();
 
     printf("* INIT: Trying to init FreeType... ");
 
@@ -43,8 +50,10 @@ int freetype_font::init( const char *infile, int insize, bool origin ) {
     //printf("past main inits... ");
 
     //find the width of texture
-    for ( int char_offset = 0; char_offset < 590; char_offset++ ) {
-        glyph_index = FT_Get_Char_Index( face, char_offset);
+    x_width = 0;
+    //for ( int char_offset = 0; char_offset < 65534; char_offset++ ) {
+    for ( my_languages.it = my_languages.valid_chars.begin(); my_languages.it != my_languages.valid_chars.end(); my_languages.it++ ) {
+        glyph_index = FT_Get_Char_Index( face, (*my_languages.it) );
         if ( glyph_index != 0 ) {
             error = FT_Load_Glyph( face, glyph_index, FT_LOAD_RENDER );
             if ( error ) { printf("ERROR in FreeType - FT_Load_Glyph\n"); }
@@ -75,8 +84,8 @@ int freetype_font::init( const char *infile, int insize, bool origin ) {
 
     //dry run here to make sure it all fits
     pen_x=0; pen_y=0;
-    for ( int char_offset = 0; char_offset <= 590; char_offset++ ) {
-        glyph_index = FT_Get_Char_Index( face, char_offset);
+    for ( my_languages.it = my_languages.valid_chars.begin(); my_languages.it != my_languages.valid_chars.end(); my_languages.it++ ) {
+        glyph_index = FT_Get_Char_Index( face, (*my_languages.it) );
         if ( glyph_index != 0 ) {
             error = FT_Load_Glyph( face, glyph_index, FT_LOAD_RENDER );
             if ( error ) { printf("ERROR in FreeType - FT_Load_Glyph\n"); }
@@ -107,8 +116,8 @@ int freetype_font::init( const char *infile, int insize, bool origin ) {
     pen_x=0; pen_y=0;
 //    for ( int char_offset = 0; char_offset <= 94; char_offset++ ) {
 //        error = FT_Load_Char( face, 32+char_offset, FT_LOAD_RENDER );
-    for ( int char_offset = 0; char_offset <= 590; char_offset++ ) {
-        glyph_index = FT_Get_Char_Index( face, char_offset);
+    for ( my_languages.it = my_languages.valid_chars.begin(); my_languages.it != my_languages.valid_chars.end(); my_languages.it++ ) {
+        glyph_index = FT_Get_Char_Index( face, (*my_languages.it) );
         if ( glyph_index != 0 ) {
             error = FT_Load_Glyph( face, glyph_index, FT_LOAD_RENDER );
             if ( error ) { printf("ERROR in FreeType - FT_Load_Glyph\n"); }
@@ -125,7 +134,7 @@ int freetype_font::init( const char *infile, int insize, bool origin ) {
                 }
             }
 
-            glyphs.push_back( glyph_info( slot->bitmap_left,               // x_offset
+            glyphs[(*my_languages.it)] = glyph_info( slot->bitmap_left,               // x_offset
                                           //slot->bitmap_top - max_height, // y_offset
                                           slot->bitmap_top - max_height + (max_height-bitmap->rows), // y_offset
                                           (float)(pen_x)/(float)tex_width, //left
@@ -134,11 +143,11 @@ int freetype_font::init( const char *infile, int insize, bool origin ) {
                                           1.0-(float)(pen_y + (max_height-max_height))/(float)tex_height, //top
                                           1.0-(float)(pen_y + max_height )/(float)tex_height, //bottom
                                           slot->advance.x >> 6,            // advance
-                                          //bitmap->rows,                    // height
-                                          max_height,                    // height
+                                          //bitmap->rows,                  // height
+                                          max_height,                      // height
                                           bitmap->width,                   // width
-                                          32+char_offset                   //ascii char
-                                          ) );
+                                          (*my_languages.it)               //ascii char
+                                          ) ;
 
             pen_x += bitmap->width + 1;
 
@@ -222,15 +231,19 @@ ver_count = 0;
 
         //ABCDEF+ FGGH + GHIJKL
 
-        i_glyph = intext[a]-32;
+        i_glyph = intext[a];
         //printf("Operating on glyph %d\n",i_glyph);
 
-        if ( !inmax || (inx+(int)(glyphs[i_glyph].advance * inscale )-old_inx) <= inmax ) {
+        //check to see if given value is even in the map.  if not, continue to next char
+        mit = glyphs.find(i_glyph);
+        if ( mit == glyphs.end() ) continue;
 
-        x_left = glyphs[i_glyph].x_left;  x_right = glyphs[i_glyph].x_right;
-        y_top = glyphs[i_glyph].y_top;    y_bottom = glyphs[i_glyph].y_bottom;
-        height = glyphs[i_glyph].height;  width = glyphs[i_glyph].width;
-        x_off = glyphs[i_glyph].x_offset; y_off = glyphs[i_glyph].y_offset;
+        if ( !inmax || (inx+(int)(mit->second.advance * inscale )-old_inx) <= inmax ) {
+
+        x_left = mit->second.x_left;  x_right = mit->second.x_right;
+        y_top = mit->second.y_top;    y_bottom = mit->second.y_bottom;
+        height = mit->second.height;  width = mit->second.width;
+        x_off = mit->second.x_offset; y_off = mit->second.y_offset;
 
         width  = (int)((float)width  * inscale);
         height = (int)((float)height * inscale);
@@ -301,7 +314,7 @@ ver_count = 0;
         ver_count++;
 
         keep_inx = inx;
-        inx+=(int)(glyphs[i_glyph].advance * inscale );
+        inx+=(int)(mit->second.advance * inscale );
 
         } else {
             break;
@@ -324,15 +337,19 @@ ver_count = 0;
 
         //ABCDEF+ FGGH + GHIJKL
 
-        i_glyph = intext[a]-32;
+        i_glyph = intext[a];
         //printf("Operating on glyph %d\n",i_glyph);
 
-        if ( !inmax || (inx+(int)(glyphs[i_glyph].advance * inscale )-old_inx) <= inmax ) {
+        //check to see if given value is even in the map.  if not, continue to next char
+        mit = glyphs.find(i_glyph);
+        if ( mit == glyphs.end() ) continue;
 
-        x_left = glyphs[i_glyph].x_left;  x_right = glyphs[i_glyph].x_right;
-        y_top = glyphs[i_glyph].y_top;    y_bottom = glyphs[i_glyph].y_bottom;
-        height = glyphs[i_glyph].height;  width = glyphs[i_glyph].width;
-        x_off = glyphs[i_glyph].x_offset; y_off = glyphs[i_glyph].y_offset;
+        if ( !inmax || (inx+(int)(mit->second.advance * inscale )-old_inx) <= inmax ) {
+
+        x_left = mit->second.x_left;  x_right = mit->second.x_right;
+        y_top = mit->second.y_top;    y_bottom = mit->second.y_bottom;
+        height = mit->second.height;  width = mit->second.width;
+        x_off = mit->second.x_offset; y_off = mit->second.y_offset;
 
         width  = (int)((float)width  * inscale);
         height = (int)((float)height * inscale);
@@ -405,7 +422,7 @@ ver_count = 0;
         ver_count++;
 
         keep_inx = inx;
-        inx+=(int)(glyphs[i_glyph].advance * inscale );
+        inx+=(int)(mit->second.advance * inscale );
 
         } else {
             break;
@@ -562,3 +579,29 @@ glyph_matrix* freetype_font::returnCharMatrix( char inchar ) {
 
 }
 */
+
+
+void languages::populate_list() {
+    int i;
+
+    if ( basic_latin )
+        for ( i=0x0000; i <= 0x007E; i++ ) valid_chars.push_back(i);
+    if ( latin_supplement )
+        for ( i=0x00A0; i <= 0x00FF; i++ ) valid_chars.push_back(i);
+    if ( latin_extended_a )
+        for ( i=0x0100; i <= 0x017F; i++ ) valid_chars.push_back(i);
+    if ( latin_extended_b )
+        for ( i=0x0180; i <= 0x024F; i++ ) valid_chars.push_back(i);
+    if ( ipa_extensions )
+        for ( i=0x0250; i <= 0x02AF; i++ ) valid_chars.push_back(i);
+    if ( spacing_modifier_letters )
+        for ( i=0x02B0; i <= 0x02FF; i++ ) valid_chars.push_back(i);
+    if ( combining_diacritical_marks )
+        for ( i=0x0300; i <= 0x036F; i++ ) valid_chars.push_back(i);
+    if ( greek_coptic )
+        for ( i=0x0370; i <= 0x03FF; i++ ) valid_chars.push_back(i);
+    if ( cyrillic )
+        for ( i=0x0400; i <= 0x04FF; i++ ) valid_chars.push_back(i);
+    if ( cyrillic_supplement )
+        for ( i=0x0500; i <= 0x052F; i++ ) valid_chars.push_back(i);
+}

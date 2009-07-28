@@ -10,6 +10,66 @@
 #include <vector>
 
 
+typedef struct languagess {
+
+    void enableAll() { basic_latin = true;
+                       latin_supplement = true;
+                       latin_extended_a = true;
+                       latin_extended_b = true;
+                       ipa_extensions = true;
+                       spacing_modifier_letters = true;
+                       combining_diacritical_marks = true;
+                       greek_coptic = true;
+                       cyrillic = true;
+                       cyrillic_supplement = true; }
+
+    void enableLatin() { latin_supplement = true;
+                         latin_extended_a = true;
+                         latin_extended_b = true;
+                         ipa_extensions = true;
+                         spacing_modifier_letters = true;
+                         combining_diacritical_marks = true; }
+
+    void enableGreek() { greek_coptic = true; }
+
+    void enableCyrillic() { cyrillic = true;
+                            cyrillic_supplement = true; }
+
+    void enableExtendedAscii() { latin_supplement = true; }
+
+
+    languagess() : basic_latin(true),
+                   latin_supplement(false),
+                   latin_extended_a(false),
+                   latin_extended_b(false),
+                   ipa_extensions(false),
+                   spacing_modifier_letters(false),
+                   combining_diacritical_marks(false),
+                   greek_coptic(false),
+                   cyrillic(false),
+                   cyrillic_supplement(false) {}
+
+    void populate_list();
+
+    bool basic_latin;
+    bool latin_supplement;
+    bool latin_extended_a;
+    bool latin_extended_b;
+    bool ipa_extensions;
+    bool spacing_modifier_letters;
+    bool combining_diacritical_marks;
+    bool greek_coptic;
+    bool cyrillic;
+    bool cyrillic_supplement;
+
+    std::list<short int> valid_chars;
+    std::list<short int>::iterator it;
+
+} languages;
+
+//////////////////////////////////////////////////////////////////////////////////
+//
+
 class glyph_info {
 public:
 
@@ -25,17 +85,9 @@ public:
     short int width;
 
     glyph_info( char, char, float, float, float, float, short int, short int, short int, char );
+    glyph_info() {};
 
 };
-
-typedef struct glyph_matrixs {
-//    bool *bools;
-    int w;
-    int h;
-    int xoffset;
-    int yoffset;
-    int advance;
-} glyph_matrix;
 
 //////////////////////////////////////////////////////////////////////////////////
 //
@@ -76,7 +128,6 @@ public:
 
     int init(const char*,int,bool);
     int createText( const char*, std::vector<GLfloat>*, float, int, int, int );
-    //glyph_matrix* returnCharMatrix( char );
     int checkLength( const char *, float );
     int returnOffset( char*, int, float );
     int clipText( char *, char **, char **, float, int);
@@ -89,20 +140,18 @@ public:
 
     freetype_font() { my_list = NULL; max_height = 0;}
 
+    languages my_languages;
+
 private:
 
-    FT_Library    library;
-    FT_Face       face;
-    FT_GlyphSlot  slot;
-    FT_Bitmap*    bitmap;
     GLuint        atlas_texture;
     GLubyte*      atlas_data;
     bool          origin_topleft;
-    //glyph_matrix  *my_matrix;
     GLfloat       r,g,b,a;
     int           max_height;
 
-    std::vector<glyph_info> glyphs;
+    std::map<short int, glyph_info> glyphs;
+    std::map<short int, glyph_info>::iterator mit;
 
     font_list_pointers *my_list;
 
