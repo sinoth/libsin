@@ -21,6 +21,9 @@ int freetype_font::init( const char *infile, int insize, bool origin ) {
     int pen_x;
     int pen_y;
     int pen_offset;
+    int max_real_height;
+    int min_real_height;
+    int max_boxheight;
     unsigned int glyph_index;
 
     origin_topleft = origin;
@@ -50,21 +53,29 @@ int freetype_font::init( const char *infile, int insize, bool origin ) {
     //printf("past main inits... ");
 
     //find the width of texture
-    x_width = 0;
+    x_width = 0; max_real_height = 0; min_real_height = 0;
     //for ( int char_offset = 0; char_offset < 65534; char_offset++ ) {
     for ( my_languages.it = my_languages.valid_chars.begin(); my_languages.it != my_languages.valid_chars.end(); my_languages.it++ ) {
         glyph_index = FT_Get_Char_Index( face, (*my_languages.it) );
         if ( glyph_index != 0 ) {
             error = FT_Load_Glyph( face, glyph_index, FT_LOAD_RENDER );
             if ( error ) { printf("ERROR in FreeType - FT_Load_Glyph\n"); }
+            bitmap = &slot->bitmap;
 
             bitmap = (FT_Bitmap*)&slot->bitmap;
             x_width += ((FT_Bitmap*)&slot->bitmap)->width + 1 ;
 
-            if ( ((FT_Bitmap*)&slot->bitmap)->rows > max_height ) { max_height = ((FT_Bitmap*)&slot->bitmap)->rows; }
+            if ( bitmap->rows > max_height ) { max_height = bitmap->rows; }
+
+            if ( slot->bitmap_top > max_real_height ) { max_real_height = slot->bitmap_top; }
+            if ( slot->bitmap_top - bitmap->rows < min_real_height ) { min_real_height = slot->bitmap_top - bitmap->rows; }
         }
 
     }
+
+    max_boxheight = max_real_height - min_real_height;
+
+    //printf("font - max_height: %d, max_real_height: %d, min_real_height:  ,max_box: %d%d\n",max_height, max_real_height, min_real_height, max_boxheight);
 
     // ok... start by finding area that will hold the guessed area, start at 32x32 and go up (step up each by a power)
     // once you get required area, do a dry run of placement to see if it will fit
@@ -136,15 +147,16 @@ int freetype_font::init( const char *infile, int insize, bool origin ) {
 
             glyphs[(*my_languages.it)] = glyph_info( slot->bitmap_left,               // x_offset
                                           //slot->bitmap_top - max_height, // y_offset
-                                          slot->bitmap_top - max_height + (max_height-bitmap->rows), // y_offset
+                                          //slot->bitmap_top - max_height + (max_height-bitmap->rows), // y_offset
+                                          -max_real_height + slot->bitmap_top, // y_offset
                                           (float)(pen_x)/(float)tex_width, //left
                                           (float)(pen_x+bitmap->width)/(float)tex_width, //right
                                           //1.0-(float)(pen_y + (max_height-bitmap->rows))/(float)tex_height, //top
-                                          1.0-(float)(pen_y + (max_height-max_height))/(float)tex_height, //top
+                                          1.0-(float)(pen_y + (max_height-bitmap->rows))/(float)tex_height, //top
                                           1.0-(float)(pen_y + max_height )/(float)tex_height, //bottom
                                           slot->advance.x >> 6,            // advance
-                                          //bitmap->rows,                  // height
-                                          max_height,                      // height
+                                          bitmap->rows,                  // height
+                                          //max_height,                      // height
                                           bitmap->width,                   // width
                                           (*my_languages.it)               //ascii char
                                           ) ;
@@ -167,8 +179,8 @@ int freetype_font::init( const char *infile, int insize, bool origin ) {
 
     //glTexParameteri( GL_TEXTURE_2D, GL_GENERATE_MIPMAP, GL_TRUE);
 
-	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_NEAREST);
-	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_LINEAR);
 
     // the texture wraps over at the edges (repeat)
     //glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT );
@@ -180,6 +192,8 @@ int freetype_font::init( const char *infile, int insize, bool origin ) {
 		GL_ALPHA, GL_UNSIGNED_BYTE, atlas_data );
 
 	delete [] atlas_data;
+
+    max_height = max_boxheight;
 
     printf("done.\n");
 
@@ -245,10 +259,10 @@ ver_count = 0;
         height = mit->second.height;  width = mit->second.width;
         x_off = mit->second.x_offset; y_off = mit->second.y_offset;
 
-        width  = (int)((float)width  * inscale);
-        height = (int)((float)height * inscale);
-        x_off  = (int)((float)x_off  * inscale);
-        y_off  = (int)((float)y_off  * inscale);
+        width  = (int)((float)width  * inscale + 0.5);
+        height = (int)((float)height * inscale + 0.5);
+        x_off  = (int)((float)x_off  * inscale + 0.5);
+        y_off  = (int)((float)y_off  * inscale + 0.5);
 
         if ( a==0 && vec_vertex->size()!=0 ) {
 
@@ -458,17 +472,31 @@ ver_count = 0;
 
 int freetype_font::checkLength( const char *intext, float inscale ) {
 
-    int moved_x, a, phrase_len;
+    int moved_x = 0;
+    int phrase_len = strlen(intext);
 
-    moved_x = 0;
-    phrase_len = strlen(intext);
-    for ( a=0; a < phrase_len; a++ ) {
-        moved_x+=glyphs[intext[a]-32].advance;
+    for ( int a=0; a < phrase_len; a++ ) {
+        moved_x+=glyphs[intext[a]].advance;
     }
     return (int)((float)moved_x * inscale);
 
 }
 
+/*
+int freetype_font::checkHeight( const char *intext, float inscale ) {
+
+    int max_y, phrase_len;
+
+    max_y = 0;
+    phrase_len = strlen(intext);
+    for ( int a=0; a < phrase_len; a++ ) {
+        if ( glyphs.find(intext[a]) != glyphs.end() )
+        if ( glyphs[intext[a]].height > max_y ) { max_y = glyphs[intext[a]].height; }
+    }
+    return (int)((float)max_y * inscale);
+
+}
+*/
 
 int freetype_font::clipText( char *intext, char **returntext, char **remainingtext, float inscale, int inmaxwidth ) {
 

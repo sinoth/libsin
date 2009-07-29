@@ -129,6 +129,7 @@ public:
     int init(const char*,int,bool);
     int createText( const char*, std::vector<GLfloat>*, float, int, int, int );
     int checkLength( const char *, float );
+    //int checkHeight( const char *, float );
     int returnOffset( char*, int, float );
     int clipText( char *, char **, char **, float, int);
     int clipTextMulti( char *, std::list<char*>*, float, int);
@@ -195,6 +196,21 @@ public:
             glDisable(GL_TEXTURE_2D);
 
         }
+
+    void moveTo(int inx, int iny) {
+        static std::vector<GLfloat>::iterator vit;
+
+            for ( it=all_fonts.begin(); it != all_fonts.end(); it++ ) {
+                for (lit=(*it).second.begin(); lit != (*it).second.end(); lit++ ) {
+                    for (vit=(*lit)->vec_vertex->begin(); vit != (*lit)->vec_vertex->end(); vit++) {
+                        (*vit) += inx;
+                        vit++;
+                        (*vit) += iny;
+                        vit++;
+                    }
+                }
+            }
+    }
 
     font_list_pointers registerFont( freetype_font *in, bool is_static ) {
             if ( is_static ) {
