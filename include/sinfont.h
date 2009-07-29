@@ -170,9 +170,9 @@ public:
 
             glEnable(GL_TEXTURE_2D);
             glEnable(GL_BLEND);
-            glEnableClientState(GL_VERTEX_ARRAY);
-            glEnableClientState(GL_COLOR_ARRAY);
-            glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+            //glEnableClientState(GL_VERTEX_ARRAY);
+            //glEnableClientState(GL_COLOR_ARRAY);
+            //glEnableClientState(GL_TEXTURE_COORD_ARRAY);
 
             for ( it=all_fonts.begin(); it != all_fonts.end(); it++ ) {
 
@@ -188,9 +188,9 @@ public:
                 }
             }
 
-            glDisableClientState(GL_VERTEX_ARRAY);
-            glDisableClientState(GL_COLOR_ARRAY);
-            glDisableClientState(GL_TEXTURE_COORD_ARRAY);
+            //glDisableClientState(GL_VERTEX_ARRAY);
+            //glDisableClientState(GL_COLOR_ARRAY);
+            //glDisableClientState(GL_TEXTURE_COORD_ARRAY);
             glDisable(GL_BLEND);
             glDisable(GL_TEXTURE_2D);
 
