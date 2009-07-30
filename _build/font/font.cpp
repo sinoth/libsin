@@ -6,8 +6,12 @@ glyph_info::glyph_info( char a, char b, float c, float d, float e, float f, shor
 x_offset = a; y_offset = b; x_left = c; x_right = d; y_top = e; y_bottom = f; advance = g; height = h; width = i; character = j;  }
 
 
+freetype_font::freetype_font() : origin_topleft(false), r(0),g(0),b(0),a(1) {
+    my_list = NULL;
+    max_height = 0;
+}
 
-int freetype_font::init( const char *infile, int insize, bool origin ) {
+int freetype_font::init( const char *infile, int insize ) {
 
     FT_Library    library;
     FT_Face       face;
@@ -25,8 +29,6 @@ int freetype_font::init( const char *infile, int insize, bool origin ) {
     int min_real_height;
     int max_boxheight;
     unsigned int glyph_index;
-
-    origin_topleft = origin;
 
     my_languages.populate_list();
 
@@ -482,21 +484,6 @@ int freetype_font::checkLength( const char *intext, float inscale ) {
 
 }
 
-/*
-int freetype_font::checkHeight( const char *intext, float inscale ) {
-
-    int max_y, phrase_len;
-
-    max_y = 0;
-    phrase_len = strlen(intext);
-    for ( int a=0; a < phrase_len; a++ ) {
-        if ( glyphs.find(intext[a]) != glyphs.end() )
-        if ( glyphs[intext[a]].height > max_y ) { max_y = glyphs[intext[a]].height; }
-    }
-    return (int)((float)max_y * inscale);
-
-}
-*/
 
 int freetype_font::clipText( char *intext, char **returntext, char **remainingtext, float inscale, int inmaxwidth ) {
 
@@ -594,42 +581,19 @@ static int veclength;
 }
 
 
-
-
-
-
-
-/*
-glyph_matrix* freetype_font::returnCharMatrix( char inchar ) {
-
-    return &my_matrix[inchar-32];
-
-
+void freetype_font::setCorner(int in) {
+    if ( in == FONT_ORIGIN_LOWERLEFT )
+        origin_topleft = false;
+    else
+        origin_topleft = true;
 }
-*/
 
+int freetype_font::getMaxHeight() { return max_height; }
 
-void languages::populate_list() {
-    int i;
+inline int freetype_font::next_p2 (int a) { int rval=1; while(rval<a) rval<<=1; return rval; }
 
-    if ( basic_latin )
-        for ( i=0x0000; i <= 0x007E; i++ ) valid_chars.push_back(i);
-    if ( latin_supplement )
-        for ( i=0x00A0; i <= 0x00FF; i++ ) valid_chars.push_back(i);
-    if ( latin_extended_a )
-        for ( i=0x0100; i <= 0x017F; i++ ) valid_chars.push_back(i);
-    if ( latin_extended_b )
-        for ( i=0x0180; i <= 0x024F; i++ ) valid_chars.push_back(i);
-    if ( ipa_extensions )
-        for ( i=0x0250; i <= 0x02AF; i++ ) valid_chars.push_back(i);
-    if ( spacing_modifier_letters )
-        for ( i=0x02B0; i <= 0x02FF; i++ ) valid_chars.push_back(i);
-    if ( combining_diacritical_marks )
-        for ( i=0x0300; i <= 0x036F; i++ ) valid_chars.push_back(i);
-    if ( greek_coptic )
-        for ( i=0x0370; i <= 0x03FF; i++ ) valid_chars.push_back(i);
-    if ( cyrillic )
-        for ( i=0x0400; i <= 0x04FF; i++ ) valid_chars.push_back(i);
-    if ( cyrillic_supplement )
-        for ( i=0x0500; i <= 0x052F; i++ ) valid_chars.push_back(i);
-}
+void freetype_font::setPointerList( font_list_pointers *in ) { my_list = in; }
+
+void freetype_font::setColor( float inr, float ing, float inb, float ina ) { r=inr; g=ing; b=inb; a=ina; }
+
+GLuint freetype_font::getTextureID() { return atlas_texture; }

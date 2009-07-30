@@ -76,7 +76,19 @@
 			<Add option="-Wall" />
 			<Add directory="..\include" />
 		</Compiler>
+		<Unit filename="font\controller.cpp">
+			<Option virtualFolder="font\" />
+			<Option target="font" />
+		</Unit>
 		<Unit filename="font\font.cpp">
+			<Option virtualFolder="font\" />
+			<Option target="font" />
+		</Unit>
+		<Unit filename="font\languages.cpp">
+			<Option virtualFolder="font\" />
+			<Option target="font" />
+		</Unit>
+		<Unit filename="font\pointers.cpp">
 			<Option virtualFolder="font\" />
 			<Option target="font" />
 		</Unit>
