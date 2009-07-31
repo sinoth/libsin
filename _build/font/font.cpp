@@ -6,10 +6,11 @@ glyph_info::glyph_info( char a, char b, float c, float d, float e, float f, shor
 x_offset = a; y_offset = b; x_left = c; x_right = d; y_top = e; y_bottom = f; advance = g; height = h; width = i; character = j;  }
 
 
-freetype_font::freetype_font() : origin_topleft(false), r(0),g(0),b(0),a(1) {
-    my_list = NULL;
-    max_height = 0;
-}
+freetype_font::freetype_font()
+  : origin_topleft(false),
+    r(0),g(0),b(0),a(1),
+    max_height(0)
+    { my_list = NULL; }
 
 int freetype_font::init( const char *infile, int insize ) {
 
@@ -241,7 +242,7 @@ ver_count = 0;
       vec_color = NULL;
   }
 
-  if ( origin_topleft ) {
+  if ( !origin_topleft ) {
 
     for ( a=0; a < phrase_len; a++ ) {
 
