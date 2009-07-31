@@ -596,5 +596,6 @@ inline int freetype_font::next_p2 (int a) { int rval=1; while(rval<a) rval<<=1; 
 void freetype_font::setPointerList( font_list_pointers *in ) { my_list = in; }
 
 void freetype_font::setColor( float inr, float ing, float inb, float ina ) { r=inr; g=ing; b=inb; a=ina; }
+void freetype_font::setColor( int inr, int ing, int inb, int ina ) { r=(float)inr/255.0; g=(float)ing/255.0; b=(float)inb/255.0; a=(float)ina/255.0; }
 
 GLuint freetype_font::getTextureID() { return atlas_texture; }

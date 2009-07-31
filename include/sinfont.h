@@ -96,6 +96,7 @@ public:
     int clipTextMulti( char *, std::list<char*>*, float, int);
     GLuint getTextureID();
     void setColor( float, float, float, float );
+    void setColor( int, int, int, int );
     void setPointerList( font_list_pointers * );
     int getMaxHeight();
     void setCorner(int);
