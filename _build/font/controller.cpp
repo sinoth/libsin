@@ -81,3 +81,56 @@ font_list_pointers freetype_font_controller::registerFont( freetype_font *in, bo
         return *new_fontp;
     }
 }
+
+
+//////////////////////////////////////////////////////////////////////////
+//
+//////////////////////////////////////////////////////////////////////////
+//
+
+font_object::font_object() {
+    active = true;
+    x=0; y=0;
+    width=0; height = 0;
+    memset(color, 0, sizeof(float)*4 );
+    uniqueID = 0;
+    my_font = NULL;
+    horiz_align = FONT_ALIGN_LEFT;
+    vert_align = FONT_ALIGN_TOP;
+}
+
+void font_object::setFont( freetype_font *in ) { my_font = in; }
+void font_object::setColor( float *in ) { memcpy( color, in, sizeof(float)*4 ); }
+void font_object::setXY( int inx, int iny ) { x = inx; y = iny; }
+void font_object::setWH( int inw, int inh ) { width = inw; height = inh; }
+void font_object::setActive( bool in ) { active = in; }
+void font_object::setHorizAlign( char in ) { horiz_align = in; }
+void font_object::setVertAlign( char in ) { vert_align = in; }
+bool font_object::isActive() { return active; }
+void font_object::setID( unsigned int in ) { uniqueID = in; }
+
+void font_object::setText( const char *in ) {
+    my_text = (char*) malloc( strlen(in)*sizeof(char)+1 );
+    strcpy(my_text,in);
+}
+
+void font_object::update() {}
+
+//////////////////////////////////////////////////////////////////////////
+//
+freetype_font_controller_omega::freetype_font_controller_omega() {
+    internal_id = 100;
+}
+
+bool freetype_font_controller_omega::addObject(font_object* in) {
+
+    //main_map.find( in->getTextureID() ) == all_fonts.end()
+
+
+
+    in->setID(internal_id);
+
+    internal_id++;
+
+    return false;
+}

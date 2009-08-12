@@ -198,6 +198,9 @@ int freetype_font::init( const char *infile, int insize ) {
 
     max_height = max_boxheight;
 
+    newline_advance = face->size->metrics.height >> 6;
+    printf("\nnewline_advance: %d\n", newline_advance);
+
     printf("done.\n");
 
     return 0;

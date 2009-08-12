@@ -25,6 +25,13 @@
 #define FONT_ORIGIN_LOWERLEFT 1
 #define FONT_ORIGIN_UPPERLEFT 2
 
+#define FONT_ALIGN_BOTTOM   1
+#define FONT_ALIGN_CENTER   2
+#define FONT_ALIGN_TOP      3
+#define FONT_ALIGN_LEFT     4
+#define FONT_ALIGN_RIGHT    5
+
+
 typedef struct languagess {
 
     void enableAll();
@@ -128,6 +135,7 @@ private:
     bool          origin_topleft;
     GLfloat       r,g,b,a;
     int           max_height;
+    int           newline_advance;
 
     std::map<short int, glyph_info> glyphs;
     std::map<short int, glyph_info>::iterator mit;
@@ -152,6 +160,58 @@ private:
     std::map<GLuint, std::list<font_list_pointers*> > all_fonts;
     std::map<GLuint, std::list<font_list_pointers*> >::iterator it;
     std::list<font_list_pointers*>::iterator lit;
+
+};
+
+//////////////////////////////////////////////////////////////////////////////////
+//
+class font_object {
+
+  public:
+    void setFont( freetype_font* );
+    void setText( const char* );
+    void setColor( float* );
+    void setXY( int, int );
+    void setWH( int, int );
+    void setActive( bool );
+    void setHorizAlign( char );
+    void setVertAlign( char );
+
+    bool isActive();
+
+    font_object();
+
+  protected:
+    friend class freetype_font_controller_omega;
+    void setID( unsigned int );
+    void update();
+
+  private:
+    bool active;
+    int x, y;
+    int width, height;
+    char horiz_align, vert_align;
+    char *my_text;
+    float color[4];
+    unsigned int uniqueID;
+    freetype_font *my_font;
+};
+
+class freetype_font_controller_omega {
+public:
+
+    void render();
+    bool addObject(font_object*);
+    bool updateObject(font_object*);
+
+    freetype_font_controller_omega();
+
+private:
+
+    int internal_id;
+    std::map<unsigned int, font_object*> main_map;
+    std::map<GLuint, unsigned int> render_map;
+
 
 };
 
