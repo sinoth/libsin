@@ -1,3 +1,12 @@
+/////////////////////////////
+// todo
+//
+// [ ] make a more general interface for adding text to the scene
+//     one controller should be able to take care of the whole screen
+//     allow user to hide and unhide specific text
+//
+
+
 #ifndef FONT_H
 #define FONT_H
 
