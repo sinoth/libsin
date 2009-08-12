@@ -5,6 +5,9 @@
 //     one controller should be able to take care of the whole screen
 //     allow user to hide and unhide specific text
 //
+//     basically you feed the font engine text, it gives you back a unique ID
+//     you use this ID to do stuff with the text.. move it, change color, etc
+//
 
 
 #ifndef FONT_H
