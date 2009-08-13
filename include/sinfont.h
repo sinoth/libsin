@@ -31,6 +31,8 @@
 #define FONT_ALIGN_LEFT     4
 #define FONT_ALIGN_RIGHT    5
 
+#define FONT_HINT_STATIC    1
+#define FONT_HINT_DYNAMIC   2
 
 typedef struct languagess {
 
@@ -197,11 +199,14 @@ class font_object {
     freetype_font *my_font;
 };
 
+
+
 class freetype_font_controller_omega {
 public:
 
     void render();
-    bool addObject(font_object*);
+    void addObject(font_object*);
+    void addObject(font_object*, int);
     bool updateObject(font_object*);
 
     freetype_font_controller_omega();
@@ -210,7 +215,9 @@ private:
 
     int internal_id;
     std::map<unsigned int, font_object*> main_map;
-    std::map<GLuint, unsigned int> render_map;
+    std::map<GLuint, std::list<unsigned int> > render_map;
+
+    gotta decide how to let the object write to vectors
 
 
 };

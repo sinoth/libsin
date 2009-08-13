@@ -122,15 +122,12 @@ freetype_font_controller_omega::freetype_font_controller_omega() {
     internal_id = 100;
 }
 
-bool freetype_font_controller_omega::addObject(font_object* in) {
-
-    //main_map.find( in->getTextureID() ) == all_fonts.end()
-
-
+void freetype_font_controller_omega::addObject(font_object* in) {
 
     in->setID(internal_id);
+    main_map[internal_id] = in;
+    render_map[in->my_font->getTextureID()].push_back(internal_id);
 
     internal_id++;
 
-    return false;
 }
