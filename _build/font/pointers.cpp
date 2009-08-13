@@ -13,7 +13,8 @@
 
 font_list_pointerss::font_list_pointerss() : start_vertex(0),
                                              start_color(0),
-                                             start_texture(0)
+                                             start_texture(0),
+                                             active(true)
                                              { vec_vertex = NULL;
                                                vec_texture = NULL;
                                                vec_color = NULL;   }
@@ -28,3 +29,9 @@ void font_list_pointerss::clearAll() { vec_vertex->clear();
 
 void font_list_pointerss::setPointers( std::vector<GLfloat> *invec, std::vector<GLfloat> *intex, std::vector<GLfloat> *incol ) {
         vec_vertex = invec; vec_texture = intex; vec_color = incol; }
+
+void font_list_pointerss::newPointers() {
+    vec_vertex = new std::vector<GLfloat>;
+    vec_texture = new std::vector<GLfloat>;
+    vec_color = new std::vector<GLfloat>;
+}

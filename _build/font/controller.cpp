@@ -5,7 +5,6 @@
 
 //////////////////////////////////////////////////////////////////////////
 //
-
 void freetype_font_controller::render() {
 
     glEnable(GL_TEXTURE_2D);
@@ -56,7 +55,6 @@ void freetype_font_controller::moveTo(int inx, int iny) {
 
 //////////////////////////////////////////////////////////////////////////
 //
-
 font_list_pointers freetype_font_controller::registerFont( freetype_font *in, bool is_static ) {
     if ( is_static ) {
         if ( all_fonts.find( in->getTextureID() ) == all_fonts.end() ) {
@@ -85,49 +83,78 @@ font_list_pointers freetype_font_controller::registerFont( freetype_font *in, bo
 
 //////////////////////////////////////////////////////////////////////////
 //
+freetype_font_controller_omega::freetype_font_controller_omega() {}
+
+void freetype_font_controller_omega::registerObject(font_object* in) { registerObject(in,FONT_HINT_STATIC); }
+void freetype_font_controller_omega::registerObject(font_object* in, int hint) {
+
+    in->setHint(hint);
+
+    switch ( hint ) {
+        case FONT_HINT_STATIC:
+            if ( render_map.find(in->my_font->getTextureID()) == render_map.end() ) {
+                render_map[in->my_font->getTextureID()].push_back(font_list_pointers());
+                render_map[in->my_font->getTextureID()].front().newPointers();
+                in->my_pointers = render_map[in->my_font->getTextureID()].front();
+            } else {
+                render_map[in->my_font->getTextureID()].front().setStart();
+                in->my_pointers = render_map[in->my_font->getTextureID()].front();
+            }
+            break;
+        case FONT_HINT_DYNAMIC:
+            render_map[in->my_font->getTextureID()].push_back(font_list_pointers());
+            render_map[in->my_font->getTextureID()].front().newPointers();
+            in->my_pointers = render_map[in->my_font->getTextureID()].front();
+            break;
+    }
+
+    in->cook();
+}
+
+void freetype_font_controller_omega::render() {
+
+    glEnable(GL_TEXTURE_2D);
+    glEnable(GL_BLEND);
+    //glEnableClientState(GL_VERTEX_ARRAY);
+    //glEnableClientState(GL_COLOR_ARRAY);
+    //glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+
+    for ( it=render_map.begin(); it != render_map.end(); it++ ) {
+
+        glBindTexture( GL_TEXTURE_2D, (*it).first );
+
+        //for every font in the list, we have to go through every set of pointers
+        for (lit=(*it).second.begin(); lit != (*it).second.end(); lit++ ) {
+            glVertexPointer(3, GL_FLOAT, 0, &(*lit).vec_vertex->at(0) );
+            glTexCoordPointer(2, GL_FLOAT, 0, &(*lit).vec_texture->at(0) );
+            glColorPointer(4, GL_FLOAT, 0, &(*lit).vec_color->at(0) );
+            glDrawArrays(GL_TRIANGLE_STRIP, 0, (*lit).vec_vertex->size()/3 );
+            //glInterleavedArrays(GL_T2F_V3F,0,&(*lit)->vec_vertex->at(0) );
+        }
+    }
+
+    //glDisableClientState(GL_VERTEX_ARRAY);
+    //glDisableClientState(GL_COLOR_ARRAY);
+    //glDisableClientState(GL_TEXTURE_COORD_ARRAY);
+    glDisable(GL_BLEND);
+    glDisable(GL_TEXTURE_2D);
+
+}
+
 //////////////////////////////////////////////////////////////////////////
 //
 
-font_object::font_object() {
-    active = true;
-    x=0; y=0;
-    width=0; height = 0;
-    memset(color, 0, sizeof(float)*4 );
-    uniqueID = 0;
-    my_font = NULL;
-    horiz_align = FONT_ALIGN_LEFT;
-    vert_align = FONT_ALIGN_TOP;
-}
+void freetype_font_controller_omega::translate(int inx, int iny) {
+    static std::vector<GLfloat>::iterator vit;
 
-void font_object::setFont( freetype_font *in ) { my_font = in; }
-void font_object::setColor( float *in ) { memcpy( color, in, sizeof(float)*4 ); }
-void font_object::setXY( int inx, int iny ) { x = inx; y = iny; }
-void font_object::setWH( int inw, int inh ) { width = inw; height = inh; }
-void font_object::setActive( bool in ) { active = in; }
-void font_object::setHorizAlign( char in ) { horiz_align = in; }
-void font_object::setVertAlign( char in ) { vert_align = in; }
-bool font_object::isActive() { return active; }
-void font_object::setID( unsigned int in ) { uniqueID = in; }
-
-void font_object::setText( const char *in ) {
-    my_text = (char*) malloc( strlen(in)*sizeof(char)+1 );
-    strcpy(my_text,in);
-}
-
-void font_object::update() {}
-
-//////////////////////////////////////////////////////////////////////////
-//
-freetype_font_controller_omega::freetype_font_controller_omega() {
-    internal_id = 100;
-}
-
-void freetype_font_controller_omega::addObject(font_object* in) {
-
-    in->setID(internal_id);
-    main_map[internal_id] = in;
-    render_map[in->my_font->getTextureID()].push_back(internal_id);
-
-    internal_id++;
-
+    for ( it=render_map.begin(); it != render_map.end(); it++ ) {
+        for (lit=(*it).second.begin(); lit != (*it).second.end(); lit++ ) {
+            for (vit=(*lit).vec_vertex->begin(); vit != (*lit).vec_vertex->end(); vit++) {
+                (*vit) += inx;
+                vit++;
+                (*vit) += iny;
+                vit++;
+            }
+        }
+    }
 }

@@ -93,6 +93,7 @@ typedef struct font_list_pointerss {
     void setStart();
     void clearAll();
     void setPointers( std::vector<GLfloat> *, std::vector<GLfloat> *, std::vector<GLfloat> *);
+    void newPointers();
 
     std::vector<GLfloat> *vec_vertex;
     std::vector<GLfloat> *vec_texture;
@@ -100,6 +101,7 @@ typedef struct font_list_pointerss {
     int start_vertex;
     int start_color;
     int start_texture;
+    bool active;
 
 } font_list_pointers;
 
@@ -117,6 +119,7 @@ public:
     int clipTextMulti( char *, std::list<char*>*, float, int);
     GLuint getTextureID();
     void setColor( float, float, float, float );
+    void setColor( float* );
     void setColor( int, int, int, int );
     void setPointerList( font_list_pointers * );
     int getMaxHeight();
@@ -173,30 +176,41 @@ class font_object {
     void setFont( freetype_font* );
     void setText( const char* );
     void setColor( float* );
+    void changeColor( float* );
+    void changeAlpha( float );
     void setXY( int, int );
-    void setWH( int, int );
+    void setMaxWH(int, int );
     void setActive( bool );
     void setHorizAlign( char );
     void setVertAlign( char );
+    void setStretch( bool );
 
     bool isActive();
+    void addChar(int);
+    void backspace();
+    void cook();
 
     font_object();
 
   protected:
-    friend class freetype_font_controller_omega;
-    void setID( unsigned int );
-    void update();
+    void setHint(int);
+
 
   private:
     bool active;
+    bool can_stretch;
+    int hint;
     int x, y;
-    int width, height;
+    int max_width, max_height;
+    int list_size;
     char horiz_align, vert_align;
     char *my_text;
     float color[4];
-    unsigned int uniqueID;
     freetype_font *my_font;
+    font_list_pointers my_pointers;
+    std::vector<GLfloat>::iterator it;
+
+    friend class freetype_font_controller_omega;
 };
 
 
@@ -205,20 +219,16 @@ class freetype_font_controller_omega {
 public:
 
     void render();
-    void addObject(font_object*);
-    void addObject(font_object*, int);
-    bool updateObject(font_object*);
-
+    void translate(int,int);
+    void registerObject(font_object*);
+    void registerObject(font_object*,int);
     freetype_font_controller_omega();
 
 private:
 
-    int internal_id;
-    std::map<unsigned int, font_object*> main_map;
-    std::map<GLuint, std::list<unsigned int> > render_map;
-
-    gotta decide how to let the object write to vectors
-
+    std::map<GLuint, std::list<font_list_pointers> > render_map;
+    std::map<GLuint, std::list<font_list_pointers> >::iterator it;
+    std::list<font_list_pointers>::iterator lit;
 
 };
 
