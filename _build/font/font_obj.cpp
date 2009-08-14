@@ -8,6 +8,7 @@
 
 font_object::font_object() {
     active = true;
+    can_stretch = false;
     hint = 0;
     x = 0; y = 0;
     max_width = 0; max_height = 0;

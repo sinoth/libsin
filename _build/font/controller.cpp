@@ -115,9 +115,9 @@ void freetype_font_controller_omega::render() {
 
     glEnable(GL_TEXTURE_2D);
     glEnable(GL_BLEND);
-    //glEnableClientState(GL_VERTEX_ARRAY);
-    //glEnableClientState(GL_COLOR_ARRAY);
-    //glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+    glEnableClientState(GL_VERTEX_ARRAY);
+    glEnableClientState(GL_COLOR_ARRAY);
+    glEnableClientState(GL_TEXTURE_COORD_ARRAY);
 
     for ( it=render_map.begin(); it != render_map.end(); it++ ) {
 
@@ -133,9 +133,9 @@ void freetype_font_controller_omega::render() {
         }
     }
 
-    //glDisableClientState(GL_VERTEX_ARRAY);
-    //glDisableClientState(GL_COLOR_ARRAY);
-    //glDisableClientState(GL_TEXTURE_COORD_ARRAY);
+    glDisableClientState(GL_VERTEX_ARRAY);
+    glDisableClientState(GL_COLOR_ARRAY);
+    glDisableClientState(GL_TEXTURE_COORD_ARRAY);
     glDisable(GL_BLEND);
     glDisable(GL_TEXTURE_2D);
 
