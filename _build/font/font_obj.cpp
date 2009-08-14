@@ -15,11 +15,12 @@ font_object::font_object() {
     list_size = 0;
     memset(color, 0, sizeof(float)*4 );
     my_font = NULL;
+    my_text = NULL;
     horiz_align = FONT_ALIGN_LEFT;
     vert_align = FONT_ALIGN_TOP;
 }
 
-void font_object::setFont( freetype_font *in ) { my_font = in; }
+void font_object::setFont( freetype_font *in ) { my_font = in; parent_controller->registerObject(this); }
 void font_object::setColor( float *in ) { memcpy( color, in, sizeof(float)*4 ); }
 void font_object::setXY( int inx, int iny ) { x = inx; y = iny; }
 void font_object::setMaxWH( int inw, int inh ) { max_width = inw; max_height = inh; }
@@ -28,6 +29,7 @@ void font_object::setHorizAlign( char in ) { horiz_align = in; }
 void font_object::setVertAlign( char in ) { vert_align = in; }
 void font_object::setHint(int in) { hint = in; }
 void font_object::setStretch(bool in) { can_stretch = in; }
+void font_object::setController(freetype_font_controller_omega *in) { parent_controller = in; }
 bool font_object::isActive() { return active; }
 
 ////////////////////////////////////////////////////////////////////////////

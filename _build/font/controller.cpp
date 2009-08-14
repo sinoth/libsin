@@ -108,10 +108,14 @@ void freetype_font_controller_omega::registerObject(font_object* in, int hint) {
             break;
     }
 
-    in->cook();
+    //in->cook();
 }
 
 void freetype_font_controller_omega::render() {
+
+
+    glPushClientAttrib(GL_CLIENT_VERTEX_ARRAY_BIT);
+    glPushAttrib( GL_ENABLE_BIT );
 
     glEnable(GL_TEXTURE_2D);
     glEnable(GL_BLEND);
@@ -133,11 +137,8 @@ void freetype_font_controller_omega::render() {
         }
     }
 
-    glDisableClientState(GL_VERTEX_ARRAY);
-    glDisableClientState(GL_COLOR_ARRAY);
-    glDisableClientState(GL_TEXTURE_COORD_ARRAY);
-    glDisable(GL_BLEND);
-    glDisable(GL_TEXTURE_2D);
+    glPopAttrib();
+    glPopClientAttrib();
 
 }
 

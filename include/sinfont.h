@@ -184,6 +184,7 @@ class font_object {
     void setHorizAlign( char );
     void setVertAlign( char );
     void setStretch( bool );
+    void setController(class freetype_font_controller_omega*);
 
     bool isActive();
     void addChar(int);
@@ -209,6 +210,7 @@ class font_object {
     freetype_font *my_font;
     font_list_pointers my_pointers;
     std::vector<GLfloat>::iterator it;
+    freetype_font_controller_omega *parent_controller;
 
     friend class freetype_font_controller_omega;
 };
