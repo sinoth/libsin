@@ -103,6 +103,8 @@ typedef struct font_list_pointerss {
     int start_texture;
     bool active;
 
+    font_list_pointerss *parent;
+
 } font_list_pointers;
 
 //////////////////////////////////////////////////////////////////////////////////
@@ -175,6 +177,7 @@ class font_object {
   public:
     void setFont( freetype_font* );
     void setText( const char* );
+    //void addText( const char* );
     void setColor( float* );
     void changeColor( float* );
     void changeAlpha( float );
@@ -185,21 +188,26 @@ class font_object {
     void setVertAlign( char );
     void setStretch( bool );
     void setController(class freetype_font_controller_omega*);
+    void selfRegister(int);
+    void selfRegister(int,int);
+    void setGroup(int);
+    int  getGroup();
 
     bool isActive();
     void addChar(int);
     void backspace();
     void cook();
 
+    font_object& operator= (const font_object);
     font_object();
 
   protected:
     void setHint(int);
 
-
   private:
     bool active;
     bool can_stretch;
+    int group;
     int hint;
     int x, y;
     int max_width, max_height;
@@ -224,6 +232,7 @@ public:
     void translate(int,int);
     void registerObject(font_object*);
     void registerObject(font_object*,int);
+    void registerObject(font_object*,int,int);
     freetype_font_controller_omega();
 
 private:

@@ -199,7 +199,7 @@ int freetype_font::init( const char *infile, int insize ) {
     max_height = max_boxheight;
 
     newline_advance = face->size->metrics.height >> 6;
-    printf("\nnewline_advance: %d\n", newline_advance);
+    //printf("\nnewline_advance: %d\n", newline_advance);
 
     printf("done.\n");
 
@@ -219,6 +219,7 @@ static int phrase_len;
 static int old_inx;
 static int keep_inx;
 static int ver_count;
+static bool newline_trigger;
 
 static std::vector<GLfloat> *vec_vertex;
 static std::vector<GLfloat> *vec_texture;
@@ -227,6 +228,7 @@ static std::vector<GLfloat> *vec_color;
 old_inx = inx;
 phrase_len = strlen(intext);
 ver_count = 0;
+newline_trigger = false;
 
 //invec->clear();
 //uses GL_T2F_V3F
@@ -250,7 +252,20 @@ ver_count = 0;
     for ( a=0; a < phrase_len; a++ ) {
 
         //ABCDEF+ FGGH + GHIJKL
+        if ( intext[a] == '\n' ) {
+            vec_texture->push_back( x_right );
+            vec_texture->push_back( y_bottom );
+            //####//
+            vec_vertex->push_back( keep_inx + x_off + width );
+            vec_vertex->push_back( iny + y_off - height);
+            vec_vertex->push_back( 0 );
+            ver_count++;
 
+            newline_trigger = true;
+            inx = old_inx;
+            iny -= newline_advance;
+            continue;
+        }
         i_glyph = intext[a];
         //printf("Operating on glyph %d\n",i_glyph);
 
@@ -270,7 +285,7 @@ ver_count = 0;
         x_off  = (int)((float)x_off  * inscale + 0.5);
         y_off  = (int)((float)y_off  * inscale + 0.5);
 
-        if ( a==0 && vec_vertex->size()!=0 ) {
+        if ( newline_trigger || (a==0 && vec_vertex->size()!=0) ) {
 
             vec_texture->push_back(x_left);
             vec_texture->push_back(y_top);
@@ -295,6 +310,8 @@ ver_count = 0;
             vec_vertex->push_back( iny + y_off );
             vec_vertex->push_back( 0 );
             ver_count++;
+
+            newline_trigger = false;
         }
 
         vec_texture->push_back(x_left);
@@ -482,6 +499,7 @@ int freetype_font::checkLength( const char *intext, float inscale ) {
     int phrase_len = strlen(intext);
 
     for ( int a=0; a < phrase_len; a++ ) {
+        if ( intext[a] == '\n' ) { moved_x = 0; continue; }
         moved_x+=glyphs[intext[a]].advance;
     }
     return (int)((float)moved_x * inscale);
