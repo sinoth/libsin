@@ -25,6 +25,7 @@ void font_object::setFont( freetype_font *in ) { my_font = in; parent_controller
 void font_object::selfRegister(int in) { parent_controller->registerObject(this, in); }
 void font_object::selfRegister(int in, int group) { parent_controller->registerObject(this, in, group); }
 void font_object::setColor( float *in ) { memcpy( color, in, sizeof(float)*4 ); }
+void font_object::setColor( float inr, float ing, float inb, float ina ) { color[0]=inr; color[1]=ing; color[2]=inb; color[3]=ina; }
 void font_object::setXY( int inx, int iny ) { x = inx; y = iny; }
 void font_object::setMaxWH( int inw, int inh ) { max_width = inw; max_height = inh; }
 void font_object::setActive( bool in ) { active = in; if ( hint == FONT_HINT_DYNAMIC ) my_pointers.parent->active = in; }

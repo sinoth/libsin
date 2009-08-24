@@ -179,6 +179,7 @@ class font_object {
     void setText( const char* );
     //void addText( const char* );
     void setColor( float* );
+    void setColor( float,float,float,float );
     void changeColor( float* );
     void changeAlpha( float );
     void setXY( int, int );

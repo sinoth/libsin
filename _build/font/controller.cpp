@@ -153,6 +153,7 @@ void freetype_font_controller_omega::render() {
             glDrawArrays(GL_TRIANGLE_STRIP, 0, (*lit).vec_vertex->size()/3 );
             //glInterleavedArrays(GL_T2F_V3F,0,&(*lit)->vec_vertex->at(0) );
         }
+
     }
 
     glPopAttrib();
