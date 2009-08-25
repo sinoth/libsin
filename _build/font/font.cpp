@@ -500,7 +500,10 @@ int freetype_font::checkLength( const char *intext, float inscale ) {
 
     for ( int a=0; a < phrase_len; a++ ) {
         if ( intext[a] == '\n' ) { moved_x = 0; continue; }
-        moved_x+=glyphs[intext[a]].advance;
+        //moved_x+=glyphs[intext[a]].advance;
+        mit = glyphs.find((int)intext[a]);
+        if ( mit == glyphs.end() ) continue;
+        moved_x += mit->second.advance;
     }
     return (int)((float)moved_x * inscale);
 

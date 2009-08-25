@@ -85,8 +85,10 @@ void font_object::cook() {
 
     int text_width = my_font->checkLength(my_text, 1.0);
     int text_height = my_font->getMaxHeight();
-    int text_scale = 1.0;
+    float text_scale = 1.0;
     int size_before = 0;
+
+    //printf("s: %s, w: %d, h: %d, s: %f, max_width: %d, max_height: %d\n", my_text, text_width, text_height, text_scale, max_width, max_height);
 
     if ( text_height > max_height ) { text_scale = (float)max_height/(float)text_height; } else { text_scale = 1.0; }
     if ( text_width * text_scale > max_width ) { text_scale = (float)max_width / ((float)text_width* text_scale); }
@@ -95,7 +97,7 @@ void font_object::cook() {
 
     if ( can_stretch && text_scale == 1.0 ) {
         text_scale = max_height / text_height;
-        if ( text_width * text_scale > max_width ) { text_scale = max_width / ((float)text_width* text_scale); }
+        if ( text_width * text_scale > max_width ) { text_scale *= max_width / ((float)text_width* text_scale); }
         text_width = text_width * text_scale;
         text_height = text_height * text_scale;
     }
@@ -114,7 +116,7 @@ void font_object::cook() {
         default:                 yoffset = 0; break;
     }
 
-    //printf("w: %d, h: %d, s: %f, xo: %d, yo: %d, max_width: %d\n", text_width, text_height, text_scale, xoffset, yoffset, max_width);
+    //printf("s: %s, w: %d, h: %d, s: %f, xo: %d, yo: %d, max_width: %d\n", my_text, text_width, text_height, text_scale, xoffset, yoffset, max_width);
 
     switch (hint) {
         case FONT_HINT_STATIC:
