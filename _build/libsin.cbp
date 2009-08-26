@@ -5,7 +5,7 @@
 		<Option title="libsin" />
 		<Option pch_mode="2" />
 		<Option compiler="gcc" />
-		<Option virtualFolders="font\;timer\;ui\;zutil\;" />
+		<Option virtualFolders="font\;timer\;ui\;zutil\;camera\;" />
 		<Build>
 			<Target title="zlib_util">
 				<Option output="..\lib\libsinz" prefix_auto="1" extension_auto="1" />
@@ -68,6 +68,21 @@
 					<Add option="-s" />
 				</Linker>
 			</Target>
+			<Target title="camera">
+				<Option output="..\lib\libsincam" prefix_auto="1" extension_auto="1" />
+				<Option working_dir="" />
+				<Option object_output="obj\Release\" />
+				<Option type="2" />
+				<Option compiler="gcc" />
+				<Option createDefFile="1" />
+				<Compiler>
+					<Add option="-O2" />
+					<Add directory="..\..\glfw\include" />
+				</Compiler>
+				<Linker>
+					<Add option="-s" />
+				</Linker>
+			</Target>
 		</Build>
 		<VirtualTargets>
 			<Add alias="all" targets="zlib_util;font;timer;ui;" />
@@ -76,6 +91,10 @@
 			<Add option="-Wall" />
 			<Add directory="..\include" />
 		</Compiler>
+		<Unit filename="camera\camera.cpp">
+			<Option virtualFolder="camera\" />
+			<Option target="camera" />
+		</Unit>
 		<Unit filename="font\controller.cpp">
 			<Option virtualFolder="font\" />
 			<Option target="font" />
@@ -103,10 +122,15 @@
 		<Unit filename="ui\ui.cpp">
 			<Option virtualFolder="ui\" />
 			<Option target="ui" />
+			<Option target="camera" />
 		</Unit>
 		<Unit filename="zutil\zlib_util.cpp">
 			<Option virtualFolder="zutil\" />
 			<Option target="zlib_util" />
+		</Unit>
+		<Unit filename="..\include\sincamera.h">
+			<Option virtualFolder="camera\" />
+			<Option target="camera" />
 		</Unit>
 		<Unit filename="..\include\sinfont.h">
 			<Option virtualFolder="font\" />
@@ -119,6 +143,7 @@
 		<Unit filename="..\include\sinui.h">
 			<Option virtualFolder="ui\" />
 			<Option target="ui" />
+			<Option target="camera" />
 		</Unit>
 		<Unit filename="..\include\sinzutil.h">
 			<Option virtualFolder="zutil\" />
