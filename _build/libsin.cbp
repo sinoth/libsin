@@ -81,6 +81,7 @@
 				</Compiler>
 				<Linker>
 					<Add option="-s" />
+					<Add library="sinprim" />
 				</Linker>
 			</Target>
 			<Target title="prim">
