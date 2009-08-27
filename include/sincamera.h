@@ -1,7 +1,7 @@
 #ifndef CAMERA_H
 #define CAMERA_H
 
-#include "prim.h"
+#include "sinprim.h"
 
 #define ANG2RAD 3.14159265358979323846/360.0
 
@@ -10,9 +10,9 @@
 // http://www.lighthouse3d.com/opengl/viewfrustum/index.php?rimp
 ////////////////////////////////////////////////////////////////////////////////
 
-class camera {
+class sinCamera {
     public:
-    camera();
+    sinCamera();
     void setPerspective();
     void changePitch(GLfloat);
     void changeHeading(GLfloat);
@@ -21,7 +21,7 @@ class camera {
     void setVelocity(GLfloat);
     void setStrafeVelocity(GLfloat);
     void updatePosition();
-    void setPosition( btVector3 in ) { p_position.x = in.getX(); p_position.y = in.getY(); p_position.z = in.getZ(); }
+    void setPosition(vector);
     //void updatePositionXPlane(float,float);
     //void updatePositionYPlane(float,float);
     void recalculateAngle();

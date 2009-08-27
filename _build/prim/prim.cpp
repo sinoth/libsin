@@ -1,24 +1,6 @@
 
-#include "prim.h"
+#include "sinprim.h"
 #include <math.h>
-#include <stdio.h>
-
-
-///////////////////////////////////////
-// colour shizzle
-///////////////////////////////////////
-//
-
-colour::colour(float inr, float ing, float inb, float ina) {
-    r=inr; g=ing; b=inb; a=ina; }
-
-colour::colour() { r=0; g=0; b=0; a=0; }
-
-void colour::set( float inr, float ing, float inb, float ina ) {
-    r=inr; g=ing; b=inb; a=ina; }
-
-void colour::draw() { glColor4f(r,g,b,a); }
-
 
 
 ///////////////////////////////////////
@@ -34,9 +16,6 @@ point::point(int inx, int iny, int inz) {
 
 point::point() {
     x=0; y=0; z=0; }
-
-void point::draw() {
-    glVertex3f(x,y,z); }
 
 void point::set( float inx, float iny, float inz) {
     x=inx; y=iny; z=inz; }
@@ -62,7 +41,7 @@ vector point::subToVector(point in) {
     return r; }
 
 
-void point::mult_by_matrix( GLfloat *in )
+void point::mult_by_matrix( float *in )
 {
     static float x2,y2,z2;
 
@@ -93,8 +72,6 @@ point point::operator /(point in) {
     r.y = y / in.y;
     r.z = z / in.z;
     return r; }
-
-void vector::print(char *in) { printf("--- [%s] %+.5f, %+.5f, %+.5f\n", in, x, y, z ); }
 
 void point::ray_point_distance( vector ray_dir, point check, point *best_point ) {
 
@@ -196,7 +173,7 @@ vector vector::operator *(float in)
 void vector::operator *=(float in)
 { x *= in; y *= in; z *= in; }
 
-void vector::mult_by_matrix( GLfloat *in )
+void vector::mult_by_matrix( float *in )
 {
     static float x2,y2,z2;
 /*
@@ -265,32 +242,32 @@ quaternion quaternion::operator *(quaternion in)
 	return(r);
 }
 
-void quaternion::createFromAxisAngle(GLfloat xin, GLfloat yin, GLfloat zin, GLfloat degrees)
+void quaternion::createFromAxisAngle(float xin, float yin, float zin, float degrees)
 {
 	//static const GLdouble pi = 3.14159265;
 
 	// First we want to convert the degrees to radians
 	// since the angle is assumed to be in radians
-	static GLfloat angle;
-	static GLfloat result;
+	static float angle;
+	static float result;
 
-	//angle = GLfloat((degrees / 180.0f) * 3.14159265);
+	//angle = float((degrees / 180.0f) * 3.14159265);
 	angle = degrees * 0.0174532925;
 
 	// Here we calculate the sin( theta / 2) once for optimization
-	result = (GLfloat)sin( angle / 2.0f );
+	result = (float)sin( angle / 2.0f );
 
 	// Calcualte the w value by cos( theta / 2 )
-	d_w = (GLfloat)cos( angle / 2.0f );
+	d_w = (float)cos( angle / 2.0f );
 
 	// Calculate the x, y and z of the quaternion
-	d_x = GLfloat(xin * result);
-	d_y = GLfloat(yin * result);
-	d_z = GLfloat(zin * result);
+	d_x = float(xin * result);
+	d_y = float(yin * result);
+	d_z = float(zin * result);
 }
 
 
-void quaternion::createMatrix(GLfloat *pMatrix)
+void quaternion::createMatrix(float *pMatrix)
 {
 	// Make sure the matrix has allocated memory to store the rotation data
 	if(!pMatrix) return;

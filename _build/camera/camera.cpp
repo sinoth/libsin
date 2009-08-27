@@ -1,16 +1,16 @@
 #include <GL/glfw.h>
 #include <math.h>
 
-#include "camera.h"
+#include "sincamera.h"
 
 //////////////////////////////////////////
 // Quaternion camera code from Vic Hollis
 // http://nehe.gamedev.net/data/lessons/lesson.asp?lesson=Quaternion_Camera_Class
 //////////////////////////////////////////////////////////////////////////////////
 
-camera::camera() {
+sinCamera::sinCamera() {
     f_heading_degrees = 0;
-    f_pitch_degrees = -30;
+    f_pitch_degrees = 0;
     f_max_heading_rate = 5.0f;
     f_max_pitch_rate = 5.0f;
     f_max_pitch = 85.0f;
@@ -18,7 +18,7 @@ camera::camera() {
     f_max_strafe_velocity = 5.0f;
     f_velocity = 0.0f;
     f_strafe_velocity = 0.0f;
-    p_position.set(0,50,100);
+    p_position.set(0,0,0);
 
     for ( int i = 0; i < 15; i++ ) {
         af_Matrix_rot[i] = 0.0f;
@@ -31,8 +31,12 @@ camera::camera() {
 
 }
 
+void sinCamera::setPosition( vector in ) {
+    p_position.x = in.x;
+    p_position.y = in.y;
+    p_position.z = in.z; }
 
-void camera::setPerspective()
+void sinCamera::setPerspective()
 {
 
     // Let OpenGL set our new prespective on the world!
@@ -44,7 +48,7 @@ void camera::setPerspective()
 }
 
 
-void camera::updatePosition() {
+void sinCamera::updatePosition() {
 
 	static vector v_temp_dir, v_temp_strafe;
 
@@ -70,7 +74,7 @@ void camera::updatePosition() {
 }
 
 
-void camera::changePitch(GLfloat degrees)
+void sinCamera::changePitch(GLfloat degrees)
 {
 
 	if(fabs(degrees) < f_max_pitch_rate)
@@ -113,7 +117,7 @@ void camera::changePitch(GLfloat degrees)
 
 }
 
-void camera::changeHeading(GLfloat degrees)
+void sinCamera::changeHeading(GLfloat degrees)
 {
 	if(fabs(degrees) < f_max_heading_rate)
 	{
@@ -140,7 +144,7 @@ void camera::changeHeading(GLfloat degrees)
 	}
 }
 
-void camera::recalculateAngle() {
+void sinCamera::recalculateAngle() {
 
 	// Make the Quaternions that will represent our rotations
 	q_pitch.createFromAxisAngle(1.0f, 0.0f, 0.0f, f_pitch_degrees);
@@ -161,7 +165,7 @@ void camera::recalculateAngle() {
 
 }
 
-void camera::changeVelocity(GLfloat vel)
+void sinCamera::changeVelocity(GLfloat vel)
 {
 	if(fabs(vel) < f_max_velocity)
 	{
@@ -187,7 +191,7 @@ void camera::changeVelocity(GLfloat vel)
 	}
 }
 
-void camera::changeStrafeVelocity(GLfloat vel)
+void sinCamera::changeStrafeVelocity(GLfloat vel)
 {
 	if(fabs(vel) < f_max_strafe_velocity)
 	{
@@ -213,12 +217,12 @@ void camera::changeStrafeVelocity(GLfloat vel)
 	}
 }
 
-void camera::setVelocity(GLfloat vel) { f_velocity = vel; }
-void camera::setStrafeVelocity(GLfloat vel) { f_strafe_velocity = vel; }
+void sinCamera::setVelocity(GLfloat vel) { f_velocity = vel; }
+void sinCamera::setStrafeVelocity(GLfloat vel) { f_strafe_velocity = vel; }
 
 
 /*
-void camera::updatePositionXPlane(float mouse_inx, float mouse_iny) {
+void sinCamera::updatePositionXPlane(float mouse_inx, float mouse_iny) {
 
 	// Create a matrix from the pitch Quaternion and get the j vector
 	// for our direction.
@@ -254,7 +258,7 @@ void camera::updatePositionXPlane(float mouse_inx, float mouse_iny) {
 
 
 
-void camera::updatePositionYPlane(float mouse_inx, float mouse_iny) {
+void sinCamera::updatePositionYPlane(float mouse_inx, float mouse_iny) {
 
 	// Create a matrix from the pitch Quaternion and get the j vector
 	// for our direction.
@@ -289,7 +293,7 @@ void camera::updatePositionYPlane(float mouse_inx, float mouse_iny) {
 }
 */
 
-void camera::setInternals(float inangle, float inratio, float innear, float infar) {
+void sinCamera::setInternals(float inangle, float inratio, float innear, float infar) {
 
 	// store the information
 	f_ratio = inratio;
@@ -308,7 +312,7 @@ void camera::setInternals(float inangle, float inratio, float innear, float infa
 
 
 
-int camera::pointInView( point &p, float radius ) {
+int sinCamera::pointInView( point &p, float radius ) {
 
 	static float d1,d2;
 	static float az,ax,ay,zz1,zz2;

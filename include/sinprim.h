@@ -1,28 +1,7 @@
 #ifndef PRIM_H
 #define PRIM_H
 
-#include <GL/glfw.h>
-
 class point;
-
-////////////////////////////////////////////////////////////////////////////////
-//
-class colour {
-public:
-
-    float r;
-    float g;
-    float b;
-    float a;
-
-    colour(float,float,float,float);
-    colour();
-
-    void draw();
-    void set(float,float,float,float);
-
-};
-
 
 ////////////////////////////////////////////////////////////////////////////////
 //
@@ -44,10 +23,8 @@ struct vector
     void subtract(vector);
     void set(double,double,double);
     float dotproduct(vector);
-    void mult_by_matrix(GLfloat*);
-    void print(char *);
+    void mult_by_matrix(float*);
 };
-
 
 ////////////////////////////////////////////////////////////////////////////////
 //
@@ -68,19 +45,16 @@ public:
     point operator +(point);
     point operator /(point);
 
-    void draw();
     void set(float,float,float);
     float distance( point );
     float distance( float,float,float );
     void ray_point_distance( vector , point , point * );
     float ray_point_distance( vector , point );
-    void mult_by_matrix(GLfloat*);
+    void mult_by_matrix(float*);
 
 
 
 };
-
-
 
 ////////////////////////////////////////////////////////////////////////////////
 //
@@ -97,8 +71,8 @@ struct quaternion
     void conjugate();
     void mult(quaternion);
     float* toMatrix();
-    void createFromAxisAngle( GLfloat, GLfloat, GLfloat, GLfloat );
-    void createMatrix( GLfloat* );
+    void createFromAxisAngle( float, float, float, float );
+    void createMatrix( float* );
     vector toVector();
 };
 

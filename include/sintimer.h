@@ -7,7 +7,7 @@
 // timer declaration
 //
 
-class timer {
+class sinTimer {
 public:
 
     void init(int in);
@@ -15,8 +15,8 @@ public:
     int  needUpdateNoCarry();
     void catchup();
 
-    timer();
-    timer(int in);
+    sinTimer();
+    sinTimer(int in);
 
 private:
 
@@ -32,11 +32,11 @@ private:
 // counter declaration
 //
 
-class timerCounter {
+class sinTimerCounter {
 public:
 
     double timeSinceLastCall();
-    timerCounter();
+    sinTimerCounter();
 
 private:
 
