@@ -101,7 +101,7 @@
 			</Target>
 		</Build>
 		<VirtualTargets>
-			<Add alias="all" targets="zlib_util;font;timer;ui;" />
+			<Add alias="all" targets="zlib_util;font;timer;ui;camera;prim;" />
 		</VirtualTargets>
 		<Compiler>
 			<Add option="-Wall" />
