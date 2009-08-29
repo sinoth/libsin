@@ -3,6 +3,7 @@
 
 #include "sinprim.h"
 
+
 #define ANG2RAD 3.14159265358979323846/360.0
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -14,14 +15,15 @@ class sinCamera {
     public:
     sinCamera();
     void setPerspective();
-    void changePitch(GLfloat);
-    void changeHeading(GLfloat);
-    void changeVelocity(GLfloat);
-    void changeStrafeVelocity(GLfloat);
-    void setVelocity(GLfloat);
-    void setStrafeVelocity(GLfloat);
+    void changePitch(float);
+    void changeHeading(float);
+    void changeVelocity(float);
+    void changeStrafeVelocity(float);
+    void setVelocity(float);
+    void setStrafeVelocity(float);
     void updatePosition();
     void setPosition(vector);
+    void setPosition(float,float,float);
     //void updatePositionXPlane(float,float);
     //void updatePositionYPlane(float,float);
     void recalculateAngle();
@@ -29,18 +31,18 @@ class sinCamera {
     void setInternals(float, float, float, float);
 
 
-    GLfloat f_pitch_degrees;
-    GLfloat f_max_pitch_rate;
-    GLfloat f_max_pitch;
-    GLfloat f_heading_degrees;
-    GLfloat f_max_heading_rate;
-    GLfloat f_velocity;
-    GLfloat f_max_velocity;
-    GLfloat f_strafe_velocity;
-    GLfloat f_max_strafe_velocity;
+    float f_pitch_degrees;
+    float f_max_pitch_rate;
+    float f_max_pitch;
+    float f_heading_degrees;
+    float f_max_heading_rate;
+    float f_velocity;
+    float f_max_velocity;
+    float f_strafe_velocity;
+    float f_max_strafe_velocity;
 
-    GLfloat af_Matrix_rot[16];
-    GLfloat af_Matrix_pos[16];
+    float af_Matrix_rot[16];
+    float af_Matrix_pos[16];
 
     quaternion q_pitch;
     quaternion q_heading;
@@ -50,15 +52,15 @@ class sinCamera {
     vector v_up;
 
     //frustum funstuff
-    GLfloat f_fov_angle;
-    GLfloat f_nearP;
-    GLfloat f_farP;
-    GLfloat f_ratio;
-    GLfloat f_width;
-    GLfloat f_height;
-    GLfloat f_tang;
-    GLfloat f_sphereFactorX;
-    GLfloat f_sphereFactorY;
+    float f_fov_angle;
+    float f_nearP;
+    float f_farP;
+    float f_ratio;
+    float f_width;
+    float f_height;
+    float f_tang;
+    float f_sphereFactorX;
+    float f_sphereFactorY;
 
 };
 

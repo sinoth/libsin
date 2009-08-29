@@ -36,6 +36,11 @@ void sinCamera::setPosition( vector in ) {
     p_position.y = in.y;
     p_position.z = in.z; }
 
+void sinCamera::setPosition( float inx, float iny, float inz ) {
+    p_position.x = inx;
+    p_position.y = iny;
+    p_position.z = inz; }
+
 void sinCamera::setPerspective()
 {
 
@@ -74,7 +79,7 @@ void sinCamera::updatePosition() {
 }
 
 
-void sinCamera::changePitch(GLfloat degrees)
+void sinCamera::changePitch(float degrees)
 {
 
 	if(fabs(degrees) < f_max_pitch_rate)
@@ -117,7 +122,7 @@ void sinCamera::changePitch(GLfloat degrees)
 
 }
 
-void sinCamera::changeHeading(GLfloat degrees)
+void sinCamera::changeHeading(float degrees)
 {
 	if(fabs(degrees) < f_max_heading_rate)
 	{
@@ -165,7 +170,7 @@ void sinCamera::recalculateAngle() {
 
 }
 
-void sinCamera::changeVelocity(GLfloat vel)
+void sinCamera::changeVelocity(float vel)
 {
 	if(fabs(vel) < f_max_velocity)
 	{
@@ -191,7 +196,7 @@ void sinCamera::changeVelocity(GLfloat vel)
 	}
 }
 
-void sinCamera::changeStrafeVelocity(GLfloat vel)
+void sinCamera::changeStrafeVelocity(float vel)
 {
 	if(fabs(vel) < f_max_strafe_velocity)
 	{
@@ -217,8 +222,8 @@ void sinCamera::changeStrafeVelocity(GLfloat vel)
 	}
 }
 
-void sinCamera::setVelocity(GLfloat vel) { f_velocity = vel; }
-void sinCamera::setStrafeVelocity(GLfloat vel) { f_strafe_velocity = vel; }
+void sinCamera::setVelocity(float vel) { f_velocity = vel; }
+void sinCamera::setStrafeVelocity(float vel) { f_strafe_velocity = vel; }
 
 
 /*
