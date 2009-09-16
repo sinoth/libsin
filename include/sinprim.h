@@ -28,7 +28,7 @@ struct vector
 
 ////////////////////////////////////////////////////////////////////////////////
 //
-class point {
+struct point {
 public:
 
     float x;
@@ -51,8 +51,6 @@ public:
     void ray_point_distance( vector , point , point * );
     float ray_point_distance( vector , point );
     void mult_by_matrix(float*);
-
-
 
 };
 
