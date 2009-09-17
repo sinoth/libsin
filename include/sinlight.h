@@ -7,11 +7,8 @@ typedef struct sinlight_s
     float diffuse[4];
     float specular[4];
     float position[4];
-    bool enabled;
 
     sinlight_s();
-
-
 
 } sinlight;
 
@@ -21,7 +18,7 @@ typedef struct sinlight_s
 ////////////////////////////////////////
 
 
-class sinlight_manager
+class sinLighting
 {
 public:
 
@@ -39,14 +36,19 @@ public:
 
     void enableLight(int);
     void disableLight(int);
+    void enable();
+    void disable();
 
     sinlight lights[8];
+    bool lights_enabled[8];
 
-    sinlight_manager();
+    sinLighting();
 
 private:
 
+    bool enabled;
     bool do_ambient;
     float global_ambient_color[4];
+    float none[4];
 
 };
