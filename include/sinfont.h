@@ -193,6 +193,7 @@ class font_object {
     void selfRegister(int,int);
     void setGroup(int);
     int  getGroup();
+    int  getLength(const char*, float);
 
     bool isActive();
     void addChar(int);
@@ -202,7 +203,8 @@ class font_object {
     font_object& operator= (const font_object);
     font_object();
 
-  protected:
+  //why is this protected?
+  //protected:
     void setHint(int);
 
   private:
