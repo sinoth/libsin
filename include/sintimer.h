@@ -11,9 +11,11 @@ class sinTimer {
 public:
 
     void init(int in);
+    void initMS(int in);
     int  needUpdate();
     int  needUpdateNoCarry();
     void catchup();
+    void reset();
 
     sinTimer();
     sinTimer(int in);

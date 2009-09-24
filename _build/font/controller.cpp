@@ -115,7 +115,7 @@ void freetype_font_controller_omega::registerObject(font_object* in, int hint, i
                 int position = -1;
                 for ( lit = render_map[in->my_font->getTextureID()].begin(); lit != render_map[in->my_font->getTextureID()].end(); lit++,position++ );
                 in->setGroup(position);
-                printf("setting group position to %d\n", position);
+                //printf("setting group position to %d\n", position);
             } else {
                 lit = render_map[in->my_font->getTextureID()].begin();
                 for (int i=0; i<group; i++ ) lit++;

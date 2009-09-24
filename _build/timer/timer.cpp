@@ -10,6 +10,12 @@ void sinTimer::init(int in) {
         d_currentTime = glfwGetTime();
         d_previousTime = d_currentTime; }
 
+void sinTimer::initMS(int in) {
+        //input is in milliseconds
+        d_interval = (double)in/1000.0;
+        d_currentTime = glfwGetTime();
+        d_previousTime = d_currentTime; }
+
 int  sinTimer::needUpdate() {
         if ( glfwGetTime() - d_previousTime >= d_interval ) {
             d_previousTime += d_interval;
@@ -18,11 +24,12 @@ int  sinTimer::needUpdate() {
 
 int  sinTimer::needUpdateNoCarry() {
         if ( glfwGetTime() - d_previousTime >= d_interval ) {
-            d_previousTime += d_interval;
+            d_previousTime = glfwGetTime();
             return 1; }
         return 0; }
 
 void sinTimer::catchup() { d_previousTime = glfwGetTime(); }
+void sinTimer::reset()   { d_previousTime = glfwGetTime(); }
 
 sinTimer::sinTimer() {}
 sinTimer::sinTimer(int in) { init(in); }

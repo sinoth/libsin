@@ -176,6 +176,7 @@ class font_object {
 
   public:
     void setFont( freetype_font* );
+    void setFont( freetype_font*, int );
     void setText( const char* );
     //void addText( const char* );
     void setColor( float* );

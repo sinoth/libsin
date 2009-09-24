@@ -22,6 +22,7 @@ font_object::font_object() {
 }
 
 void font_object::setFont( freetype_font *in ) { my_font = in; parent_controller->registerObject(this); }
+void font_object::setFont( freetype_font *in, int inhint ) { my_font = in; hint = inhint; parent_controller->registerObject(this, inhint); }
 void font_object::selfRegister(int in) { parent_controller->registerObject(this, in); }
 void font_object::selfRegister(int in, int group) { parent_controller->registerObject(this, in, group); }
 void font_object::setColor( float *in ) { memcpy( color, in, sizeof(float)*4 ); }
@@ -84,10 +85,6 @@ void font_object::cook() {
     if ( my_text == NULL ) {
         printf("* ERROR: font text must be set before cooking\n"); return; }
 
-    if ( hint == FONT_HINT_DYNAMIC ) {
-        my_pointers.clearAll();
-    }
-
     int text_width = my_font->checkLength(my_text, 1.0);
     int text_height = my_font->getMaxHeight();
     float text_scale = 1.0;
@@ -135,7 +132,7 @@ void font_object::cook() {
 
         case FONT_HINT_DYNAMIC:
             my_font->setPointerList( &my_pointers );
-            //my_pointers.clearAll();
+            my_pointers.clearAll();
 
             my_font->setColor( color );
             my_font->createText( my_text, NULL, text_scale, x+xoffset, y+yoffset, 0 );
