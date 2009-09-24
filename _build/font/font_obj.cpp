@@ -84,6 +84,10 @@ void font_object::cook() {
     if ( my_text == NULL ) {
         printf("* ERROR: font text must be set before cooking\n"); return; }
 
+    if ( hint == FONT_HINT_DYNAMIC ) {
+        my_pointers.clearAll();
+    }
+
     int text_width = my_font->checkLength(my_text, 1.0);
     int text_height = my_font->getMaxHeight();
     float text_scale = 1.0;
