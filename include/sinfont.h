@@ -154,24 +154,6 @@ private:
 
 //////////////////////////////////////////////////////////////////////////////////
 //
-
-class freetype_font_controller {
-public:
-
-    void render();
-    void moveTo(int, int);
-    font_list_pointers registerFont( freetype_font *, bool );
-
-private:
-
-    std::map<GLuint, std::list<font_list_pointers*> > all_fonts;
-    std::map<GLuint, std::list<font_list_pointers*> >::iterator it;
-    std::list<font_list_pointers*>::iterator lit;
-
-};
-
-//////////////////////////////////////////////////////////////////////////////////
-//
 class font_object {
 
   public:
@@ -189,7 +171,7 @@ class font_object {
     void setHorizAlign( char );
     void setVertAlign( char );
     void setStretch( bool );
-    void setController(class freetype_font_controller_omega*);
+    void setController(class freetype_font_controller*);
     void selfRegister(int);
     void selfRegister(int,int);
     void setGroup(int);
@@ -222,14 +204,14 @@ class font_object {
     freetype_font *my_font;
     font_list_pointers my_pointers;
     std::vector<GLfloat>::iterator it;
-    freetype_font_controller_omega *parent_controller;
+    freetype_font_controller *parent_controller;
 
-    friend class freetype_font_controller_omega;
+    friend class freetype_font_controller;
 };
 
 
 
-class freetype_font_controller_omega {
+class freetype_font_controller {
 public:
 
     void render();
@@ -237,7 +219,7 @@ public:
     void registerObject(font_object*);
     void registerObject(font_object*,int);
     void registerObject(font_object*,int,int);
-    freetype_font_controller_omega();
+    freetype_font_controller();
 
 private:
 

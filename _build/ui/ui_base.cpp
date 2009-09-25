@@ -31,7 +31,7 @@ void ui_base::setWH(int a, int b) {w=a; h=b; my_mouseover.set(x,y-h,x+w,y); chan
 void ui_base::setParent(ui_base *in) { parent = in; }
 void ui_base::setPayload( void (*function)() ) { payload = function; }
 
-void ui_base::enableFontController() { my_controller = new freetype_font_controller_omega(); }
+void ui_base::enableFontController() { my_controller = new freetype_font_controller(); }
 
 void ui_base::setParentDragOffset(int inx, int iny) {
     if ( parent != NULL )

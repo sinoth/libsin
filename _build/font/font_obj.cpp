@@ -34,7 +34,7 @@ void font_object::setHorizAlign( char in ) { horiz_align = in; }
 void font_object::setVertAlign( char in ) { vert_align = in; }
 void font_object::setHint(int in) { hint = in; }
 void font_object::setStretch(bool in) { can_stretch = in; }
-void font_object::setController(freetype_font_controller_omega *in) { parent_controller = in; }
+void font_object::setController(freetype_font_controller *in) { parent_controller = in; }
 void font_object::setGroup(int in) { group = in; }
 int  font_object::getGroup() { return group; }
 int  font_object::getLength(const char* inc, float inf) { return my_font->checkLength(inc, inf); }

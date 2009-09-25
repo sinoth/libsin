@@ -147,7 +147,7 @@ class ui_base {
     void setPayload(void(*)());
 
     font_object my_font;
-    freetype_font_controller_omega *my_controller;
+    freetype_font_controller *my_controller;
     void enableFontController();
     void setXY(int,int);
     void setWH(int,int);
