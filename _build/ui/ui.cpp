@@ -152,11 +152,16 @@ bool SinUI::insertMouseClick(int button, int state, int inx, int iny ) {
 //
 void SinUI::render() {
 
+    glDisable(GL_LIGHTING);
+    glEnable(GL_TEXTURE);
+
     //we render in reverse order so the first is on top
     for (rit=window_list.rbegin(); rit != window_list.rend(); rit++) {
         //if ( (*rit)->isVisible() )
             (*rit)->render();
     }
+
+    fix this
 
 }
 
