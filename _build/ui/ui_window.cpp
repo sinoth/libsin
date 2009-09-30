@@ -24,6 +24,9 @@ void ui_window::setInWH(int, int) {}
 
 void ui_window::changeDims() {}
 
+void ui_window::setThemeTextureID(GLuint in) { theme_texture = in; }
+
+
 /////////////////////////////////////////////////////////////////////////////////////////
 //
 bool ui_window::eatKeyChar(int inchar, int instate) {
@@ -296,10 +299,13 @@ void ui_window::render() {
 
     //if ( fade_percent == 0 ) return;
 
-    glEnable(GL_TEXTURE_2D);
-    glColor4f(1.0,1.0,1.0,1.0);
-
+    glPushAttrib( GL_TEXTURE_BIT | GL_LIGHTING_BIT );
     glPushClientAttrib(GL_CLIENT_VERTEX_ARRAY_BIT);
+
+    glDisable(GL_LIGHTING);
+    glEnable(GL_TEXTURE_2D);
+    glBindTexture(GL_TEXTURE_2D, theme_texture);
+    glColor4f(1.0,1.0,1.0,1.0);
 
       glEnableClientState(GL_VERTEX_ARRAY);
       glEnableClientState(GL_COLOR_ARRAY);
@@ -312,6 +318,7 @@ void ui_window::render() {
 
     //printf("ver:%d tex:%d col:%d\n", real_vec_vertex.size()/2, real_vec_texture.size()/2, real_vec_color.size()/2);
 
+    glPopAttrib();
     glPopClientAttrib();
 
     if ( my_controller != NULL ) my_controller->render();

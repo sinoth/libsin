@@ -319,6 +319,7 @@ class ui_window : public ui_base {
     bool show_closebutton;
     bool show_titlebar;
     bool can_resize;
+    GLuint theme_texture;
 
     std::vector<GLfloat> real_vec_vertex;
     std::vector<GLfloat> real_vec_texture;
@@ -326,6 +327,7 @@ class ui_window : public ui_base {
     //
     void enableCloseButton();
     void enableTitlebar();
+    void setThemeTextureID(GLuint);
     ui_window();
     // virtuals
     void render();

@@ -49,10 +49,11 @@ void freetype_font_controller::registerObject(font_object* in, int hint, int gro
 void freetype_font_controller::render() {
 
     glPushClientAttrib(GL_CLIENT_VERTEX_ARRAY_BIT);
-    glPushAttrib( GL_ENABLE_BIT );
+    glPushAttrib( GL_TEXTURE_BIT | GL_LIGHTING_BIT | GL_COLOR_BUFFER_BIT );
 
     glEnable(GL_TEXTURE_2D);
     glEnable(GL_BLEND);
+    glDisable(GL_LIGHTING);
     glEnableClientState(GL_VERTEX_ARRAY);
     glEnableClientState(GL_COLOR_ARRAY);
     glEnableClientState(GL_TEXTURE_COORD_ARRAY);
