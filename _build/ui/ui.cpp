@@ -126,9 +126,10 @@ bool SinUI::insertMouseClick(int button, int state, int inx, int iny ) {
                     if ( ((*it)->fade_ticks == 0 || (*it)->fade_direction == UI_FADE_IN)
                          && (*it)->eatMouseClick(button,state,inx,iny) ) {
 
-                        //if ( (*it)->isActive() ) {
+                        //if ( (*it)->is_active ) {
                         //    if ( activeWindow != NULL && activeWindow != (*it) ) activeWindow->setActive(false);
                         //    activeWindow = (*it);
+                        //    activeWindow->setActive(true);
                         //}
 
                         return true;
@@ -137,6 +138,7 @@ bool SinUI::insertMouseClick(int button, int state, int inx, int iny ) {
 
                 //released on nothing, unac tive if possible
                 if ( activeWindow != NULL && lastClickedWindow == NULL ) {
+                    //printf("* UI: clicked nothing\n");
                     activeWindow->setActive(false);
                     activeWindow = NULL;
                 }
@@ -183,7 +185,17 @@ ui_window* SinUI::getWindow(const char* in) {
 }
 
 
+/////////////////////////////////////////////////////////////////////////////////////////
+//
+ui_base* SinUI::getWidget(const char* in) {
 
+    if ( widget_map.find(in) == widget_map.end() ) {
+        printf("* UI - ERROR: cannot find widget with name [%s]\n", in);
+        return NULL;
+    }
+
+    return widget_map.find(in)->second;
+}
 
 /////////////////////////////////////////////////////////////////////////////////////////
 //
@@ -194,10 +206,11 @@ ui_base* SinUI::addWidget(const char *inname, int intype ) {
     switch (intype) {
         case UI_WIDGET_BASE:        new_widget = new ui_base; break;
         case UI_WIDGET_BUTTON:      new_widget = new ui_button; break;
-        case UI_WIDGET_BUTTON_NP:   new_widget = new ui_button; break;
+        case UI_WIDGET_BUTTON_NP:   new_widget = new ui_button_np; break;
         case UI_WIDGET_CHECKBOX:    new_widget = new ui_checkbox; break;
         case UI_WIDGET_LABEL:       new_widget = new ui_label; break;
-        //case UI_WIDGET_LISTBOX:     new_widget = new ui_listbox; break;
+        //case UI_WIDGET_LISTBOX:   new_widget = new ui_listbox; break;
+        case UI_WIDGET_TEXTINPUT:   new_widget = new ui_textinput; break;
         default:
             new_widget = NULL;
             printf("* ERROR: addWidget called with invalid type\n"); break;
@@ -236,6 +249,7 @@ void SinUI::bringToFront(ui_window* in) {
     if ( found ) {
         window_list.erase(it);
         window_list.push_front(in);
+        activeWindow = in;
     }
 
 }

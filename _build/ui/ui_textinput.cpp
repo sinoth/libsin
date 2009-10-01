@@ -203,9 +203,9 @@ bool ui_textinput::eatMouseClick(int button, int state, int inx, int iny ) {
                 for (cit=children.begin(); cit != children.end(); cit++) {
                     if ( (*cit)->eatMouseClick(button,state,inx,iny) ) {
                         if ( (*cit)->is_active ) {
-                            if ( active_child != NULL && active_child != (*cit) ) active_child->setActive(false);
-                            active_child = (*cit);
-                            active_child->setActive(true);
+                            //if ( active_child != NULL && active_child != (*cit) ) active_child->setActive(false);
+                            //active_child = (*cit);
+                            //active_child->setActive(true);
                         }
 
                         setPressed(false);
@@ -263,7 +263,7 @@ void ui_textinput::redraw() {
         vec_color->at(vec_color_index+3+4*i) = fade_percent;
     }
     for (int i=36; i < 40; i++) {
-        if ( cursor_is_blinking ) {
+        if ( is_active && cursor_is_blinking ) {
             vec_color->at(vec_color_index+3+4*i) = fade_percent;
         } else {
             vec_color->at(vec_color_index+3+4*i) = 0;

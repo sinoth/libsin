@@ -75,8 +75,8 @@ bool ui_button::eatMouseClick(int button, int state, int inx, int iny ) {
                 for (cit=children.begin(); cit != children.end(); cit++) {
                     if ( (*cit)->eatMouseClick(button,state,inx,iny) ) {
                         if ( (*cit)->is_active ) {
-                            if ( active_child != NULL && active_child != (*cit) ) active_child->setActive(false);
-                            active_child = (*cit);
+                            //if ( active_child != NULL && active_child != (*cit) ) active_child->setActive(false);
+                            //active_child = (*cit);
                         }
                         setPressed(false);
                         return true;

@@ -92,7 +92,6 @@ void ui_base::addChild( ui_base* in ) {
 }
 
 
-
 //virtuals
 void ui_base::render() { printf("* STUB: ui_base::render\n"); }
 void ui_base::update() { printf("* STUB: ui_base::update\n"); }
@@ -127,12 +126,20 @@ void ui_base::setHover(bool in) {
 
 
 void ui_base::setActive(bool in) {
+    //printf("((%s:%d,%d))\n",my_name.c_str(),is_active,in);
     if ( is_active == in ) { return; }
     if ( in == true ) {
+        if ( parent != NULL ) {
+            parent->setActive(true);
+            if ( parent->active_child != NULL && parent->active_child != this )
+                parent->active_child->setActive(false);
+            parent->active_child = this; }
         is_active = true;
     } else {
+        //printf("setActive(FALSE) ", my_name.c_str());
         is_active = false;
         if ( active_child != NULL ) {
+            //printf("setActiveChild(FALSE) ");
             active_child->setHover(false);
             active_child->setActive(false);
             active_child = NULL;

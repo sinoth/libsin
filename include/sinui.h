@@ -19,6 +19,7 @@
 #define UI_WIDGET_LABEL     3
 #define UI_WIDGET_LISTBOX   4
 #define UI_WIDGET_BUTTON_NP 5
+#define UI_WIDGET_TEXTINPUT 6
 
 //alignment
 //#define UI_ALIGN_TOP     1
