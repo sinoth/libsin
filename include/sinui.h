@@ -114,6 +114,7 @@ class ui_base {
     bool is_active;
     bool is_pressed;
     bool is_dragging;
+    bool is_visible;
     bool has_children;
     bool can_drag_parent;
     int vec_texture_index;
@@ -145,7 +146,9 @@ class ui_base {
     void childDrag(int,int);
 
     void (*payload)();
+    bool (*custom_key_callback)(int,int);
     void setPayload(void(*)());
+    void setCustomKeyCallback(bool(*)(int,int));
 
     font_object my_font;
     freetype_font_controller *my_controller;

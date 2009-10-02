@@ -50,7 +50,7 @@ bool SinUI::insertKeyChar(int character, int state ) {
 bool SinUI::insertKey(int key, int state ) {
 
     for (it=window_list.begin(); it != window_list.end(); it++) {
-        if ( (*it)->eatKey(key,state) )
+        if ( (*it)->is_visible && (*it)->eatKey(key,state) )
             return true;
     }
 
@@ -157,7 +157,7 @@ void SinUI::render() {
 
     //we render in reverse order so the first is on top
     for (rit=window_list.rbegin(); rit != window_list.rend(); rit++) {
-        //if ( (*rit)->isVisible() )
+        if ( (*rit)->is_visible )
             (*rit)->render();
     }
 

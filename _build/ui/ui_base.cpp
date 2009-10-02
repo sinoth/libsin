@@ -11,6 +11,7 @@ ui_base::ui_base() {
     is_hovered = false;
     is_active = false;
     is_pressed = false;
+    is_visible = true;
     is_dragging = false;
     can_drag_parent = false;
     parent = NULL;
@@ -18,6 +19,7 @@ ui_base::ui_base() {
     active_child = NULL;
     my_controller = NULL;
     payload = NULL;
+    custom_key_callback = NULL;
 }
 
 void ui_base::setXY(int inx, int iny) {
@@ -30,6 +32,7 @@ void ui_base::setXY(int inx, int iny) {
 void ui_base::setWH(int a, int b) {w=a; h=b; my_mouseover.set(x,y-h,x+w,y); changeDims(); }
 void ui_base::setParent(ui_base *in) { parent = in; }
 void ui_base::setPayload( void (*function)() ) { payload = function; }
+void ui_base::setCustomKeyCallback( bool (*function)(int,int) ) { custom_key_callback = function; }
 
 void ui_base::enableFontController() { my_controller = new freetype_font_controller(); }
 

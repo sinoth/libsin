@@ -346,6 +346,8 @@ void ui_window::doFade(int fade_dir, int fade_length) {
     fade_direction = fade_dir;
     fade_ticks_max = fade_length;
 
+    if ( fade_dir == UI_FADE_IN ) is_visible = true;
+
     //fade all the  widgets
     for (cit2=children.begin(); cit2 != children.end(); cit2++) {
       (*cit2)->doFade(fade_dir, fade_length);
@@ -360,9 +362,11 @@ void ui_window::update() {
 
     if ( fade_ticks ) {
         fade_ticks--;
+
         switch (fade_direction) {
             case UI_FADE_IN: fade_percent = 1.0 - (float)fade_ticks/(float)fade_ticks_max; break;
-            case UI_FADE_OUT: fade_percent = (float)fade_ticks/(float)fade_ticks_max; break;
+            case UI_FADE_OUT: fade_percent = (float)fade_ticks/(float)fade_ticks_max;
+                              if ( fade_ticks == 0 ) is_visible = false; break;
             default: break;
         }
         my_font.changeAlpha(fade_percent);

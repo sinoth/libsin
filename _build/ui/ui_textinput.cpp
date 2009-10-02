@@ -98,36 +98,38 @@ bool ui_textinput::eatKeyChar(int inkey, int instate) {
 /////////////////////////////////////////////////////////////////////////////////////////
 //
 bool ui_textinput::eatKey(int inkey, int instate) {
-    if ( is_active ) {
-        switch (instate) {
-            case GLFW_PRESS:
-                switch ( inkey ) {
-                    case GLFW_KEY_BACKSPACE:
-                        doing_backspace_wait = true;
-                        doing_backspace = false;
-                        backspace_timer.reset();
-                        return true;
-                        break;
-                }
-                break;
 
-            case GLFW_RELEASE:
-                switch ( inkey ) {
-                    case GLFW_KEY_BACKSPACE:
-                        //if we didn't wait long enough, assume a single delete
-                        if ( !doing_backspace ) { deleteChar(); }
-                        doing_backspace_wait = false;
-                        doing_backspace = false;
-                        return true;
-                        break;
-                    case GLFW_KEY_ESC:
-                    case GLFW_KEY_ENTER:
-                        setActive(false);
-                        return true;
-                        break;
-                }
-                break;
-        }
+    if ( custom_key_callback != NULL )
+        if ( custom_key_callback(inkey,instate) ) return true;
+
+    switch (instate) {
+        case GLFW_PRESS:
+            switch ( inkey ) {
+                case GLFW_KEY_BACKSPACE:
+                    doing_backspace_wait = true;
+                    doing_backspace = false;
+                    backspace_timer.reset();
+                    return true;
+                    break;
+            }
+            break;
+
+        case GLFW_RELEASE:
+            switch ( inkey ) {
+                case GLFW_KEY_BACKSPACE:
+                    //if we didn't wait long enough, assume a single delete
+                    if ( !doing_backspace ) { deleteChar(); }
+                    doing_backspace_wait = false;
+                    doing_backspace = false;
+                    return true;
+                    break;
+                case GLFW_KEY_ESC:
+                case GLFW_KEY_ENTER:
+                    setActive(false);
+                    return true;
+                    break;
+            }
+            break;
     }
 
     return false;

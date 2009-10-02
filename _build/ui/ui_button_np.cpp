@@ -11,7 +11,12 @@ void ui_button_np::changeDims() {
     //printf("%d, %d, %d, %d\n", my_style.font_x, my_style.font_y, my_style.font_w_off, my_style.font_h_off );
 }
 
-bool ui_button_np::eatKey(int,int) { return false; }
+bool ui_button_np::eatKey(int key, int state) {
+    if ( custom_key_callback != NULL )
+        return custom_key_callback(key,state);
+    else
+        return false;
+}
 bool ui_button_np::eatKeyChar(int,int) { return false; }
 
 void ui_button_np::setStyle( np_style &in ) { my_style = in; }
@@ -94,7 +99,7 @@ bool ui_button_np::eatMouseClick(int button, int state, int inx, int iny ) {
 
                 if ( is_dragging ) is_dragging = false;
                 if ( can_drag_parent ) stopParentDrag();
-                if ( is_pressed ) setActive(true);
+                if ( is_pressed ) { setActive(true); if ( payload != NULL ) { payload(); } }
                 setPressed(false);
 
                 return true;
