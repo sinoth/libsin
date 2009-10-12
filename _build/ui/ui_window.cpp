@@ -55,33 +55,29 @@ bool ui_window::eatKey(int inkey, int instate) {
 //
 bool ui_window::eatMousePos(int inx, int iny) {
 
-    //first check to see if mouse is within the window
-    if ( my_mouseover.isMouseover(inx,iny) ) {
+    //bail out early if we're not visible and mouse isn't over
+    if ( !is_visible || !my_mouseover.isMouseover(inx,iny) ) return false;
 
-        setHover(true);
+    setHover(true);
 
-        for ( cit=children.begin(); cit != children.end(); cit++ ) {
-            if ( (*cit)->eatMousePos(inx,iny) ) {
-                if ( hover_child != (*cit) && hover_child != NULL ) {
-                    hover_child->setHover(false);
-                }
-                hover_child = (*cit);
-                hover_child->setHover(true);
-                return true;
+    for ( cit=children.begin(); cit != children.end(); cit++ ) {
+        if ( (*cit)->eatMousePos(inx,iny) ) {
+            if ( hover_child != (*cit) && hover_child != NULL ) {
+                hover_child->setHover(false);
             }
+            hover_child = (*cit);
+            hover_child->setHover(true);
+            return true;
         }
-
-        //no widget is moused over, so turn the rest off
-        if ( hover_child != NULL ) {
-            hover_child->setHover(false);
-            hover_child = NULL;
-        }
-
-        //return true since the mouse was inside the window area
-        return true;
     }
 
-    return false;
+    //no widget is moused over, so turn the rest off
+    if ( hover_child != NULL ) {
+        hover_child->setHover(false);
+        hover_child = NULL;
+    }
+
+    return true;
 }
 
 
@@ -89,7 +85,8 @@ bool ui_window::eatMousePos(int inx, int iny) {
 //
 bool ui_window::eatMouseClick(int button, int state, int inx, int iny ) {
 
-    if ( !my_mouseover.isMouseover(inx, iny) ) return false;
+    //bail out early if we're not visible and mouse isn't over
+    if ( !is_visible || !my_mouseover.isMouseover(inx, iny) ) return false;
 
     switch ( state ) {
         case GLFW_PRESS:
@@ -160,6 +157,52 @@ void ui_window::cook() {
 
 ///////////////////////////////////////////////////////////////////
     {
+
+    if ( !show_titlebar ) {
+    //upper left
+        window_style.normal.my_np[UI_9P_TL].addToVec(vec_texture);
+        //
+        vec_vertex->push_back( cur_x );
+        vec_vertex->push_back( cur_y - window_style.normal.my_np[UI_9P_TL].h );
+        vec_vertex->push_back( cur_x );
+        vec_vertex->push_back( cur_y );
+        vec_vertex->push_back( cur_x + window_style.normal.my_np[UI_9P_TL].w );
+        vec_vertex->push_back( cur_y );
+        vec_vertex->push_back( cur_x + window_style.normal.my_np[UI_9P_TL].w );
+        vec_vertex->push_back( cur_y - window_style.normal.my_np[UI_9P_TL].h );
+        //
+        cur_x += window_style.normal.my_np[UI_9P_TL].w;
+
+    //upper mid
+        window_style.normal.my_np[UI_9P_TM].addToVec(vec_texture);
+        //
+        vec_vertex->push_back( cur_x );
+        vec_vertex->push_back( cur_y - window_style.normal.my_np[UI_9P_TM].h );
+        vec_vertex->push_back( cur_x );
+        vec_vertex->push_back( cur_y );
+        vec_vertex->push_back( cur_x + window_style.normal.my_np[UI_9P_TM].w + (w-window_style.min_x) );
+        vec_vertex->push_back( cur_y );
+        vec_vertex->push_back( cur_x + window_style.normal.my_np[UI_9P_TM].w + (w-window_style.min_x) );
+        vec_vertex->push_back( cur_y - window_style.normal.my_np[UI_9P_TM].h );
+        //
+        cur_x += window_style.normal.my_np[UI_9P_TM].w + (w-window_style.min_x) ;
+
+    //upper right
+        window_style.normal.my_np[UI_9P_TR].addToVec(vec_texture);
+        //
+        vec_vertex->push_back( cur_x );
+        vec_vertex->push_back( cur_y - window_style.normal.my_np[UI_9P_TR].h );
+        vec_vertex->push_back( cur_x );
+        vec_vertex->push_back( cur_y );
+        vec_vertex->push_back( cur_x + window_style.normal.my_np[UI_9P_TR].w );
+        vec_vertex->push_back( cur_y );
+        vec_vertex->push_back( cur_x + window_style.normal.my_np[UI_9P_TR].w );
+        vec_vertex->push_back( cur_y - window_style.normal.my_np[UI_9P_TR].h );
+        //
+        cur_x = x;
+        cur_y -= window_style.normal.my_np[UI_9P_TR].h;
+    }
+
 //middle left
     window_style.normal.my_np[UI_9P_ML].addToVec(vec_texture);
     //
@@ -248,8 +291,12 @@ void ui_window::cook() {
     }
 ///////////////////////////////////////////////////////////////////
 
-    for (int i=0; i < 24; i++) {
-        vec_color->push_back(1.0);vec_color->push_back(1.0);vec_color->push_back(1.0);vec_color->push_back(1.0);
+    if ( !show_titlebar ) {
+        for (int i=0; i < 36; i++)
+            vec_color->push_back(1.0);vec_color->push_back(1.0);vec_color->push_back(1.0);vec_color->push_back(1.0);
+    } else {
+        for (int i=0; i < 24; i++)
+            vec_color->push_back(1.0);vec_color->push_back(1.0);vec_color->push_back(1.0);vec_color->push_back(1.0);
     }
 
 
@@ -273,12 +320,18 @@ void ui_window::redraw() {
     int cur_index = vec_texture_index;
     np_object *temp_win_np;
 
-    if ( is_hovered ) {
+    if ( is_hovered && window_style.has_hover ) {
         temp_win_np = &window_style.hover;
-    } else if ( is_pressed ) {
+    } else if ( is_pressed & window_style.has_pressed  ) {
         temp_win_np = &window_style.pressed;
     } else {
         temp_win_np = &window_style.normal;
+    }
+
+    if ( !show_titlebar ) {
+        temp_win_np->my_np[UI_9P_TL].addToVec(vec_texture,cur_index);
+        temp_win_np->my_np[UI_9P_TM].addToVec(vec_texture,cur_index);
+        temp_win_np->my_np[UI_9P_TR].addToVec(vec_texture,cur_index);
     }
 
     temp_win_np->my_np[UI_9P_ML].addToVec(vec_texture,cur_index);
@@ -288,9 +341,14 @@ void ui_window::redraw() {
     temp_win_np->my_np[UI_9P_BM].addToVec(vec_texture,cur_index);
     temp_win_np->my_np[UI_9P_BR].addToVec(vec_texture,cur_index);
 
-    for (int i=0; i < 24; i++) {
-        vec_color->at(vec_color_index+3+4*i) = fade_percent;
+    if ( !show_titlebar ) {
+        for (int i=0; i < 36; i++)
+            vec_color->at(vec_color_index+3+4*i) = fade_percent;
+    } else {
+        for (int i=0; i < 24; i++)
+            vec_color->at(vec_color_index+3+4*i) = fade_percent;
     }
+
 
 }
 

@@ -263,7 +263,7 @@ newline_trigger = false;
 
             newline_trigger = true;
             inx = old_inx;
-            iny -= newline_advance;
+            iny -= newline_advance*inscale;
             continue;
         }
         i_glyph = intext[a];
