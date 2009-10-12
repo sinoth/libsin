@@ -36,11 +36,11 @@ void ui_textinput::setText(const char* in) {
     my_font.setText(in);
 }
 
-char *ui_textinput::getText() {
-    char* temp_char = new char[my_text.size()+1];
-    strcpy(temp_char, my_text.c_str() );
-    return (char*)&(my_style.font_x);
-    return temp_char;
+const char *ui_textinput::getText() {
+    //char* temp_char = new char[my_text.size()+1];
+    //strcpy(temp_char, my_text.c_str() );
+    //return (char*)&(my_style.font_x);
+    return my_text.c_str();
 }
 
 void ui_textinput::addChar(char in) {

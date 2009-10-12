@@ -159,6 +159,7 @@ class ui_base {
     void setHover(bool);
     void setActive(bool);
     void setPressed(bool);
+    void setVisible(bool);
     void setPointers(std::vector<GLfloat> *,std::vector<GLfloat> *,std::vector<GLfloat> *);
     ui_base();
     //
@@ -252,7 +253,7 @@ class ui_textinput : public ui_base {
     void deleteChar();
 
     void setCursorSize(int);
-    char *getText();
+    const char *getText();
     ui_textinput();
 
     // virtuals

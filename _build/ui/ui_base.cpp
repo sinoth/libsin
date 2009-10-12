@@ -161,3 +161,8 @@ void ui_base::setPressed(bool in) {
     }
     redraw();
 }
+
+
+void ui_base::setVisible(bool in) {
+    is_visible = in;
+}
