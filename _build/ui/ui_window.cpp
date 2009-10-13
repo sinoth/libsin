@@ -293,10 +293,10 @@ void ui_window::cook() {
 
     if ( !show_titlebar ) {
         for (int i=0; i < 36; i++)
-            vec_color->push_back(1.0);vec_color->push_back(1.0);vec_color->push_back(1.0);vec_color->push_back(1.0);
+            { vec_color->push_back(1.0);vec_color->push_back(1.0);vec_color->push_back(1.0);vec_color->push_back(1.0); }
     } else {
         for (int i=0; i < 24; i++)
-            vec_color->push_back(1.0);vec_color->push_back(1.0);vec_color->push_back(1.0);vec_color->push_back(1.0);
+            { vec_color->push_back(1.0);vec_color->push_back(1.0);vec_color->push_back(1.0);vec_color->push_back(1.0); }
     }
 
 
@@ -341,7 +341,7 @@ void ui_window::redraw() {
     temp_win_np->my_np[UI_9P_BM].addToVec(vec_texture,cur_index);
     temp_win_np->my_np[UI_9P_BR].addToVec(vec_texture,cur_index);
 
-    if ( !show_titlebar ) {
+    if (!show_titlebar ) {
         for (int i=0; i < 36; i++)
             vec_color->at(vec_color_index+3+4*i) = fade_percent;
     } else {
@@ -374,7 +374,7 @@ void ui_window::render() {
       glColorPointer(4, GL_FLOAT, 0, &real_vec_color[0] );
       glDrawArrays(GL_QUADS, 0, real_vec_vertex.size()/2 );
 
-    //printf("ver:%d tex:%d col:%d\n", real_vec_vertex.size()/2, real_vec_texture.size()/2, real_vec_color.size()/2);
+    //printf("%s ver:%d tex:%d col:%d\n", my_name.c_str(), real_vec_vertex.size(), real_vec_texture.size(), real_vec_color.size());
 
     glPopAttrib();
     glPopClientAttrib();
@@ -390,6 +390,7 @@ void ui_window::doFade(int fade_dir, int fade_length) {
 
     static std::list<ui_base*>::iterator cit2;
 
+    if ( fade_dir == UI_FADE_IN ) is_visible = true;
 
     if ( (fade_dir == fade_direction ) ||
          (fade_dir == UI_FADE_IN && fade_percent == 1.0) ||
@@ -404,7 +405,6 @@ void ui_window::doFade(int fade_dir, int fade_length) {
     fade_direction = fade_dir;
     fade_ticks_max = fade_length;
 
-    if ( fade_dir == UI_FADE_IN ) is_visible = true;
 
     //fade all the  widgets
     for (cit2=children.begin(); cit2 != children.end(); cit2++) {
