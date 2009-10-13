@@ -72,6 +72,25 @@ void ui_base::parentDrag(int inx, int iny) {
     drag_offset_x = inx; drag_offset_y = iny;
 }
 
+
+void ui_base::moveBy(int inx, int iny) {
+
+    std::vector<GLfloat>::iterator itt;
+
+    for ( unsigned int i=0; i < vec_vertex->size(); i+=2 ) {
+        vec_vertex->at(i) += inx;
+        vec_vertex->at(i+1) += iny;
+    }
+
+    my_mouseover.moveBy(inx,iny);
+    for (cit=children.begin(); cit != children.end(); cit++) {
+        (*cit)->childDrag(inx,iny);
+    }
+
+    if ( my_controller != NULL ) my_controller->translate(inx,iny);
+
+}
+
 void ui_base::childDrag(int inx, int iny) {
 
     my_mouseover.moveBy(inx,iny);

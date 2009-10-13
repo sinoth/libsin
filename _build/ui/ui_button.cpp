@@ -6,6 +6,8 @@ ui_button::ui_button() {
 void ui_button::changeDims() {}
 void ui_button::setInWH(int,int) {}
 
+void ui_button::setStyle( tex_style &in ) { my_style = in; }
+
 bool ui_button::eatKey(int,int) { return false; }
 bool ui_button::eatKeyChar(int,int) { return false; }
 

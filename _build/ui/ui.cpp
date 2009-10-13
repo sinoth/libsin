@@ -253,3 +253,15 @@ void SinUI::bringToFront(ui_window* in) {
     }
 
 }
+
+
+
+/////////////////////////////////////////////////////////////////////////////////////////
+//
+void SinUI::globalResize(int x_diff, int y_diff ) {
+
+    for (it=window_list.begin(); it != window_list.end(); it++) {
+        (*it)->moveBy(x_diff,y_diff);
+    }
+
+}

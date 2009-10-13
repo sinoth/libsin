@@ -181,6 +181,7 @@ class ui_base {
 class ui_button : public ui_base {
   public:
     tex_style my_style;
+    void setStyle(tex_style &);
     //
     ui_button();
     // virtuals
@@ -369,6 +370,8 @@ public:
     ui_window* getWindow(const char*);
     ui_base* addWidget(const char*, int);
     ui_base* getWidget(const char*);
+
+    void globalResize(int,int);
 
     ui_window* getActiveWindow();
     void bringToFront(ui_window* in);
