@@ -166,6 +166,8 @@ class font_object {
     void changeColor( float* );
     void changeAlpha( float );
     void setXY( int, int );
+    //void scaleXY( float, float );
+    void moveBy( int, int );
     void setMaxWH(int, int );
     void setActive( bool );
     void setHorizAlign( char );
@@ -216,6 +218,7 @@ public:
 
     void render();
     void translate(int,int);
+    //void scaleXY(float,float);
     void registerObject(font_object*);
     void registerObject(font_object*,int);
     void registerObject(font_object*,int,int);

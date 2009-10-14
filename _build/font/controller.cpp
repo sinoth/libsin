@@ -82,7 +82,6 @@ void freetype_font_controller::render() {
 
 //////////////////////////////////////////////////////////////////////////
 //
-
 void freetype_font_controller::translate(int inx, int iny) {
     static std::vector<GLfloat>::iterator vit;
 
@@ -96,4 +95,26 @@ void freetype_font_controller::translate(int inx, int iny) {
             }
         }
     }
+
 }
+
+
+/*
+//////////////////////////////////////////////////////////////////////////
+//
+void freetype_font_controller::scaleXY(float inx, float iny) {
+    static std::vector<GLfloat>::iterator vit;
+
+    for ( it=render_map.begin(); it != render_map.end(); it++ ) {
+        for (lit=(*it).second.begin(); lit != (*it).second.end(); lit++ ) {
+            for (vit=(*lit).vec_vertex->begin(); vit != (*lit).vec_vertex->end(); vit++) {
+                (*vit) *= inx;
+                vit++;
+                (*vit) *= iny;
+                vit++;
+            }
+        }
+    }
+
+}
+*/

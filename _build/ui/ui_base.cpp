@@ -63,6 +63,7 @@ void ui_base::parentDrag(int inx, int iny) {
     }
 
     my_mouseover.moveBy(dragx,dragy);
+    x += dragx; y += dragy;
     for (cit=children.begin(); cit != children.end(); cit++) {
         (*cit)->childDrag(dragx,dragy);
     }
@@ -70,6 +71,7 @@ void ui_base::parentDrag(int inx, int iny) {
     if ( my_controller != NULL ) my_controller->translate(dragx,dragy);
 
     drag_offset_x = inx; drag_offset_y = iny;
+
 }
 
 
@@ -83,17 +85,46 @@ void ui_base::moveBy(int inx, int iny) {
     }
 
     my_mouseover.moveBy(inx,iny);
+    my_font.moveBy(inx,iny);
+
     for (cit=children.begin(); cit != children.end(); cit++) {
         (*cit)->childDrag(inx,iny);
     }
 
     if ( my_controller != NULL ) my_controller->translate(inx,iny);
 
+    x += inx; y += iny;
+
 }
+
+/*
+void ui_base::scaleXY(float inx, float iny) {
+
+    std::vector<GLfloat>::iterator itt;
+
+    for ( unsigned int i=0; i < vec_vertex->size(); i+=2 ) {
+        vec_vertex->at(i) *= inx;
+        vec_vertex->at(i+1) *= iny;
+    }
+
+    my_mouseover.scaleXY(inx,iny);
+    my_font.scaleXY(inx,iny);
+
+    for (cit=children.begin(); cit != children.end(); cit++) {
+        (*cit)->scaleXY(inx,iny);
+    }
+
+    if ( my_controller != NULL ) my_controller->scaleXY(inx,iny);
+
+}
+*/
 
 void ui_base::childDrag(int inx, int iny) {
 
+    x += inx; y += iny;
     my_mouseover.moveBy(inx,iny);
+    my_font.moveBy(inx,iny);
+
     for (cit=children.begin(); cit != children.end(); cit++) {
         (*cit)->childDrag(inx,iny);
     }

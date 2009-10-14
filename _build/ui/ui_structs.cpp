@@ -75,4 +75,5 @@ bool mouseover_s::isMouseover(int inx,int iny) {
     else return false; }
 void mouseover_s::set(int inx1, int iny1, int inx2, int iny2 ) { X1=inx1; Y1=iny1; X2=inx2; Y2=iny2; }
 void mouseover_s::moveBy(int xoffset, int yoffset) { X1+=xoffset; X2+=xoffset; Y1+=yoffset; Y2+=yoffset; }
+//void mouseover_s::scaleXY(float xscale, float yscale) { X1*=xscale; X2+=xscale; Y1*=yscale; Y2*=yscale; }
 

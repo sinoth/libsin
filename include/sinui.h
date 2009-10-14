@@ -97,6 +97,7 @@ typedef struct mouseover_s {
     bool isMouseover(int, int);
     void set(int, int, int, int);
     void moveBy(int, int);
+    //void scaleXY(float, float);
     mouseover_s();
     //
     int X1, Y1, X2, Y2; // x1,y1 is lower left - x2,y2 is upper right
@@ -154,6 +155,7 @@ class ui_base {
     freetype_font_controller *my_controller;
     void enableFontController();
     void setXY(int,int);
+    //void scaleXY(float,float);
     void setWH(int,int);
     void setParent(ui_base*);
     void setHover(bool);
@@ -371,7 +373,7 @@ public:
     ui_base* addWidget(const char*, int);
     ui_base* getWidget(const char*);
 
-    void globalResize(int,int);
+    void globalResize(int,int,int,int);
 
     ui_window* getActiveWindow();
     void bringToFront(ui_window* in);
