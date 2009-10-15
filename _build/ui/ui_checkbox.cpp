@@ -5,6 +5,8 @@ ui_checkbox::ui_checkbox() {
     show_check_always = false;
 }
 
+bool ui_checkbox::isChecked() { return is_checked; }
+void ui_checkbox::flipChecked() { is_checked = !is_checked; redraw(); }
 void ui_checkbox::changeDims() {}
 void ui_checkbox::setInWH(int,int) {}
 void ui_checkbox::setStyle( np_style &in ) { my_style = in; }
@@ -58,7 +60,11 @@ bool ui_checkbox::eatMouseClick(int button, int state, int inx, int iny ) {
 
                 if ( is_dragging ) is_dragging = false;
                 if ( can_drag_parent ) stopParentDrag();
-                if ( is_pressed ) { setActive(true); if ( payload != NULL ) { payload(); } is_checked = !is_checked; }
+                if ( is_pressed ) {
+                    setActive(true);
+                    is_checked = !is_checked;
+                    if ( payload != NULL ) { payload(); }
+                }
                 setPressed(false);
 
                 return true;

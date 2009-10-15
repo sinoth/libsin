@@ -302,6 +302,8 @@ class ui_checkbox : public ui_base {
     tex_info checkmark;
 
     void setStyle(np_style &);
+    bool isChecked();
+    void flipChecked();
     ui_checkbox();
     // virtuals
     void render();

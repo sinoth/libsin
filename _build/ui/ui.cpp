@@ -262,7 +262,7 @@ void SinUI::globalResize(int x_old, int y_old, int x_new, int y_new ) {
 
     for (it=window_list.begin(); it != window_list.end(); it++) {
 
-        printf(" %f \n", (float)((*it)->y-(*it)->h/2)/(float)y_old * (float)y_new - ((*it)->y-(*it)->h/2) );
+        //printf(" %f \n", (float)((*it)->y-(*it)->h/2)/(float)y_old * (float)y_new - ((*it)->y-(*it)->h/2) );
 
         (*it)->moveBy( (float)((*it)->x+(*it)->w/2)/(float)x_old * (float)x_new - ((*it)->x+(*it)->w/2) ,
                        (float)((*it)->y-(*it)->h/2)/(float)y_old * (float)y_new - ((*it)->y-(*it)->h/2) );

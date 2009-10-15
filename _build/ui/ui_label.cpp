@@ -12,8 +12,55 @@ void ui_label::setInWH(int,int) {}
 bool ui_label::eatKey(int,int) { return false; }
 bool ui_label::eatKeyChar(int,int) { return false; }
 bool ui_label::eatMousePos(int, int) { return false; }
-bool ui_label::eatMouseClick(int, int, int, int ) { return false; }
 void ui_label::render() {}
+
+bool ui_label::eatMouseClick(int button, int state, int inx, int iny) {
+
+    if ( !my_mouseover.isMouseover(inx, iny) ) return false;
+
+    switch ( state ) {
+        case GLFW_PRESS:
+        switch ( button ) {
+            case GLFW_MOUSE_BUTTON_LEFT:
+
+                //for (cit=children.begin(); cit != children.end(); cit++) {
+                //    if ( (*cit)->eatMouseClick(button,state,inx,iny) ) {
+                //        return true;
+                //    }
+                //}
+
+                setPressed(true);
+
+                //if ( can_drag_parent ) {
+                //    setParentDragOffset(inx, iny);
+                //}
+
+                return true;
+            break;
+        }
+        break;
+
+        case GLFW_RELEASE:
+        switch ( button ) {
+            case GLFW_MOUSE_BUTTON_LEFT:
+
+                //if ( is_dragging ) is_dragging = false;
+                //if ( can_drag_parent ) stopParentDrag();
+                if ( is_pressed ) {
+                    //setActive(true);
+                    if ( payload != NULL ) { payload(); }
+                    }
+                setPressed(false);
+
+                return true;
+            break;
+        }
+        break;
+    }
+
+    return false;
+}
+
 
 void ui_label::redraw() {
 

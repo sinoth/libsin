@@ -30,6 +30,9 @@ void ui_window::setThemeTextureID(GLuint in) { theme_texture = in; }
 /////////////////////////////////////////////////////////////////////////////////////////
 //
 bool ui_window::eatKeyChar(int inchar, int instate) {
+
+    if ( !is_visible ) return false;
+
     for ( cit=children.begin(); cit != children.end(); cit++ ) {
         if ( (*cit)->eatKeyChar(inchar,instate) ) {
             return true;
@@ -42,11 +45,17 @@ bool ui_window::eatKeyChar(int inchar, int instate) {
 //
 bool ui_window::eatKey(int inkey, int instate) {
 
+    if ( !is_visible ) return false;
+
     for ( cit=children.begin(); cit != children.end(); cit++ ) {
         if ( (*cit)->eatKey(inkey,instate) ) {
             return true;
         }
     }
+
+    if ( custom_key_callback != NULL )
+        if ( custom_key_callback(inkey,instate) ) return true;
+
     return false;
 }
 
@@ -387,6 +396,8 @@ void ui_window::render() {
 /////////////////////////////////////////////////////////////////////////////////////////
 //
 void ui_window::doFade(int fade_dir, int fade_length) {
+
+    printf("dir: %d, length: %d\n",fade_dir, fade_length );
 
     static std::list<ui_base*>::iterator cit2;
 
