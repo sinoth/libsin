@@ -39,7 +39,9 @@ void font_object::setGroup(int in) { group = in; }
 int  font_object::getGroup() { return group; }
 int  font_object::getLength(const char* inc, float inf) { return my_font->checkLength(inc, inf); }
 bool font_object::isActive() { return active; }
+bool font_object::isSet() { return ( my_font == NULL ? false : true ); }
 void font_object::moveBy( int inx, int iny ) { x += inx; y += iny; }
+
 //void font_object::scaleXY( float inx, float iny ) { x *= inx; y *= iny; }
 
 ////////////////////////////////////////////////////////////////////////////

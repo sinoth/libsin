@@ -361,7 +361,11 @@ class SinUI {
 
 public:
 
-    void cook();
+    //for when we lose context
+    void storeControllers();
+    void restoreControllers();
+
+    void cookFonts();
     void render();
     void update();
 

@@ -18,10 +18,12 @@ void freetype_font_controller::registerObject(font_object* in, int hint, int gro
                 render_map[in->my_font->getTextureID()].front().newPointers();
                 in->my_pointers = render_map[in->my_font->getTextureID()].front();
                 in->my_pointers.parent = &render_map[in->my_font->getTextureID()].front();
+                render_map[in->my_font->getTextureID()].front().last_font_object = in;
             } else {
                 render_map[in->my_font->getTextureID()].front().setStart();
                 in->my_pointers = render_map[in->my_font->getTextureID()].front();
                 in->my_pointers.parent = &render_map[in->my_font->getTextureID()].front();
+                render_map[in->my_font->getTextureID()].front().last_font_object = in;
             }
             break;
         case FONT_HINT_DYNAMIC:
@@ -30,6 +32,7 @@ void freetype_font_controller::registerObject(font_object* in, int hint, int gro
                 render_map[in->my_font->getTextureID()].back().newPointers();
                 in->my_pointers = render_map[in->my_font->getTextureID()].back();
                 in->my_pointers.parent = &render_map[in->my_font->getTextureID()].back();
+                render_map[in->my_font->getTextureID()].back().last_font_object = in;
                 int position = -1;
                 for ( lit = render_map[in->my_font->getTextureID()].begin(); lit != render_map[in->my_font->getTextureID()].end(); lit++,position++ );
                 in->setGroup(position);
@@ -39,6 +42,7 @@ void freetype_font_controller::registerObject(font_object* in, int hint, int gro
                 for (int i=0; i<group; i++ ) lit++;
                 in->my_pointers = (*lit);
                 in->my_pointers.parent = &(*lit);
+                (*lit).last_font_object = in;
             }
             break;
     }
@@ -95,6 +99,44 @@ void freetype_font_controller::translate(int inx, int iny) {
             }
         }
     }
+
+}
+
+
+
+//////////////////////////////////////////////////////////////////////////
+//
+void freetype_font_controller::storeTexID() {
+
+    render_map_lookup.clear();
+
+    //for every entry in the render map, we need to store just
+    //one font_object that points to it
+    for ( it=render_map.begin(); it != render_map.end(); it++ ) {
+        //if ( render_map_lookup.find((*it).first) == render_map_lookup.end() )
+            render_map_lookup[(*it).first] = (*it).second.front().last_font_object;
+    }
+
+}
+
+
+//////////////////////////////////////////////////////////////////////////
+//
+void freetype_font_controller::restoreTexID() {
+
+    render_map_backup = render_map;
+    render_map.clear();
+
+    //for every entry in the render map, we need to store just
+    //one font_object that points to it
+    for ( it=render_map_backup.begin(); it != render_map_backup.end(); it++ ) {
+        //if ( render_map_lookup.find((*it).first) == render_map_lookup.end() )
+        //    render_map_lookup[(*it).first] = (*it).second.front().last_font_object;
+        render_map[render_map_lookup[(*it).first]->my_font->getTextureID()] = (*it).second;
+    }
+
+    render_map_backup.clear();
+    render_map_lookup.clear();
 
 }
 

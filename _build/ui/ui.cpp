@@ -270,3 +270,29 @@ void SinUI::globalResize(int x_old, int y_old, int x_new, int y_new ) {
     }
 
 }
+
+
+/////////////////////////////////////////////////////////////////////////////////////////
+//
+void SinUI::cookFonts() {
+  for (it=window_list.begin(); it != window_list.end(); it++) {
+    (*it)->update();
+  }
+}
+
+
+/////////////////////////////////////////////////////////////////////////////////////////
+//
+void SinUI::storeControllers() {
+    for (it=window_list.begin(); it != window_list.end(); it++) {
+        (*it)->my_controller->storeTexID();
+    }
+}
+
+/////////////////////////////////////////////////////////////////////////////////////////
+//
+void SinUI::restoreControllers() {
+    for (it=window_list.begin(); it != window_list.end(); it++) {
+        (*it)->my_controller->restoreTexID();
+    }
+}

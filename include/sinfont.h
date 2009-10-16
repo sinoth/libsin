@@ -86,7 +86,7 @@ public:
 
 //////////////////////////////////////////////////////////////////////////////////
 //
-
+class font_object;
 typedef struct font_list_pointerss {
 
     font_list_pointerss();
@@ -104,6 +104,7 @@ typedef struct font_list_pointerss {
     bool active;
 
     font_list_pointerss *parent;
+    font_object *last_font_object;
 
 } font_list_pointers;
 
@@ -181,6 +182,7 @@ class font_object {
     int  getLength(const char*, float);
 
     bool isActive();
+    bool isSet();
     void addChar(int);
     void backspace();
     void cook();
@@ -216,6 +218,10 @@ class font_object {
 class freetype_font_controller {
 public:
 
+    //for when we lose context
+    void storeTexID();
+    void restoreTexID();
+
     void render();
     void translate(int,int);
     //void scaleXY(float,float);
@@ -227,6 +233,8 @@ public:
 private:
 
     std::map<GLuint, std::list<font_list_pointers> > render_map;
+    std::map<GLuint, std::list<font_list_pointers> > render_map_backup;
+    std::map<GLuint, font_object* > render_map_lookup;
     std::map<GLuint, std::list<font_list_pointers> >::iterator it;
     std::list<font_list_pointers>::iterator lit;
 

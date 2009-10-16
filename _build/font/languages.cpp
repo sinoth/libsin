@@ -43,6 +43,8 @@ languages::languagess() :  basic_latin(true),
 void languages::populate_list() {
     int i;
 
+    valid_chars.clear();
+
     if ( basic_latin )
         for ( i=0x0000; i <= 0x007E; i++ ) valid_chars.push_back(i);
     if ( latin_supplement )

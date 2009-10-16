@@ -32,9 +32,11 @@ int freetype_font::init( const char *infile, int insize ) {
     unsigned int glyph_index;
 
     my_languages.populate_list();
+    my_languages.populate_list();
 
     printf("* INIT: Trying to init FreeType... ");
 
+    glyphs.clear();
     //my_matrix = new glyph_matrix[95];
 
     error = FT_Init_FreeType( &library );
@@ -56,7 +58,7 @@ int freetype_font::init( const char *infile, int insize ) {
     //printf("past main inits... ");
 
     //find the width of texture
-    x_width = 0; max_real_height = 0; min_real_height = 0;
+    x_width = 0; max_real_height = 0; min_real_height = 0; max_height = 0;
     //for ( int char_offset = 0; char_offset < 65534; char_offset++ ) {
     for ( my_languages.it = my_languages.valid_chars.begin(); my_languages.it != my_languages.valid_chars.end(); my_languages.it++ ) {
         glyph_index = FT_Get_Char_Index( face, (*my_languages.it) );
@@ -201,7 +203,7 @@ int freetype_font::init( const char *infile, int insize ) {
     newline_advance = face->size->metrics.height >> 6;
     //printf("\nnewline_advance: %d\n", newline_advance);
 
-    printf("done.\n");
+    printf("done. [texID=%d]\n",atlas_texture);
 
     return 0;
 
