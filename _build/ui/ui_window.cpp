@@ -397,7 +397,7 @@ void ui_window::render() {
 //
 void ui_window::doFade(int fade_dir, int fade_length) {
 
-    printf("dir: %d, length: %d\n",fade_dir, fade_length );
+    //printf("dir: %d, length: %d\n",fade_dir, fade_length );
 
     static std::list<ui_base*>::iterator cit2;
 
