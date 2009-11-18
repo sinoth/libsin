@@ -31,6 +31,18 @@ sinCamera::sinCamera() {
 
 }
 
+float sinCamera::getMaxPitch() { return f_max_pitch; }
+void sinCamera::setMaxPitch(const float &in) { f_max_pitch = in; }
+
+void sinCamera::reset() {
+    p_position.set(0,0,0);
+    f_velocity = 0.0f;
+    f_strafe_velocity = 0.0f;
+    f_pitch_degrees = 0.0f;
+    f_heading_degrees = 0.0f;
+    recalculateAngle();
+}
+
 void sinCamera::setPosition( vector in ) {
     p_position.x = in.x;
     p_position.y = in.y;
@@ -78,6 +90,14 @@ void sinCamera::updatePosition() {
 
 }
 
+
+void sinCamera::setPitch(float degrees) {
+    f_pitch_degrees = degrees;
+}
+
+void sinCamera::setHeading(float degrees) {
+    f_heading_degrees = degrees;
+}
 
 void sinCamera::changePitch(float degrees)
 {

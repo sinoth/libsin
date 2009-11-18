@@ -12,7 +12,7 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 class sinCamera {
-    public:
+public:
     sinCamera();
     void setPerspective();
     void changePitch(float);
@@ -24,13 +24,19 @@ class sinCamera {
     void updatePosition();
     void setPosition(vector);
     void setPosition(float,float,float);
+    void setPitch(float);
+    void setHeading(float);
+    void reset();
     //void updatePositionXPlane(float,float);
     //void updatePositionYPlane(float,float);
     void recalculateAngle();
 	int pointInView(point &p, float );
     void setInternals(float, float, float, float);
+    float getMaxPitch();
+    void setMaxPitch(const float&);
 
 
+private:
     float f_pitch_degrees;
     float f_max_pitch_rate;
     float f_max_pitch;
