@@ -2,6 +2,7 @@
 #define PRIM_H
 
 class point;
+class sphere;
 
 ////////////////////////////////////////////////////////////////////////////////
 //
@@ -22,6 +23,7 @@ struct vector
     void crossproduct(vector);
     void subtract(vector);
     void set(double,double,double);
+    int sphereIntersect(sphere&);
     float dotproduct(vector);
     void mult_by_matrix(float*);
 };
@@ -53,6 +55,18 @@ public:
     void mult_by_matrix(float*);
 
 };
+
+////////////////////////////////////////////////////////////////////////////////
+//
+struct sphere {
+
+    point pos;
+    float radius;
+
+    sphere(float,float,float,float);
+
+};
+
 
 ////////////////////////////////////////////////////////////////////////////////
 //

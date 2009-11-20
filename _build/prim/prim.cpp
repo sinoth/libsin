@@ -131,6 +131,15 @@ vector::vector( double xin, double yin, double zin )
 
 vector::vector() { x=0; y=0; z=0; }
 
+
+int vector::sphereIntersect(sphere &insphere) {
+    normalize();
+    if ( dotproduct(insphere.pos)*dotproduct(insphere.pos) -
+
+}
+
+sphere::sphere(float inx, float iny, float inz, float inr) { pos.set(inx,iny,inz); radius=inr; }
+
 void vector::subtract( vector in )
     { x -= in.x; y -= in.y; z -= in.z; }
 
