@@ -8,38 +8,6 @@
 ///////////////////////////////////////
 //
 
-point::point(float inx, float iny, float inz) {
-    x=inx; y=iny; z=inz; }
-
-point::point(int inx, int iny, int inz) {
-    x=inx; y=iny; z=inz; }
-
-point::point() {
-    x=0; y=0; z=0; }
-
-void point::set( float inx, float iny, float inz) {
-    x=inx; y=iny; z=inz; }
-
-float point::distance( point in ) {
-    //return sqrt((x-in.x)*(x-in.x) + (y-in.y)*(y-in.y) + (z-in.z)*(z-in.z));
-    return ((x-in.x)*(x-in.x) + (y-in.y)*(y-in.y) + (z-in.z)*(z-in.z));
-    }
-
-point point::operator +(vector in) {
-    static point r;
-    r.x = in.x + x;
-    r.y = in.y + y;
-    r.z = in.z + z;
-    return r; }
-
-
-vector point::subToVector(point in) {
-    static vector r;
-    r.x = x - in.x;
-    r.y = y - in.y;
-    r.z = z - in.z;
-    return r; }
-
 
 void point::mult_by_matrix( float *in )
 {
