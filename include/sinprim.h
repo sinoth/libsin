@@ -1,28 +1,30 @@
 #ifndef PRIM_H
 #define PRIM_H
 
-class point;
 class sphere;
 
 ////////////////////////////////////////////////////////////////////////////////
 //
-struct vector
+struct vec3f
 {
-    double x, y, z;
+    float x, y, z;
+
     vector();
-    vector(double,double,double);
+    vector(float,float,float);
     vector operator *(vector);
     vector operator *(float);
     void rotate(float);
 
     void operator *=(float);
+    point operator +(const vector &in) { return point(in.x+x, in.y+y, in.z+z); }
+    vector operator -(const point &in) { return vector(x-in.x, y-in.y, z-in.z); }
 
     //vector functions
     void normalize();
     void createFromPoints( point, point );
     void crossproduct(vector);
     void subtract(vector);
-    void set(double,double,double);
+    void set(float,float,float);
     int sphereIntersect(sphere&);
     float dotproduct(vector);
     void mult_by_matrix(float*);
@@ -37,8 +39,8 @@ struct point {
     point(const float &inx, const float &iny, const float &inz) { x=inx; y=iny; z=inz; }
     point() { x=0; y=0; z=0; }
 
-    point operator +(const vector &in) { return point(in.x+x, in.y+y, in.z+z); }
-    vector operator -(const point &in) { return vector(x-in.x, y-in.y, z-in.z); }
+    change all this to vector
+
     point operator -(const point &in);
 
     point operator +(const point &in);
