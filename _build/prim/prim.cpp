@@ -8,39 +8,6 @@
 ///////////////////////////////////////
 //
 
-
-void point::mult_by_matrix( float *in )
-{
-    static float x2,y2,z2;
-
-    x2 = x*in[0] + y*in[4] + z*in[8];
-    y2 = x*in[1] + y*in[5] + z*in[9];
-    z2 = x*in[2] + y*in[6] + z*in[10];
-
-    x=x2; y=y2; z=z2;
-}
-
-point point::operator -(point in) {
-    static point r;
-    r.x = x - in.x;
-    r.y = y - in.y;
-    r.z = z - in.z;
-    return r; }
-
-point point::operator +(point in) {
-    static point r;
-    r.x = x + in.x;
-    r.y = y + in.y;
-    r.z = z + in.z;
-    return r; }
-
-point point::operator /(point in) {
-    static point r;
-    r.x = x / in.x;
-    r.y = y / in.y;
-    r.z = z / in.z;
-    return r; }
-
 void point::ray_point_distance( vector ray_dir, point check, point *best_point ) {
 
 	static vector t;
@@ -89,105 +56,7 @@ float point::ray_point_distance( vector ray_dir, point check ) {
 	return fabs(best_point.distance(check));
 }
 
-///////////////////////////////////////
-// vector shizzle
-///////////////////////////////////////
-//
 
-vector::vector( double xin, double yin, double zin )
-    { x = xin; y = yin; z = zin; }
-
-vector::vector() { x=0; y=0; z=0; }
-
-
-int vector::sphereIntersect(sphere &insphere) {
-    normalize();
-    if ( dotproduct(insphere.pos)*dotproduct(insphere.pos) -
-
-}
-
-sphere::sphere(float inx, float iny, float inz, float inr) { pos.set(inx,iny,inz); radius=inr; }
-
-void vector::subtract( vector in )
-    { x -= in.x; y -= in.y; z -= in.z; }
-
-void vector::normalize() {
-	static double ln;
-	ln = sqrt( x*x + y*y + z*z );
-	if (ln == 0) return;
-
-	x = x / ln;
-	y = y / ln;
-	z = z / ln; }
-
-void vector::crossproduct( vector in ) {
-	static vector tempv;
-
-	tempv.x = y * in.z - z * in.y;
-	tempv.y = z * in.x - x * in.z;
-	tempv.z = x * in.y - y * in.x;
-
-	x=tempv.x; y=tempv.y; z=tempv.z;
-	}
-
-float vector::dotproduct( vector in )
-    { return x*in.x + y*in.y + z*in.z; }
-
-vector vector::operator *(vector in)
-{ static vector r;
-  r.x = y*in.z - z*in.y;
-  r.y = z*in.x - x*in.z;
-  r.z = x*in.y - y*in.x;
-  return(r); }
-
-vector vector::operator *(float in)
-{ static vector r;
-  r.x = x * in;
-  r.y = y * in;
-  r.z = z * in;
-  return(r); }
-
-void vector::operator *=(float in)
-{ x *= in; y *= in; z *= in; }
-
-void vector::mult_by_matrix( float *in )
-{
-    static float x2,y2,z2;
-/*
-    x2 = x*in[0] + y*in[4] + z*in[8];
-    printf("\n%+.5f = %+.5f*%+.5f + %+.5f*%+.5f + %+.5f*%+.5f\n",x2 , x,in[0] , y,in[4] , z,in[8]);
-    y2 = x*in[1] + y*in[5] + z*in[9];
-    printf("%+.5f = %+.5f*%+.5f + %+.5f*%+.5f + %+.5f*%+.5f\n",y2 , x,in[1] , y,in[5] , z,in[9]);
-    z2 = x*in[2] + y*in[6] + z*in[10];
-    printf("%+.5f = %+.5f*%+.5f + %+.5f*%+.5f + %+.5f*%+.5f\n",z2 , x,in[2] , y,in[6] , z,in[10]);
-*/
-
-    x2 = x*in[0] + y*in[4] + z*in[8];
-    //printf("\n%+.5f = %+.5f*%+.5f + %+.5f*%+.5f + %+.5f*%+.5f\n",x2 , x,in[0] , y,in[4] , z,in[8]);
-    y2 = x*in[1] + y*in[5] + z*in[9];
-    //printf("%+.5f = %+.5f*%+.5f + %+.5f*%+.5f + %+.5f*%+.5f\n",y2 , x,in[1] , y,in[5] , z,in[9]);
-    z2 = x*in[2] + y*in[6] + z*in[10];
-    //printf("%+.5f = %+.5f*%+.5f + %+.5f*%+.5f + %+.5f*%+.5f\n",z2 , x,in[2] , y,in[6] , z,in[10]);
-
-    //x=-x2; y=-y2; z=-z2;
-    x=x2; y=y2; z=z2;
-}
-
-void vector::createFromPoints( point a, point b ) {
-    x = b.x - a.x;
-    y = b.y - a.y;
-    z = b.z - a.z;
-}
-
-void vector::set(double xin, double yin, double zin) { x = xin; y = yin; z = zin; }
-
-void vector::rotate(float degrees) {
-    float rad = degrees * 0.0174532925;
-    float tx = (x * cosf(rad)) - (y * sinf(rad));
-    float ty = (x * sinf(rad)) + (y * cosf(rad));
-    x = tx;
-    y = ty;
-}
 
 
 //////////////////////////////////////////
@@ -197,15 +66,6 @@ void vector::rotate(float degrees) {
 ////////////////
 // quaternion shizzle
 //
-
-quaternion::quaternion( double xin, double yin, double zin, double win )
-    { d_x = xin; d_y = yin; d_z = zin; d_w = win; }
-
-quaternion::quaternion( ) { d_x=0; d_y=0; d_z=0; d_w=1; }
-
-void quaternion::conjugate() { d_x = -d_x; d_y = -d_y; d_z = -d_z; }
-
-double quaternion::length() { return sqrt(d_x*d_x + d_y*d_y + d_z*d_z + d_w*d_w); }
 
 quaternion quaternion::operator *(quaternion in)
 {
@@ -248,25 +108,6 @@ void quaternion::createMatrix(float *pMatrix)
 {
 	// Make sure the matrix has allocated memory to store the rotation data
 	if(!pMatrix) return;
-/*
-	// First row
-	pMatrix[ 0] = 1.0f - 2.0f * ( d_y * d_y + d_z * d_z );
-	pMatrix[ 1] = 2.0f * (d_x * d_y + d_z * d_w);
-	pMatrix[ 2] = 2.0f * (d_x * d_z - d_y * d_w);
-	//pMatrix[ 3] = 0.0f;
-
-	// Second row
-	pMatrix[ 4] = 2.0f * ( d_x * d_y - d_z * d_w );
-	pMatrix[ 5] = 1.0f - 2.0f * ( d_x * d_x + d_z * d_z );
-	pMatrix[ 6] = 2.0f * (d_z * d_y + d_x * d_w );
-	//pMatrix[ 7] = 0.0f;
-
-	// Third row
-	pMatrix[ 8] = 2.0f * ( d_x * d_z + d_y * d_w );
-	pMatrix[ 9] = 2.0f * ( d_y * d_z - d_x * d_w );
-	pMatrix[10] = 1.0f - 2.0f * ( d_x * d_x + d_y * d_y );
-	//pMatrix[11] = 0.0f;
-*/
 
 	// First row
 	pMatrix[ 0] = 1.0f - (2.0f * ( d_y * d_y + d_z * d_z ));
@@ -285,7 +126,6 @@ void quaternion::createMatrix(float *pMatrix)
 	pMatrix[ 9] = 2.0f * ( d_y * d_z + d_x * d_w );
 	pMatrix[10] = 1.0f - (2.0f * ( d_x * d_x + d_y * d_y ));
 	//pMatrix[11] = 0.0f;
-
 
 	// Fourth row
 	//pMatrix[12] = 0;
