@@ -3,8 +3,7 @@
 
 #include "sinprim.h"
 
-
-#define ANG2RAD 3.14159265358979323846/360.0
+#define ANG2RAD (3.14159265358979323846/360.0)
 
 ////////////////////////////////////////////////////////////////////////////////
 // frustum code courtesy of:
@@ -22,7 +21,7 @@ public:
     void setVelocity(float);
     void setStrafeVelocity(float);
     void updatePosition();
-    void setPosition(vector);
+    void setPosition(vec3f);
     void setPosition(float,float,float);
     void setPitch(float);
     void setHeading(float);
@@ -30,7 +29,7 @@ public:
     //void updatePositionXPlane(float,float);
     //void updatePositionYPlane(float,float);
     void recalculateAngle();
-	int pointInView(point &p, float );
+	int pointInView(vec3f &p, float );
     void setInternals(float, float, float, float);
     float getMaxPitch();
     void setMaxPitch(const float&);
@@ -52,10 +51,10 @@ private:
 
     quaternion q_pitch;
     quaternion q_heading;
-    point p_position;
-    vector v_direction;
-    vector v_strafe_direction;
-    vector v_up;
+    vec3f p_position;
+    vec3f v_direction;
+    vec3f v_strafe_direction;
+    vec3f v_up;
 
     //frustum funstuff
     float f_fov_angle;
@@ -73,3 +72,76 @@ private:
 
 
 #endif //\/ CAMERA_H
+
+
+
+
+
+/*
+void sinCamera::updatePositionXPlane(float mouse_inx, float mouse_iny) {
+
+	// Create a matrix from the pitch Quaternion and get the j vector
+	// for our direction.
+	//q_pitch.createMatrix(af_Matrix);
+	//v_direction.y = af_Matrix[9];
+
+	// Combine the heading and pitch rotations and make a matrix to get
+	// the i and j vectors for our direction. ???
+	q_temp = q_heading;
+	q_temp.createMatrix(af_Matrix_pos);
+	v_direction.x = af_Matrix_pos[8];
+	v_direction.y = af_Matrix_pos[9];
+    v_direction.z = af_Matrix_pos[10];
+	v_strafe_direction.x = af_Matrix_pos[0];
+	v_strafe_direction.y = af_Matrix_pos[1];
+    v_strafe_direction.z = af_Matrix_pos[2];
+
+    //printf("%f,%f,%f\n",v_direction.x,v_direction.y,v_direction.z);
+
+    // Scale the direction by our speed.
+	v_direction *= -mouse_iny;
+	v_strafe_direction *= mouse_inx;
+
+	// Increment our position by the vector
+	p_position.x += v_direction.x;
+	//p_position.y += v_direction.y;
+	p_position.z += v_direction.z;
+    p_position.x += v_strafe_direction.x;
+	//p_position.y += v_strafe_direction.y;
+	p_position.z += v_strafe_direction.z;
+
+}
+void sinCamera::updatePositionYPlane(float mouse_inx, float mouse_iny) {
+
+	// Create a matrix from the pitch Quaternion and get the j vector
+	// for our direction.
+	//q_pitch.createMatrix(af_Matrix);
+	//v_direction.y = af_Matrix[9];
+
+	// Combine the heading and pitch rotations and make a matrix to get
+	// the i and j vectors for our direction. ???
+	q_temp = q_up;
+	q_temp.createMatrix(af_Matrix_pos);
+	v_direction.x = af_Matrix_pos[8];
+	v_direction.y = af_Matrix_pos[9];
+    v_direction.z = af_Matrix_pos[10];
+	v_strafe_direction.x = af_Matrix_pos[0];
+	v_strafe_direction.y = af_Matrix_pos[1];
+    v_strafe_direction.z = af_Matrix_pos[2];
+
+    //printf("%f,%f,%f\n",v_direction.x,v_direction.y,v_direction.z);
+
+    // Scale the direction by our speed.
+	v_direction *= -mouse_iny;
+	v_strafe_direction *= mouse_inx;
+
+	// Increment our position by the vector
+	//p_position.x += v_direction.x;
+	p_position.y += v_direction.y;
+	//p_position.z += v_direction.z;
+    //p_position.x += v_strafe_direction.x;
+	p_position.y += v_strafe_direction.y;
+	//p_position.z += v_strafe_direction.z;
+
+}
+*/

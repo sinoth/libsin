@@ -32,6 +32,7 @@ sinCamera::sinCamera() {
 }
 
 float sinCamera::getMaxPitch() { return f_max_pitch; }
+
 void sinCamera::setMaxPitch(const float &in) { f_max_pitch = in; }
 
 void sinCamera::reset() {
@@ -43,7 +44,7 @@ void sinCamera::reset() {
     recalculateAngle();
 }
 
-void sinCamera::setPosition( vector in ) {
+void sinCamera::setPosition( vec3f in ) {
     p_position.x = in.x;
     p_position.y = in.y;
     p_position.z = in.z; }
@@ -53,8 +54,7 @@ void sinCamera::setPosition( float inx, float iny, float inz ) {
     p_position.y = iny;
     p_position.z = inz; }
 
-void sinCamera::setPerspective()
-{
+void sinCamera::setPerspective() {
 
     // Let OpenGL set our new prespective on the world!
     glMultMatrixf(af_Matrix_rot);
@@ -64,10 +64,9 @@ void sinCamera::setPerspective()
 
 }
 
-
 void sinCamera::updatePosition() {
 
-	static vector v_temp_dir, v_temp_strafe;
+	static vec3f v_temp_dir, v_temp_strafe;
 
     // Scale the direction by our speed.
 	v_temp_dir = v_direction * f_velocity;
@@ -90,7 +89,6 @@ void sinCamera::updatePosition() {
 
 }
 
-
 void sinCamera::setPitch(float degrees) {
     f_pitch_degrees = degrees;
 }
@@ -99,8 +97,7 @@ void sinCamera::setHeading(float degrees) {
     f_heading_degrees = degrees;
 }
 
-void sinCamera::changePitch(float degrees)
-{
+void sinCamera::changePitch(float degrees) {
 
 	if(fabs(degrees) < f_max_pitch_rate)
 	{
@@ -142,8 +139,7 @@ void sinCamera::changePitch(float degrees)
 
 }
 
-void sinCamera::changeHeading(float degrees)
-{
+void sinCamera::changeHeading(float degrees) {
 	if(fabs(degrees) < f_max_heading_rate)
 	{
         f_heading_degrees += degrees;
@@ -175,8 +171,8 @@ void sinCamera::recalculateAngle() {
 	q_pitch.createFromAxisAngle(1.0f, 0.0f, 0.0f, f_pitch_degrees);
 	q_heading.createFromAxisAngle(0.0f, 1.0f, 0.0f, f_heading_degrees);
 
-	(q_heading * q_pitch).createMatrix(af_Matrix_rot);
-	(q_pitch * q_heading).createMatrix(af_Matrix_pos);
+	(q_heading * q_pitch).toMatrix(af_Matrix_rot);
+	(q_pitch * q_heading).toMatrix(af_Matrix_pos);
 
 	v_direction.x = af_Matrix_pos[8];
 	v_direction.y = af_Matrix_pos[9];
@@ -190,8 +186,7 @@ void sinCamera::recalculateAngle() {
 
 }
 
-void sinCamera::changeVelocity(float vel)
-{
+void sinCamera::changeVelocity(float vel) {
 	if(fabs(vel) < f_max_velocity)
 	{
 		// Our velocity is less than the max velocity increment that we
@@ -216,8 +211,7 @@ void sinCamera::changeVelocity(float vel)
 	}
 }
 
-void sinCamera::changeStrafeVelocity(float vel)
-{
+void sinCamera::changeStrafeVelocity(float vel) {
 	if(fabs(vel) < f_max_strafe_velocity)
 	{
 		// Our velocity is less than the max velocity increment that we
@@ -243,80 +237,8 @@ void sinCamera::changeStrafeVelocity(float vel)
 }
 
 void sinCamera::setVelocity(float vel) { f_velocity = vel; }
+
 void sinCamera::setStrafeVelocity(float vel) { f_strafe_velocity = vel; }
-
-
-/*
-void sinCamera::updatePositionXPlane(float mouse_inx, float mouse_iny) {
-
-	// Create a matrix from the pitch Quaternion and get the j vector
-	// for our direction.
-	//q_pitch.createMatrix(af_Matrix);
-	//v_direction.y = af_Matrix[9];
-
-	// Combine the heading and pitch rotations and make a matrix to get
-	// the i and j vectors for our direction. ???
-	q_temp = q_heading;
-	q_temp.createMatrix(af_Matrix_pos);
-	v_direction.x = af_Matrix_pos[8];
-	v_direction.y = af_Matrix_pos[9];
-    v_direction.z = af_Matrix_pos[10];
-	v_strafe_direction.x = af_Matrix_pos[0];
-	v_strafe_direction.y = af_Matrix_pos[1];
-    v_strafe_direction.z = af_Matrix_pos[2];
-
-    //printf("%f,%f,%f\n",v_direction.x,v_direction.y,v_direction.z);
-
-    // Scale the direction by our speed.
-	v_direction *= -mouse_iny;
-	v_strafe_direction *= mouse_inx;
-
-	// Increment our position by the vector
-	p_position.x += v_direction.x;
-	//p_position.y += v_direction.y;
-	p_position.z += v_direction.z;
-    p_position.x += v_strafe_direction.x;
-	//p_position.y += v_strafe_direction.y;
-	p_position.z += v_strafe_direction.z;
-
-}
-
-
-
-void sinCamera::updatePositionYPlane(float mouse_inx, float mouse_iny) {
-
-	// Create a matrix from the pitch Quaternion and get the j vector
-	// for our direction.
-	//q_pitch.createMatrix(af_Matrix);
-	//v_direction.y = af_Matrix[9];
-
-	// Combine the heading and pitch rotations and make a matrix to get
-	// the i and j vectors for our direction. ???
-	q_temp = q_up;
-	q_temp.createMatrix(af_Matrix_pos);
-	v_direction.x = af_Matrix_pos[8];
-	v_direction.y = af_Matrix_pos[9];
-    v_direction.z = af_Matrix_pos[10];
-	v_strafe_direction.x = af_Matrix_pos[0];
-	v_strafe_direction.y = af_Matrix_pos[1];
-    v_strafe_direction.z = af_Matrix_pos[2];
-
-    //printf("%f,%f,%f\n",v_direction.x,v_direction.y,v_direction.z);
-
-    // Scale the direction by our speed.
-	v_direction *= -mouse_iny;
-	v_strafe_direction *= mouse_inx;
-
-	// Increment our position by the vector
-	//p_position.x += v_direction.x;
-	p_position.y += v_direction.y;
-	//p_position.z += v_direction.z;
-    //p_position.x += v_strafe_direction.x;
-	p_position.y += v_strafe_direction.y;
-	//p_position.z += v_strafe_direction.z;
-
-}
-*/
 
 void sinCamera::setInternals(float inangle, float inratio, float innear, float infar) {
 
@@ -335,29 +257,27 @@ void sinCamera::setInternals(float inangle, float inratio, float innear, float i
 	f_sphereFactorX = 1.0/cos(atan(f_tang*inratio));
 }
 
-
-
-int sinCamera::pointInView( point &p, float radius ) {
+int sinCamera::pointInView( vec3f &p, float radius ) {
 
 	static float d1,d2;
 	static float az,ax,ay,zz1,zz2;
 	static int result;
-    static vector v;
+    static vec3f v;
 
 	result = 2;
-	v = p.subToVector(p_position);
+	v = p - p_position;
 
-	az = v.dotproduct(v_direction);
+	az = v.dot(v_direction);
 	if (az > f_farP + radius || az < f_nearP-radius)
 		return(0);
 
-	ax = v.dotproduct(v_strafe_direction);
+	ax = v.dot(v_strafe_direction);
 	zz1 = az * f_tang * f_ratio;
 	d1 = f_sphereFactorX * radius;
 	if (ax > zz1+d1 || ax < -zz1-d1)
 		return(0);
 
-	ay = v.dotproduct(v_up);
+	ay = v.dot(v_up);
 	zz2 = az * f_tang;
 	d2 = f_sphereFactorY * radius;
 	if (ay > zz2+d2 || ay < -zz2-d2)
