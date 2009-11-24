@@ -3,7 +3,6 @@
 
 #include <math.h>
 
-struct sphere;
 
 ////////////////////////////////////////////////////////////////////////////////
 // vector shizzle
@@ -22,19 +21,26 @@ struct vec3f
     void  operator *=(const float &in) { x *= in; y *= in; z *= in; }
     void  operator /=(const float &in) { x /= in; y /= in; z /= in; }
 
-    vec3f operator +(const vec3f &in) { return vec3f(x+in.x, y+in.y, z+in.z); }
-    vec3f operator -(const vec3f &in) { return vec3f(x-in.x, y-in.y, z-in.z); }
-    vec3f operator *(const float &in) { return vec3f(x*in, y*in, z*in); }
-    vec3f operator /(const float &in) { return vec3f(x/in, y/in, z/in); }
+    vec3f operator +(const vec3f &in) const { return vec3f(x+in.x, y+in.y, z+in.z); }
+    vec3f operator -(const vec3f &in) const { return vec3f(x-in.x, y-in.y, z-in.z); }
+    vec3f operator *(const float &in) const { return vec3f(x*in, y*in, z*in); }
+    vec3f operator /(const float &in) const { return vec3f(x/in, y/in, z/in); }
 
-    float dot(const vec3f &in) { return x*in.x + y*in.y + z*in.z; }
+    float dot(const vec3f &in) const { return x*in.x + y*in.y + z*in.z; }
 
-    vec3f cross(const vec3f &in) { return vec3f( y * in.z - z * in.y,
-                                                 z * in.x - x * in.z,
-                                                 x * in.y - y * in.x ); }
+    void setBySubtract(const vec3f &in1, const vec3f &in2) { x=in1.x-in2.x; y=in1.y-in2.y; z=in1.z-in2.z; }
 
-    float distance_sq( const vec3f &in) { return ((x-in.x)*(x-in.x) + (y-in.y)*(y-in.y) + (z-in.z)*(z-in.z)); }
-    float distance( const vec3f &in) { return sqrtf((x-in.x)*(x-in.x) + (y-in.y)*(y-in.y) + (z-in.z)*(z-in.z)); }
+    float sq() const { return dot(*this); }
+
+    float length() const { return sqrt(x*x+y*y+z*z); }
+    float length_sq() const { return x*x+y*y+z*z; }
+
+    vec3f cross(const vec3f &in) const { return vec3f( y * in.z - z * in.y,
+                                                       z * in.x - x * in.z,
+                                                       x * in.y - y * in.x ); }
+
+    float distance_sq( const vec3f &in) const { return ((x-in.x)*(x-in.x) + (y-in.y)*(y-in.y) + (z-in.z)*(z-in.z)); }
+    float distance( const vec3f &in) const { return sqrtf((x-in.x)*(x-in.x) + (y-in.y)*(y-in.y) + (z-in.z)*(z-in.z)); }
 
     void rotate2D(const float &indegrees) { float rad = (indegrees*0.0174532925);
                                             float tx = (x * cosf(rad)) - (y * sinf(rad));
@@ -56,10 +62,15 @@ struct vec3f
     void ray_point_distance( vec3f , vec3f , vec3f * );
     float ray_point_distance( vec3f , vec3f );
 
-    int sphereIntersect(sphere &insphere) { normalize();
-                                            //if ( dotproduct(insphere.pos)*dotproduct(insphere.pos) -
-                                            return 0;
-                                          }
+    int sphereIntersectCheck(const vec3f &startp, const float &radius) {
+                    //normalize();
+                    //printf("%1.1f ", dot(spherep-startp));
+                    static float b;
+                    b = startp.dot(*this);
+                    if ( b*b - startp.length_sq() + radius*radius >= 0 )
+                         return 1;
+                    else return 0;
+                    }
 
 };
 
@@ -68,7 +79,8 @@ struct vec3f
 // sphere shizzle
 ////////////////////////////////////////////////////////////////////////////////
 //
-struct sphere {
+struct sphere
+{
 
     vec3f pos;
     float radius;
