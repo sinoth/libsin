@@ -62,15 +62,12 @@ struct vec3f
     void ray_point_distance( vec3f , vec3f , vec3f * );
     float ray_point_distance( vec3f , vec3f );
 
-    int sphereIntersectCheck(const vec3f &startp, const float &radius) {
-                    //normalize();
-                    //printf("%1.1f ", dot(spherep-startp));
-                    static float b;
-                    b = startp.dot(*this);
-                    if ( b*b - startp.length_sq() + radius*radius >= 0 )
-                         return 1;
-                    else return 0;
-                    }
+/*
+bool SpherePrimitive::intersect(const Ray& ray, float* t)
+{
+
+}
+*/
 
 };
 
@@ -88,6 +85,55 @@ struct sphere
     sphere(const vec3f &inv, const float &inr) { pos = inv; radius = inr; }
     sphere(const float &inx, const float &iny, const float &inz, const float &inr)
                                                { pos.set(inx,iny,inz); radius=inr; }
+
+
+    bool rayIntersect(const vec3f &ray_pos, const vec3f &ray_dir, float &dist) {
+
+            static float a, b, c, disc, distSqrt, q, t0, t1, temp;
+
+            //Compute A, B and C coefficients
+            a = ray_dir.length_sq();
+            b = 2 * ray_dir.dot(ray_pos);
+            c = ray_pos.length_sq() - (radius * radius);
+
+            //Find discriminant
+            disc = b * b - 4 * a * c;
+
+            // if discriminant is negative there are no real roots, so return
+            // false as ray misses sphere
+            if (disc < 0)
+                return false;
+
+            // compute q as described above
+            distSqrt = sqrtf(disc);
+            if (b < 0)
+                q = (-b - distSqrt)/2.0;
+            else
+                q = (-b + distSqrt)/2.0;
+
+            // compute t0 and t1
+            t0 = q / a;
+            t1 = c / q;
+
+            // make sure t0 is smaller than t1
+            if (t0 > t1)
+            {
+                // if t0 is bigger than t1 swap them around
+                temp = t0;
+                t0 = t1;
+                t1 = temp;
+            }
+
+            // if t1 is less than zero, the object is in the ray's negative direction
+            // and consequently the ray misses the sphere
+            if (t1 < 0)
+                return false;
+
+            // if t0 is less than zero, the intersection point is at t1
+            if (t0 < 0) { dist = t1; return true; }
+            // else the intersection point is at t0
+            else { dist = t0; return true; }
+        }
 
 };
 
@@ -251,4 +297,35 @@ void quaternion::createFromAxisAngle(float xin, float yin, float zin, float degr
 	d_y = float(yin * result);
 	d_z = float(zin * result);
 }
+*/
+
+
+/*
+    bool sphereIntersect(const vec3f &startp, const float &radius, float &dist) {
+
+                    normalize();
+                    //printf("%1.1f ", dot(spherep-startp));
+                    static float b,q;
+                    b = startp.dot(*this);
+
+                    if ( b > 0 )
+                        //no intersections, we are behind camera
+                        return 0;
+
+                    q = b*b - startp.length_sq() + radius*radius;
+                    if ( q < 0 )
+                        //no intersections
+                        return 0;
+                    else if ( q == 0 ) {
+                        //we only have one intersection point
+                        dist = b;
+                        return 1;
+                    } else if ( q > 0 ) {
+                        //two intersections, only return the closest
+                        if ( b - q >= 0) dist = b - q;
+                        else dist = b + q;
+                        return 1;
+                    }
+                    //shouldn't be here
+                    return 0;
 */
