@@ -47,13 +47,13 @@ struct vec3f
                                             float ty = (x * sinf(rad)) + (y * cosf(rad));
                                             x = tx; y = ty; }
 
-    void normalize() { static float ln; ln = sqrt( x*x + y*y + z*z );
+    void normalize() { float ln; ln = sqrt( x*x + y*y + z*z );
                        if (ln == 0) return; x /= ln; y /= ln; z /= ln; }
 
     void createFromPoints( const vec3f &a, const vec3f &b) { x = b.x - a.x;
                                                              y = b.y - a.y;
                                                              z = b.z - a.z; }
-    void mult_by_matrix(float *in) { static float x2,y2,z2;
+    void mult_by_matrix(float *in) { float x2,y2,z2;
                                      x2 = x*in[0] + y*in[4] + z*in[8];
                                      y2 = x*in[1] + y*in[5] + z*in[9];
                                      z2 = x*in[2] + y*in[6] + z*in[10];
@@ -71,71 +71,6 @@ bool SpherePrimitive::intersect(const Ray& ray, float* t)
 
 };
 
-
-////////////////////////////////////////////////////////////////////////////////
-// sphere shizzle
-////////////////////////////////////////////////////////////////////////////////
-//
-struct sphere
-{
-
-    vec3f pos;
-    float radius;
-
-    sphere(const vec3f &inv, const float &inr) { pos = inv; radius = inr; }
-    sphere(const float &inx, const float &iny, const float &inz, const float &inr)
-                                               { pos.set(inx,iny,inz); radius=inr; }
-
-
-    bool rayIntersect(const vec3f &ray_pos, const vec3f &ray_dir, float &dist) {
-
-            static float a, b, c, disc, distSqrt, q, t0, t1, temp;
-
-            //Compute A, B and C coefficients
-            a = ray_dir.length_sq();
-            b = 2 * ray_dir.dot(ray_pos);
-            c = ray_pos.length_sq() - (radius * radius);
-
-            //Find discriminant
-            disc = b * b - 4 * a * c;
-
-            // if discriminant is negative there are no real roots, so return
-            // false as ray misses sphere
-            if (disc < 0)
-                return false;
-
-            // compute q as described above
-            distSqrt = sqrtf(disc);
-            if (b < 0)
-                q = (-b - distSqrt)/2.0;
-            else
-                q = (-b + distSqrt)/2.0;
-
-            // compute t0 and t1
-            t0 = q / a;
-            t1 = c / q;
-
-            // make sure t0 is smaller than t1
-            if (t0 > t1)
-            {
-                // if t0 is bigger than t1 swap them around
-                temp = t0;
-                t0 = t1;
-                t1 = temp;
-            }
-
-            // if t1 is less than zero, the object is in the ray's negative direction
-            // and consequently the ray misses the sphere
-            if (t1 < 0)
-                return false;
-
-            // if t0 is less than zero, the intersection point is at t1
-            if (t0 < 0) { dist = t1; return true; }
-            // else the intersection point is at t0
-            else { dist = t0; return true; }
-        }
-
-};
 
 
 //////////////////////////////////////////
@@ -168,7 +103,7 @@ struct quaternion
     double length() { return sqrt(d_x*d_x + d_y*d_y + d_z*d_z + d_w*d_w); }
     double length_sq() { return (d_x*d_x + d_y*d_y + d_z*d_z + d_w*d_w); }
 
-    void normalize() { static double R; R = sqrt(d_w*d_w + d_x*d_x + d_y*d_y + d_z*d_z);
+    void normalize() { double R; R = sqrt(d_w*d_w + d_x*d_x + d_y*d_y + d_z*d_z);
                        d_w /= R; d_x /= R; d_y /= R; d_z /= R; }
 
     void conjugate() { d_x = -d_x; d_y = -d_y; d_z = -d_z; }
@@ -201,7 +136,7 @@ struct quaternion
                             }
 
     void createFromAxisAngle(const float &xin, const float &yin, const float &zin, const float &degrees) {
-                                static float result;
+                                float result;
                                 result = (float)sin( degrees * 0.00872664625f );
                                 // Calcualte the w value by cos( theta / 2 )
                                 d_w = (float)cos( degrees * 0.00872664625f );
