@@ -34,6 +34,11 @@ public:
     float getMaxPitch();
     void setMaxPitch(const float&);
 
+    //arcball-esque stuff
+    void arcSpinXaxis(float);
+    void arcSpinYaxis(float);
+    void arcZoom(float);
+
 
 private:
     float f_pitch_degrees;
@@ -52,6 +57,7 @@ private:
     quaternion q_pitch;
     quaternion q_heading;
     vec3f p_position;
+    vec3f p_arc_center;
     vec3f v_direction;
     vec3f v_strafe_direction;
     vec3f v_up;
