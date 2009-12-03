@@ -87,6 +87,7 @@ struct quaternion
     double d_x, d_y, d_z, d_w;
 
     quaternion() { d_x=0.0; d_y=0.0; d_z=0.0; d_w=1.0; }
+    quaternion(const vec3f &in) { d_x=in.x; d_y=in.y; d_z=in.z; d_w=0.0; }
     quaternion(const double &xin, const double &yin, const double &zin, const double &win )
                                             { d_x = xin; d_y = yin; d_z = zin; d_w = win; }
 
@@ -100,17 +101,21 @@ struct quaternion
 	                                                             d_w*in.d_z + d_z*in.d_w + d_x*in.d_y - d_y*in.d_x,
 	                                                             d_w*in.d_w - d_x*in.d_x - d_y*in.d_y - d_z*in.d_z ); }
 
+    vec3f mult(const vec3f &in) { quaternion temp(in); return (((*this)*temp)*((*this).conjugate())).toVec3f(); }
+
     double length() { return sqrt(d_x*d_x + d_y*d_y + d_z*d_z + d_w*d_w); }
     double length_sq() { return (d_x*d_x + d_y*d_y + d_z*d_z + d_w*d_w); }
 
     void normalize() { double R; R = sqrt(d_w*d_w + d_x*d_x + d_y*d_y + d_z*d_z);
                        d_w /= R; d_x /= R; d_y /= R; d_z /= R; }
 
-    void conjugate() { d_x = -d_x; d_y = -d_y; d_z = -d_z; }
+    quaternion conjugate() { return quaternion(-d_x, -d_y, -d_z, d_w); }
 
-    vec3f toVec3f() { return vec3f( (d_x * (d_z + d_z))+(d_w * (d_y + d_y)),
-                                    (d_y * (d_z + d_z))-(d_w * (d_x + d_x)),
-                                    1 - ((d_x * (d_x + d_x))+(d_y * (d_y + d_y))) ); }
+    //vec3f toVec3f() { return vec3f( (d_x * (d_z + d_z))+(d_w * (d_y + d_y)),
+    //                                (d_y * (d_z + d_z))-(d_w * (d_x + d_x)),
+    //                                1 - ((d_x * (d_x + d_x))+(d_y * (d_y + d_y))) ); }
+
+    vec3f toVec3f() { return vec3f( d_x, d_y, d_z ); }
 
     void toMatrix( float *mat ) {
                             // creates 4x4 homogeneous matrix that can be applied to an OpenGL Matrix
@@ -135,11 +140,12 @@ struct quaternion
                             //mat[12] = 0; mat[13] = 0; mat[14] = 0; mat[15] = 1.0f;
                             }
 
+    void createFromAxisAngle(const vec3f &in, const float &degrees) { createFromAxisAngle(in.x, in.y, in.z, degrees); }
     void createFromAxisAngle(const float &xin, const float &yin, const float &zin, const float &degrees) {
                                 float result;
-                                result = (float)sin( degrees * 0.00872664625f );
+                                result = sin( degrees * 0.00872664625f );
                                 // Calcualte the w value by cos( theta / 2 )
-                                d_w = (float)cos( degrees * 0.00872664625f );
+                                d_w = cos( degrees * 0.00872664625f );
                                 // Calculate the x, y and z of the quaternion
                                 d_x = xin * result;
                                 d_y = yin * result;

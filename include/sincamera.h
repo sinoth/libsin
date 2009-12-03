@@ -35,12 +35,49 @@ public:
     void setMaxPitch(const float&);
 
     //arcball-esque stuff
-    void arcSpinXaxis(float);
-    void arcSpinYaxis(float);
-    void arcZoom(float);
+    void arcSpinMouseX(const float &in) {
+                quaternion temp;
+                temp.createFromAxisAngle( arc_up, in );
+                q_arc_rotation *= temp;
+                arcRecalculate(); }
+    void arcSpinMouseY(const float &in) {
+                quaternion temp;
+                temp.createFromAxisAngle( arc_strafe, in );
+                q_arc_rotation *= temp;
+                arcRecalculate(); }
+    void arcZoom(const float &in) { arc_radius += in; arcRecalculate(); }
+    void arcSetRadius(const float &in) { arc_radius = in; }
+    void arcSetCenter(const vec3f &in) { arc_center = in; }
+    void arcSetFacing(const vec3f &in) { arc_facing = in; }
+    void arcSetRotation(const quaternion &in) { q_arc_rotation = in; }
+    void arcSetUp(const vec3f &in) { arc_up = in; }
+    void arcRecalculate() {
+                q_arc_rotation.toMatrix(af_Matrix_rot);
+
+                arc_facing.x = -af_Matrix_pos[8];
+                arc_facing.y = -af_Matrix_pos[9];
+                arc_facing.z =  af_Matrix_pos[10];
+                arc_strafe.x = af_Matrix_pos[0];
+                arc_strafe.y = af_Matrix_pos[1];
+                arc_strafe.z = -af_Matrix_pos[2];
+                arc_up.x = af_Matrix_pos[4];
+                arc_up.y = af_Matrix_pos[5];
+                arc_up.z = -af_Matrix_pos[6];
+
+                p_position = arc_facing * arc_radius + arc_center;
+/*
+                // Make the Quaternions that will represent our rotations
+                q_pitch.createFromAxisAngle(1.0f, 0.0f, 0.0f, f_pitch_degrees);
+                q_heading.createFromAxisAngle(0.0f, 1.0f, 0.0f, f_heading_degrees);
+
+                (q_heading * q_pitch).toMatrix(af_Matrix_rot);
+                (q_pitch * q_heading).toMatrix(af_Matrix_pos);
+*/
+            }
 
 
-private:
+
+//private:
     float f_pitch_degrees;
     float f_max_pitch_rate;
     float f_max_pitch;
@@ -61,6 +98,15 @@ private:
     vec3f v_direction;
     vec3f v_strafe_direction;
     vec3f v_up;
+
+    //arcball-esque vars
+    vec3f arc_center;
+    vec3f arc_facing;
+    vec3f arc_up;
+    vec3f arc_strafe;
+    float arc_radius;
+    quaternion q_arc_rotation;
+
 
     //frustum funstuff
     float f_fov_angle;
