@@ -23,6 +23,7 @@ struct vec3f
 
     vec3f operator +(const vec3f &in) const { return vec3f(x+in.x, y+in.y, z+in.z); }
     vec3f operator -(const vec3f &in) const { return vec3f(x-in.x, y-in.y, z-in.z); }
+    vec3f operator -() const { return vec3f(-x, -y, -z); }
     vec3f operator *(const float &in) const { return vec3f(x*in, y*in, z*in); }
     vec3f operator /(const float &in) const { return vec3f(x/in, y/in, z/in); }
 

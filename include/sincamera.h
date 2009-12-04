@@ -53,18 +53,19 @@ public:
     void arcSetUp(const vec3f &in) { arc_up = in; }
     void arcRecalculate() {
                 q_arc_rotation.toMatrix(af_Matrix_rot);
+                q_arc_rotation.toMatrix(af_Matrix_pos);
 
                 arc_facing.x = -af_Matrix_pos[8];
                 arc_facing.y = -af_Matrix_pos[9];
-                arc_facing.z =  af_Matrix_pos[10];
-                arc_strafe.x = af_Matrix_pos[0];
-                arc_strafe.y = af_Matrix_pos[1];
-                arc_strafe.z = -af_Matrix_pos[2];
+                arc_facing.z = af_Matrix_pos[10];
+                arc_strafe.x = -af_Matrix_pos[0];
+                arc_strafe.y = -af_Matrix_pos[1];
+                arc_strafe.z = af_Matrix_pos[2];
                 arc_up.x = af_Matrix_pos[4];
                 arc_up.y = af_Matrix_pos[5];
                 arc_up.z = -af_Matrix_pos[6];
 
-                p_position = arc_facing * arc_radius + arc_center;
+                p_position = (arc_facing * arc_radius + arc_center);
 /*
                 // Make the Quaternions that will represent our rotations
                 q_pitch.createFromAxisAngle(1.0f, 0.0f, 0.0f, f_pitch_degrees);
