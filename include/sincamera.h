@@ -2,6 +2,7 @@
 #define CAMERA_H
 
 #include "sinprim.h"
+#include <stdio.h>
 
 #define ANG2RAD (3.14159265358979323846/360.0)
 
@@ -35,22 +36,27 @@ public:
     void setMaxPitch(const float&);
 
     //arcball-esque stuff
-    void arcSpinMouseX(const float &in) {
-                quaternion temp;
-                temp.createFromAxisAngle( arc_up, in );
-                q_arc_rotation *= temp;
-                arcRecalculate(); }
-    void arcSpinMouseY(const float &in) {
-                quaternion temp;
-                temp.createFromAxisAngle( arc_strafe, in );
-                q_arc_rotation *= temp;
-                arcRecalculate(); }
     void arcZoom(const float &in) { arc_radius += in; arcRecalculate(); }
     void arcSetRadius(const float &in) { arc_radius = in; }
     void arcSetCenter(const vec3f &in) { arc_center = in; }
     void arcSetFacing(const vec3f &in) { arc_facing = in; }
     void arcSetRotation(const quaternion &in) { q_arc_rotation = in; }
     void arcSetUp(const vec3f &in) { arc_up = in; }
+
+    void arcSpinMouseX(const float &in) {
+                quaternion temp;
+                temp.createFromAxisAngle( arc_up, in );
+                q_arc_rotation = temp * q_arc_rotation;
+                //q_arc_rotation = q_arc_rotation * temp;
+                arcRecalculate(); }
+
+    void arcSpinMouseY(const float &in) {
+                quaternion temp;
+                temp.createFromAxisAngle( arc_strafe, in );
+                q_arc_rotation = temp * q_arc_rotation;
+                //q_arc_rotation = q_arc_rotation * temp;
+                arcRecalculate(); }
+
     void arcRecalculate() {
                 q_arc_rotation.toMatrix(af_Matrix_rot);
                 q_arc_rotation.toMatrix(af_Matrix_pos);
@@ -60,7 +66,7 @@ public:
                 arc_facing.z = af_Matrix_pos[10];
                 arc_strafe.x = -af_Matrix_pos[0];
                 arc_strafe.y = -af_Matrix_pos[1];
-                arc_strafe.z = af_Matrix_pos[2];
+                arc_strafe.z =  af_Matrix_pos[2];
                 arc_up.x = af_Matrix_pos[4];
                 arc_up.y = af_Matrix_pos[5];
                 arc_up.z = -af_Matrix_pos[6];
