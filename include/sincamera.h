@@ -44,38 +44,73 @@ public:
     void arcSetUp(const vec3f &in) { arc_up = in; }
 
     void arcSpinMouseX(const float &in) {
-                quaternion temp;
-                //temp.createFromAxisAngle( arc_up, in );
-                temp.createFromAxisAngle( vec3f(0,1,0), in );
+                static quaternion temp;
+                static vec3f up(0,1,0);
 
-                //q_arc_rotation = temp * q_arc_rotation;
-                q_arc_rotation = q_arc_rotation * temp;
+                //temp.createFromAxisAngle( arc_up, in );
+                temp.createFromAxisAngle( up, in );
+
+                q_arc_rotation = temp * q_arc_rotation;
+                //q_arc_rotation *= temp;
+
+                q_arc_rotation.normalize();
 
                 arcRecalculate(); }
 
     void arcSpinMouseY(const float &in) {
-                quaternion temp;
-                //temp.createFromAxisAngle( arc_strafe, in );
-                temp.createFromAxisAngle( vec3f(-1,0,0), in );
+                static quaternion temp;
+                static vec3f right(-1,0,0);
 
-                //q_arc_rotation = temp * q_arc_rotation;
-                q_arc_rotation = q_arc_rotation * temp;
+                //temp.createFromAxisAngle( arc_strafe, in );
+                temp.createFromAxisAngle( right, in );
+
+                q_arc_rotation = temp * q_arc_rotation;
+                //q_arc_rotation *= temp;
+
+                q_arc_rotation.normalize();
+
                 arcRecalculate(); }
 
     void arcRecalculate() {
                 q_arc_rotation.toMatrix(af_Matrix_rot);
-                q_arc_rotation.toMatrix(af_Matrix_pos);
+                q_arc_rotation.conjugate().toMatrix(af_Matrix_pos);
 
-                arc_facing.x = -af_Matrix_pos[8];
-                arc_facing.y = -af_Matrix_pos[9];
-                arc_facing.z = af_Matrix_pos[10];
-                arc_strafe.x = -af_Matrix_pos[0];
-                arc_strafe.y = -af_Matrix_pos[1];
-                arc_strafe.z =  af_Matrix_pos[2];
-                arc_up.x =  af_Matrix_pos[4];
-                arc_up.y =  af_Matrix_pos[5];
-                arc_up.z = -af_Matrix_pos[6];
 
+                arc_facing.x = af_Matrix_rot[8];
+                arc_facing.y = af_Matrix_rot[9];
+                arc_facing.z = af_Matrix_rot[10];
+                arc_strafe.x = af_Matrix_rot[0];
+                arc_strafe.y = af_Matrix_rot[1];
+                arc_strafe.z = af_Matrix_rot[2];
+                arc_up.x = af_Matrix_rot[4];
+                arc_up.y = af_Matrix_rot[5];
+                arc_up.z = af_Matrix_rot[6];
+
+
+                /*
+                arc_facing.x = af_Matrix_rot[2];
+                arc_facing.y = af_Matrix_rot[6];
+                arc_facing.z = af_Matrix_rot[10];
+                arc_strafe.x = af_Matrix_rot[0];
+                arc_strafe.y = af_Matrix_rot[4];
+                arc_strafe.z = af_Matrix_rot[8];
+                arc_up.x = af_Matrix_rot[1];
+                arc_up.y = af_Matrix_rot[5];
+                arc_up.z = af_Matrix_rot[9];
+                */
+
+
+/*
+0 1 2 3
+4 5 6 7
+8 9 1011
+12131415
+
+0 4 8 12
+1 5 9 13
+2 6 1014
+3 7 1115
+*/
                 p_position = (arc_facing * arc_radius + arc_center);
 /*
                 // Make the Quaternions that will represent our rotations

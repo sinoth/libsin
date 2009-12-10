@@ -61,7 +61,6 @@ void sinCamera::setPerspective() {
 
     // Translate to our new position.
     glTranslatef(-p_position.x, -p_position.y, -p_position.z);
-    //glTranslatef(0,0,0);
 
 }
 
