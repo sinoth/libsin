@@ -45,16 +45,21 @@ public:
 
     void arcSpinMouseX(const float &in) {
                 quaternion temp;
-                temp.createFromAxisAngle( arc_up, in );
-                q_arc_rotation = temp * q_arc_rotation;
-                //q_arc_rotation = q_arc_rotation * temp;
+                //temp.createFromAxisAngle( arc_up, in );
+                temp.createFromAxisAngle( vec3f(0,1,0), in );
+
+                //q_arc_rotation = temp * q_arc_rotation;
+                q_arc_rotation = q_arc_rotation * temp;
+
                 arcRecalculate(); }
 
     void arcSpinMouseY(const float &in) {
                 quaternion temp;
-                temp.createFromAxisAngle( arc_strafe, in );
-                q_arc_rotation = temp * q_arc_rotation;
-                //q_arc_rotation = q_arc_rotation * temp;
+                //temp.createFromAxisAngle( arc_strafe, in );
+                temp.createFromAxisAngle( vec3f(-1,0,0), in );
+
+                //q_arc_rotation = temp * q_arc_rotation;
+                q_arc_rotation = q_arc_rotation * temp;
                 arcRecalculate(); }
 
     void arcRecalculate() {
@@ -67,8 +72,8 @@ public:
                 arc_strafe.x = -af_Matrix_pos[0];
                 arc_strafe.y = -af_Matrix_pos[1];
                 arc_strafe.z =  af_Matrix_pos[2];
-                arc_up.x = af_Matrix_pos[4];
-                arc_up.y = af_Matrix_pos[5];
+                arc_up.x =  af_Matrix_pos[4];
+                arc_up.y =  af_Matrix_pos[5];
                 arc_up.z = -af_Matrix_pos[6];
 
                 p_position = (arc_facing * arc_radius + arc_center);
@@ -80,6 +85,7 @@ public:
                 (q_heading * q_pitch).toMatrix(af_Matrix_rot);
                 (q_pitch * q_heading).toMatrix(af_Matrix_pos);
 */
+                printf("*** distance: %f\n", (p_position - arc_center).length());
             }
 
 
