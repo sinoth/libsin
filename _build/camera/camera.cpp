@@ -3,10 +3,6 @@
 
 #include "sincamera.h"
 
-//////////////////////////////////////////
-// Quaternion camera code from Vic Hollis
-// http://nehe.gamedev.net/data/lessons/lesson.asp?lesson=Quaternion_Camera_Class
-//////////////////////////////////////////////////////////////////////////////////
 
 sinCamera::sinCamera() {
     f_heading_degrees = 0;

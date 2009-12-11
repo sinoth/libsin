@@ -1,17 +1,64 @@
 #ifndef CAMERA_H
 #define CAMERA_H
 
-#include "sinprim.h"
 #include <stdio.h>
+#include <GL/glfw.h>
+#include <math.h>
+
+#include "sinprim.h"
 
 #define ANG2RAD (3.14159265358979323846/360.0)
 
-////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////
 // frustum code courtesy of:
 // http://www.lighthouse3d.com/opengl/viewfrustum/index.php?rimp
-////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////
+// Quaternion camera code from Vic Hollis:
+// http://nehe.gamedev.net/data/lessons/lesson.asp?lesson=Quaternion_Camera_Class
+//////////////////////////////////////////////////////////////////////////////////
 
 class sinCamera {
+
+private:
+    float f_pitch_degrees;
+    float f_max_pitch_rate;
+    float f_max_pitch;
+    float f_heading_degrees;
+    float f_max_heading_rate;
+    float f_velocity;
+    float f_max_velocity;
+    float f_strafe_velocity;
+    float f_max_strafe_velocity;
+
+    float af_Matrix_rot[16];
+    float af_Matrix_pos[16];
+
+    quaternion q_pitch;
+    quaternion q_heading;
+    vec3f p_position;
+    vec3f p_arc_center;
+    vec3f v_direction;
+    vec3f v_strafe_direction;
+    vec3f v_up;
+
+    //arcball-esque vars
+    vec3f arc_center;
+    vec3f arc_facing;
+    float arc_radius;
+    quaternion q_arc_rotation;
+
+
+    //frustum funstuff
+    float f_fov_angle;
+    float f_nearP;
+    float f_farP;
+    float f_ratio;
+    float f_width;
+    float f_height;
+    float f_tang;
+    float f_sphereFactorX;
+    float f_sphereFactorY;
+
 public:
     sinCamera();
     void setPerspective();
@@ -68,46 +115,6 @@ public:
                 p_position = (-arc_facing * arc_radius + arc_center);
             }
 
-
-//private:
-    float f_pitch_degrees;
-    float f_max_pitch_rate;
-    float f_max_pitch;
-    float f_heading_degrees;
-    float f_max_heading_rate;
-    float f_velocity;
-    float f_max_velocity;
-    float f_strafe_velocity;
-    float f_max_strafe_velocity;
-
-    float af_Matrix_rot[16];
-    float af_Matrix_pos[16];
-
-    quaternion q_pitch;
-    quaternion q_heading;
-    vec3f p_position;
-    vec3f p_arc_center;
-    vec3f v_direction;
-    vec3f v_strafe_direction;
-    vec3f v_up;
-
-    //arcball-esque vars
-    vec3f arc_center;
-    vec3f arc_facing;
-    float arc_radius;
-    quaternion q_arc_rotation;
-
-
-    //frustum funstuff
-    float f_fov_angle;
-    float f_nearP;
-    float f_farP;
-    float f_ratio;
-    float f_width;
-    float f_height;
-    float f_tang;
-    float f_sphereFactorX;
-    float f_sphereFactorY;
 
 };
 
