@@ -125,10 +125,6 @@
 			<Add option="-Wall" />
 			<Add directory="..\include" />
 		</Compiler>
-		<Unit filename="camera\camera.cpp">
-			<Option virtualFolder="camera\" />
-			<Option target="camera" />
-		</Unit>
 		<Unit filename="curve\curve.cpp">
 			<Option virtualFolder="curve\" />
 			<Option target="curve" />
