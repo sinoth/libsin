@@ -155,7 +155,7 @@ struct quaternion
 };
 
 
-#endif //\/ PRIM_H
+#endif
 
 
 

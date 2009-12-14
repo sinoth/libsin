@@ -153,14 +153,6 @@
 			<Option virtualFolder="font\" />
 			<Option target="font" />
 		</Unit>
-		<Unit filename="light\light.cpp">
-			<Option virtualFolder="light\" />
-			<Option target="light" />
-		</Unit>
-		<Unit filename="prim\prim.cpp">
-			<Option virtualFolder="prim\" />
-			<Option target="curve" />
-		</Unit>
 		<Unit filename="timer\timer.cpp">
 			<Option virtualFolder="timer\" />
 			<Option target="timer" />
