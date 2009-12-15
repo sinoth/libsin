@@ -32,8 +32,23 @@
 				<Option createDefFile="1" />
 				<Compiler>
 					<Add option="-O2" />
-					<Add directory="..\..\freetype\include" />
 					<Add directory="..\..\glfw\include" />
+				</Compiler>
+				<Linker>
+					<Add option="-s" />
+				</Linker>
+			</Target>
+			<Target title="socket">
+				<Option output="..\lib\libsinsocket" prefix_auto="1" extension_auto="1" />
+				<Option working_dir="" />
+				<Option object_output="obj\Release\" />
+				<Option type="2" />
+				<Option compiler="gcc" />
+				<Option createDefFile="1" />
+				<Compiler>
+					<Add option="-O2" />
+					<Add option="-D_WIN32_WINNT=0x501" />
+					<Add option="-DPTW32_STATIC_LIB" />
 				</Compiler>
 				<Linker>
 					<Add option="-s" />
@@ -68,6 +83,10 @@
 		<Unit filename="font\pointers.cpp">
 			<Option virtualFolder="font\" />
 			<Option target="font" />
+		</Unit>
+		<Unit filename="socket\sinsocket.cpp">
+			<Option virtualFolder="socket\" />
+			<Option target="socket" />
 		</Unit>
 		<Unit filename="ui\ui.cpp">
 			<Option virtualFolder="ui\" />
@@ -127,7 +146,7 @@
 		</Unit>
 		<Unit filename="..\include\sinsocket.h">
 			<Option virtualFolder="socket\" />
-			<Option target="&lt;{~None~}&gt;" />
+			<Option target="socket" />
 		</Unit>
 		<Unit filename="..\include\sinsqlite.h">
 			<Option virtualFolder="sql\" />
@@ -140,6 +159,7 @@
 		<Unit filename="..\include\sinui.h">
 			<Option virtualFolder="ui\" />
 			<Option target="ui" />
+			<Option target="socket" />
 		</Unit>
 		<Unit filename="..\include\sinzutil.h">
 			<Option virtualFolder="zutil\" />

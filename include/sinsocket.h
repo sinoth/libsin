@@ -1,32 +1,17 @@
 #ifndef _SINSOCKET_H
 #define _SINSOCKET_H
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <unistd.h>
-#include <errno.h>
-#include <string.h>
-#include <sys/types.h>
-#include <signal.h>
 #include <pthread.h>
 #include <queue>
-
-#ifdef _WIN32_WINNT
- #include <ws2tcpip.h>
-#else
- #include <sys/socket.h>
- #include <netinet/in.h>
- #include <netdb.h>
- #include <arpa/inet.h>
- #include <sys/wait.h>
-#endif
-
 
 typedef struct packet_data_s {
     int data_size;
     char *data;
-    packet_data_s(char *in, const int &size) : data_size(size), data(in) {}
-    ~packet_data_s() { free(data); }
+    void getChunk(void *output, const int &size);
+    void setChunk(void *input, const int &size);
+    int size();
+    packet_data_s(void *indata, const int &size=0);
+    ~packet_data_s();
 } packet_data;
 
 ///////////////
@@ -62,16 +47,19 @@ private:
 
 public:
 
+    sinsocket(int my_sockd=-1);
+    ~sinsocket();
+
     //server functions
-    int listen(int port); //eventually add sockets_per_thread and threads inits
+    int listen(const int &port); //eventually add sockets_per_thread and threads inits
     sinsocket* accept();
 
     //client functions
-    int connect(const char* address, int port);
+    int connect(const char* address, const int &port);
 
     //shared functions
-    int send( const void *indata, int inlength ); //blocking
-    int recv( const void *indata, int inlength ); //blocking
+    int send( const void *indata, const int &inlength ); //blocking
+    int recv( const void *indata, const int &inlength ); //blocking
     int beginDisconnect();
     int endDisconnect();
     int closeSinsocket();
@@ -81,7 +69,7 @@ public:
     static void *sinSendThread(void*);
     //
     void spawnThreads();
-    void asyncSend(const void *indata, int inlength );
+    void asyncSend(const void *indata, const int &inlength );
     packet_data* asyncRecv();
     packet_data* asyncRecvWait();
     int checkErrors();
@@ -89,9 +77,6 @@ public:
     //utility functions
     void setUserData(void* in);
     void *getUserData();
-
-    sinsocket(int my_sockd=-1);
-    ~sinsocket();
 
 };
 
