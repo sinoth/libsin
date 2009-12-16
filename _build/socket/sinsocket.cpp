@@ -25,8 +25,8 @@ bool sinsocket::done_init = false;
 int sinsocket::socket_count = 0;
 
 packet_data_s::packet_data_s(void *indata, int insize)
-        : data_size(insize), current_loc(0), data((char*)indata) { printf("data_size: %d|%d\n", data_size, insize); }
-packet_data_s::~packet_data_s() { free(data); }
+        : data_size(insize), current_loc(0), data((char*)indata) {}
+packet_data_s::~packet_data_s() { if (data!=NULL) free(data); else printf("WTF? ~packet_data data is null\n"); }
 int packet_data_s::size() { return data_size; }
 void packet_data_s::getChunk(void *output, int insize) {
     memcpy(output, data+current_loc, insize);
@@ -468,19 +468,19 @@ void *sinsocket::sinRecvThread(void *inself) {
     int packet_size;
     int bytes_left;
     packet_data *current_packet;
-    char *current_data;
 
     while (true) {
 
         amount_received = ::recv(myself->my_socket, (char*)&packet_size, 4, 0 ); //MSG_WAITALL = 0x8
         if ( amount_received == 0 || amount_received == -1 ) break;
 
-        current_data = (char*)malloc(packet_size);
-        current_packet = new packet_data(current_data, packet_size);
+        //printf("asyncRecvThread: got packet size %d ... ", packet_size);
+
+        current_packet = new packet_data(malloc(packet_size), packet_size);
 
         bytes_left = packet_size;
         while ( bytes_left ) {
-            amount_received = ::recv(myself->my_socket, current_data+(packet_size-bytes_left), bytes_left, 0 );
+            amount_received = ::recv(myself->my_socket, current_packet->data+(packet_size-bytes_left), bytes_left, 0 );
             if ( amount_received == 0 || amount_received == -1 ) break;
             bytes_left -= amount_received;
         }
@@ -488,6 +488,7 @@ void *sinsocket::sinRecvThread(void *inself) {
         if ( amount_received == 0 || amount_received == -1 ) break;
 
         pthread_mutex_lock(&myself->recv_mutex);
+            //printf("pushing size %d\n", current_packet->data_size);
             myself->received_data.push(current_packet);
             pthread_cond_signal(&myself->recv_condition);
         pthread_mutex_unlock(&myself->recv_mutex);
@@ -510,6 +511,10 @@ void *sinsocket::sinRecvThread(void *inself) {
     myself->socket_error = 1;
     pthread_mutex_unlock(&myself->error_mutex);
 
+    #ifdef PTW32_STATIC_LIB
+    pthread_win32_thread_detach_np();
+    #endif
+
     return NULL;
 }
 
@@ -530,13 +535,11 @@ void *sinsocket::sinSendThread(void *inself) {
         myself->sending_data.pop();
         pthread_mutex_unlock(&myself->send_mutex);
 
-        printf("asyncSendThread of size %d", current_packet->data_size);
+        //printf("asyncSendThread of size %d\n", current_packet->data_size);
 
         if ( myself->send(&current_packet->data_size, 4) )
             //returns 1 if error, so something bad happened
             break;
-
-        printf("|%d\n", current_packet->data_size);
 
         if ( myself->send(current_packet->data, current_packet->data_size) )
             //returns 1 if error, so something bad happened
@@ -552,6 +555,10 @@ void *sinsocket::sinSendThread(void *inself) {
     myself->socket_error = 2;
     pthread_mutex_unlock(&myself->error_mutex);
 
+    #ifdef PTW32_STATIC_LIB
+    pthread_win32_thread_detach_np();
+    #endif
+
     return NULL;
 }
 
@@ -566,6 +573,7 @@ void sinsocket::asyncSend(const void *indata, const int &inlength) {
 void sinsocket::asyncSend(packet_data *inpacket) {
 
     pthread_mutex_lock(&send_mutex);
+        //printf("asyncSend: pushing packet size %d\n", inpacket->data_size);
         sending_data.push(inpacket);
         pthread_cond_signal(&send_condition);
     pthread_mutex_unlock(&send_mutex);
@@ -604,6 +612,7 @@ packet_data *sinsocket::asyncRecvWait() {
         received_data.pop();
     pthread_mutex_unlock(&recv_mutex);
 
+    //printf("asyncRecvWait: got packet size %d\n", current_packet->data_size);
     return current_packet;
 }
 
