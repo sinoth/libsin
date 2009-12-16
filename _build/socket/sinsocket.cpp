@@ -24,14 +24,14 @@
 bool sinsocket::done_init = false;
 int sinsocket::socket_count = 0;
 
-packet_data_s::packet_data_s(void *indata, const int &insize) : data_size(insize), data((char*)indata) {}
+packet_data_s::packet_data_s(void *indata, int insize)
+        : data_size(insize), current_loc(0), data((char*)indata) { printf("data_size: %d|%d\n", data_size, insize); }
 packet_data_s::~packet_data_s() { free(data); }
 int packet_data_s::size() { return data_size; }
-void packet_data_s::getChunk(void *output, const int &insize) {
-    static int current_loc = 0;
-    memcpy(output, data, insize);
+void packet_data_s::getChunk(void *output, int insize) {
+    memcpy(output, data+current_loc, insize);
     current_loc += insize; }
-void packet_data_s::setChunk(void *input, const int &insize) {
+void packet_data_s::setChunk(void *input, int insize) {
     memcpy(data+data_size, input, insize);
     data_size += insize; }
 
@@ -530,13 +530,18 @@ void *sinsocket::sinSendThread(void *inself) {
         myself->sending_data.pop();
         pthread_mutex_unlock(&myself->send_mutex);
 
+        printf("asyncSendThread of size %d", current_packet->data_size);
+
         if ( myself->send(&current_packet->data_size, 4) )
             //returns 1 if error, so something bad happened
             break;
 
+        printf("|%d\n", current_packet->data_size);
+
         if ( myself->send(current_packet->data, current_packet->data_size) )
             //returns 1 if error, so something bad happened
             break;
+
 
         delete current_packet;
 
@@ -554,11 +559,14 @@ void *sinsocket::sinSendThread(void *inself) {
 ///////////////////////////////////////////////////////////////////////////////
 //
 void sinsocket::asyncSend(const void *indata, const int &inlength) {
-
     packet_data *current_packet = new packet_data((char*)indata, inlength);
+    asyncSend(current_packet);
+}
+//
+void sinsocket::asyncSend(packet_data *inpacket) {
 
     pthread_mutex_lock(&send_mutex);
-        sending_data.push(current_packet);
+        sending_data.push(inpacket);
         pthread_cond_signal(&send_condition);
     pthread_mutex_unlock(&send_mutex);
 

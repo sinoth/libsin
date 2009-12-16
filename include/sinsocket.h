@@ -6,11 +6,12 @@
 
 typedef struct packet_data_s {
     int data_size;
+    int current_loc;
     char *data;
-    void getChunk(void *output, const int &size);
-    void setChunk(void *input, const int &size);
+    void getChunk(void *output, int size);
+    void setChunk(void *input, int size);
     int size();
-    packet_data_s(void *indata, const int &size=0);
+    packet_data_s(void *indata, int size=0);
     ~packet_data_s();
 } packet_data;
 
@@ -69,7 +70,8 @@ public:
     static void *sinSendThread(void*);
     //
     void spawnThreads();
-    void asyncSend(const void *indata, const int &inlength );
+    void asyncSend( const void *indata, const int &inlength );
+    void asyncSend( packet_data *inpacket );
     packet_data* asyncRecv();
     packet_data* asyncRecvWait();
     int checkErrors();
