@@ -159,7 +159,7 @@ sinsocket::~sinsocket() {
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-int sinsocket::listen(const int &inport) {
+int sinsocket::listen(const int &inport, const int &hint) {
 
     struct addrinfo hints, *servinfo, *p;
     char yes=1;
@@ -178,8 +178,11 @@ int sinsocket::listen(const int &inport) {
         return 1;
     }
 
+    //first skip a few of the interfaces, as per the 'hint'
+    p = servinfo; for (int i=0; i<hint; ++i) p = p->ai_next;
+
     // loop through all the results and bind to the first we can
-    for(p = servinfo; p != NULL; p = p->ai_next) {
+    for(; p != NULL; p = p->ai_next) {
         if ((my_socket = socket(p->ai_family, p->ai_socktype,
                 p->ai_protocol)) == -1) {
             perror("ERROR: sinsocket.listen: socket");
@@ -196,6 +199,15 @@ int sinsocket::listen(const int &inport) {
             perror("ERROR: sinsocket.listen: bind");
             continue;
         }
+
+/*
+        char connection_name[100];
+        inet_ntop(p->ai_family,
+                  get_in_addr((struct sockaddr_storage *)p->ai_addr),
+                  connection_name,
+                  sizeof connection_name);
+        printf("Interface: %s\n", connection_name);
+*/
 
         break;
     }

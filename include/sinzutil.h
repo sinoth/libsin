@@ -7,7 +7,8 @@
 #include <assert.h>
 #include <zlib.h>
 
-#define CHUNK 16384
+//#define CHUNK 16384
+#define CHUNK 2097152
 
 struct sinz {
 

@@ -49,6 +49,7 @@ public:
             switch ( rc ) {
                 case SQLITE_OK: break;
                 default:
+                    printf("Offending query: [%s]\n", query);
                     throw (sinsql_exception("sinsql_statement ctor",sqlite3_errmsg(db),rc));
                     break;
             }

@@ -52,7 +52,7 @@ public:
     ~sinsocket();
 
     //server functions
-    int listen(const int &port); //eventually add sockets_per_thread and threads inits
+    int listen(const int &port, const int &hint=0); //eventually add sockets_per_thread and threads inits
     sinsocket* accept();
 
     //client functions
