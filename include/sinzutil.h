@@ -26,6 +26,7 @@ struct sinz {
                      uint8_t *dest, int &dest_size, const int comp_level=6) {
 
             int ret;
+	    int orig_dest_size = dest_size;
             z_stream strm;
 
             // allocate deflate state
@@ -39,20 +40,25 @@ struct sinz {
                 return ret;
             }
 
-            dest_size = 0;
 
             strm.avail_in = source_size;
             strm.next_in = source;
 
-            strm.avail_out = source_size;
+            if ( dest_size == 0 )
+            	strm.avail_out = source_size;
+            else
+                strm.avail_out = dest_size;
             strm.next_out = dest;
+
+            dest_size = 0;
+
             ret = deflate(&strm, Z_FINISH); // no bad return value
             assert(ret != Z_STREAM_ERROR);  // state not clobbered
 
             assert(strm.avail_in == 0);     // all input will be used
             assert(ret == Z_STREAM_END);    // stream will be complete
 
-            dest_size = source_size - strm.avail_out;
+            dest_size = orig_dest_size - strm.avail_out;
 
             // clean up and return
             (void)deflateEnd(&strm);

@@ -162,7 +162,11 @@ sinsocket::~sinsocket() {
 int sinsocket::listen(const int &inport, const int &hint) {
 
     struct addrinfo hints, *servinfo, *p;
+    #ifdef _WIN32_WINNT
     char yes=1;
+    #else
+    int yes=1;
+    #endif
     int return_value;
 
     sprintf(my_port,"%d",inport);
@@ -189,7 +193,7 @@ int sinsocket::listen(const int &inport, const int &hint) {
             continue;
         }
 
-        if (setsockopt(my_socket, SOL_SOCKET, SO_REUSEADDR, &yes, sizeof(char)) == -1) {
+        if (setsockopt(my_socket, SOL_SOCKET, SO_REUSEADDR, &yes, sizeof(yes)) == -1) {
             perror("ERROR: sinsocket.listen: setsockopt");
             continue;
         }
