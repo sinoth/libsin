@@ -308,7 +308,9 @@ int sinsocket::recv( const void *indata, const int &inlength ) {
 
     //error
     if ( temp_recv == -1 ) {
+        #ifdef _WIN32_WINNT
         printf("WSAError: %d\n", WSAGetLastError());
+        #endif
         perror("ERROR: sinsocket.recv");
         return -2; }
 
@@ -337,7 +339,12 @@ int sinsocket::closeSinsocket() {
 //
 int sinsocket::beginDisconnect() {
     //tell the client we are done
+    #ifdef _WIN32_WINNT
     shutdown(my_socket, SD_SEND);
+    #else
+    shutdown(my_socket, SHUT_WR);
+    #endif
+
 
     //wait for recv to return a 0, meaning client has disconnected
     int temp_recv = ::recv(my_socket,NULL,0,0);
@@ -370,7 +377,11 @@ int sinsocket::endDisconnect() {
 
     if ( temp_recv == 0 ) {
         //tell the client we are done
+        #ifdef _WIN32_WINNT
         shutdown(my_socket, SD_SEND);
+        #else
+        shutdown(my_socket, SHUT_WR);
+        #endif
 
         temp_recv = ::recv(my_socket,NULL,0,0);
         if ( temp_recv == -1 ) {
@@ -511,7 +522,9 @@ void *sinsocket::sinRecvThread(void *inself) {
 
     //error
     if ( amount_received == -1 ) {
+        #ifdef _WIN32_WINNT
         printf("WSAError: %d\n", WSAGetLastError());
+        #endif
         perror("ERROR: sinsocket.recv"); }
 
     //peer disconnected
