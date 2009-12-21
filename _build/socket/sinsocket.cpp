@@ -30,10 +30,12 @@ packet_data_s::packet_data_s(void *indata, int insize)
 packet_data_s::~packet_data_s() { assert(data==NULL); free(data); }
 int packet_data_s::size() { return data_size; }
 void packet_data_s::getChunk(void *output, int insize) {
+    if (insize==0) return;
     assert(current_loc+insize <= data_size);
     memcpy(output, data+current_loc, insize);
     current_loc += insize; }
 void packet_data_s::setChunk(void *input, int insize) {
+    if (insize==0) return;
     memcpy(data+data_size, input, insize);
     data_size += insize; }
 
@@ -274,7 +276,7 @@ sinsocket* sinsocket::accept() {
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-int sinsocket::send( const void *indata, const int &inlength ) {
+int sinsocket::send( const void *indata, const int inlength ) {
     int bytes_sent = 0;
     int bytes_left = inlength;
     int temp_sent = 0;
@@ -299,7 +301,7 @@ int sinsocket::send( const void *indata, const int &inlength ) {
 
 ///////////////////////////////////////////////////////////////////////////////
 // returns -1 if the peer disconnected, -2 for error, bytes received otherwise
-int sinsocket::recv( const void *indata, const int &inlength ) {
+int sinsocket::recv( const void *indata, const int inlength ) {
 
     //make sure we have a valid connection
     if ( !ready_for_action ) {
@@ -593,7 +595,7 @@ void *sinsocket::sinSendThread(void *inself) {
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-void sinsocket::asyncSend(const void *indata, const int &inlength) {
+void sinsocket::asyncSend(const void *indata, const int inlength) {
     packet_data *current_packet = new packet_data((char*)indata, inlength);
     asyncSend(current_packet);
 }

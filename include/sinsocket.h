@@ -60,8 +60,8 @@ public:
     int connect(const char* address, const int &port);
 
     //shared functions
-    int send( const void *indata, const int &inlength ); //blocking
-    int recv( const void *indata, const int &inlength ); //blocking
+    int send( const void *indata, const int inlength ); //blocking
+    int recv( const void *indata, const int inlength ); //blocking
     int beginDisconnect();
     int endDisconnect();
     int closeSinsocket();
@@ -71,7 +71,7 @@ public:
     static void *sinSendThread(void*);
     //
     void spawnThreads();
-    void asyncSend( const void *indata, const int &inlength );
+    void asyncSend( const void *indata, const int inlength );
     void asyncSend( packet_data *inpacket );
     packet_data* asyncRecv();
     packet_data* asyncRecvWait();
