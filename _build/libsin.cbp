@@ -5,34 +5,34 @@
 		<Option title="libsin" />
 		<Option pch_mode="2" />
 		<Option compiler="gcc" />
-		<Option virtualFolders="font/;timer/;ui/;zutil/;camera/;prim/;curve/;light/;sql/;socket/;" />
+		<Option virtualFolders="font\;timer\;ui\;zutil\;camera\;prim\;curve\;light\;sql\;socket\;" />
 		<Build>
 			<Target title="font">
-				<Option output="../lib/libsinfont" prefix_auto="1" extension_auto="1" />
+				<Option output="..\lib\libsinfont" prefix_auto="1" extension_auto="1" />
 				<Option working_dir="" />
-				<Option object_output="obj/Release/" />
+				<Option object_output="obj\Release\" />
 				<Option type="2" />
 				<Option compiler="gcc" />
 				<Option createDefFile="1" />
 				<Compiler>
 					<Add option="-O2" />
-					<Add directory="../../freetype/include" />
-					<Add directory="../../glfw/include" />
+					<Add directory="..\..\freetype\include" />
+					<Add directory="..\..\glfw\include" />
 				</Compiler>
 				<Linker>
 					<Add option="-s" />
 				</Linker>
 			</Target>
 			<Target title="ui">
-				<Option output="../lib/libsinui" prefix_auto="1" extension_auto="1" />
+				<Option output="..\lib\libsinui" prefix_auto="1" extension_auto="1" />
 				<Option working_dir="" />
-				<Option object_output="obj/Release/" />
+				<Option object_output="obj\Release\" />
 				<Option type="2" />
 				<Option compiler="gcc" />
 				<Option createDefFile="1" />
 				<Compiler>
 					<Add option="-O2" />
-					<Add directory="../../glfw/include" />
+					<Add directory="..\..\glfw\include" />
 				</Compiler>
 				<Linker>
 					<Add option="-s" />
@@ -40,9 +40,9 @@
 			</Target>
 			<Target title="socket">
 				<Option platforms="Windows;" />
-				<Option output="../lib/libsinsocket" prefix_auto="1" extension_auto="1" />
+				<Option output="..\lib\libsinsocket" prefix_auto="1" extension_auto="1" />
 				<Option working_dir="" />
-				<Option object_output="obj/Release/" />
+				<Option object_output="obj\Release\" />
 				<Option type="2" />
 				<Option compiler="gcc" />
 				<Option createDefFile="1" />
@@ -54,15 +54,32 @@
 			</Target>
 			<Target title="socket - linux">
 				<Option platforms="Unix;" />
-				<Option output="../lib_linux/libsinsocket" prefix_auto="1" extension_auto="1" />
+				<Option output="..\lib_linux\libsinsocket" prefix_auto="1" extension_auto="1" />
 				<Option working_dir="" />
-				<Option object_output="obj/Release/" />
+				<Option object_output="obj\Release\" />
 				<Option type="2" />
 				<Option compiler="gcc" />
 				<Option createDefFile="1" />
 				<Compiler>
 					<Add option="-g" />
 				</Compiler>
+			</Target>
+			<Target title="sqlite">
+				<Option output="..\lib\libsinsqlite" prefix_auto="1" extension_auto="1" />
+				<Option working_dir="" />
+				<Option object_output="obj\Release\" />
+				<Option type="2" />
+				<Option compiler="gcc" />
+				<Option createDefFile="1" />
+				<Compiler>
+					<Add option="-O2" />
+					<Add option="-DSQLITE_THREADSAFE" />
+					<Add directory="..\..\freetype\include" />
+					<Add directory="..\..\glfw\include" />
+				</Compiler>
+				<Linker>
+					<Add option="-s" />
+				</Linker>
 			</Target>
 		</Build>
 		<VirtualTargets>
@@ -71,111 +88,120 @@
 		<Compiler>
 			<Add option="-Wextra" />
 			<Add option="-Wall" />
-			<Add directory="../include" />
+			<Add directory="..\include" />
 		</Compiler>
-		<Unit filename="font/controller.cpp">
-			<Option virtualFolder="font/" />
+		<Unit filename="font\controller.cpp">
+			<Option virtualFolder="font\" />
 			<Option target="font" />
 		</Unit>
-		<Unit filename="font/font.cpp">
-			<Option virtualFolder="font/" />
+		<Unit filename="font\font.cpp">
+			<Option virtualFolder="font\" />
 			<Option target="font" />
 		</Unit>
-		<Unit filename="font/font_obj.cpp">
-			<Option virtualFolder="font/" />
+		<Unit filename="font\font_obj.cpp">
+			<Option virtualFolder="font\" />
 			<Option target="font" />
 		</Unit>
-		<Unit filename="font/languages.cpp">
-			<Option virtualFolder="font/" />
+		<Unit filename="font\languages.cpp">
+			<Option virtualFolder="font\" />
 			<Option target="font" />
 		</Unit>
-		<Unit filename="font/pointers.cpp">
-			<Option virtualFolder="font/" />
+		<Unit filename="font\pointers.cpp">
+			<Option virtualFolder="font\" />
 			<Option target="font" />
 		</Unit>
-		<Unit filename="socket/sinsocket.cpp">
-			<Option virtualFolder="socket/" />
+		<Unit filename="socket\sinsocket.cpp">
+			<Option virtualFolder="socket\" />
 			<Option target="socket" />
 			<Option target="socket - linux" />
 		</Unit>
-		<Unit filename="ui/ui.cpp">
-			<Option virtualFolder="ui/" />
+		<Unit filename="sql\sinsqlite.cpp">
+			<Option virtualFolder="sql\" />
+			<Option target="sqlite" />
+		</Unit>
+		<Unit filename="ui\ui.cpp">
+			<Option virtualFolder="ui\" />
 			<Option target="ui" />
 		</Unit>
-		<Unit filename="ui/ui_base.cpp">
-			<Option virtualFolder="ui/" />
+		<Unit filename="ui\ui_base.cpp">
+			<Option virtualFolder="ui\" />
 			<Option target="ui" />
 		</Unit>
-		<Unit filename="ui/ui_button.cpp">
-			<Option virtualFolder="ui/" />
+		<Unit filename="ui\ui_button.cpp">
+			<Option virtualFolder="ui\" />
 			<Option target="ui" />
 		</Unit>
-		<Unit filename="ui/ui_button_np.cpp">
-			<Option virtualFolder="ui/" />
+		<Unit filename="ui\ui_button_np.cpp">
+			<Option virtualFolder="ui\" />
 			<Option target="ui" />
 		</Unit>
-		<Unit filename="ui/ui_checkbox.cpp">
-			<Option virtualFolder="ui/" />
+		<Unit filename="ui\ui_checkbox.cpp">
+			<Option virtualFolder="ui\" />
 			<Option target="ui" />
 		</Unit>
-		<Unit filename="ui/ui_label.cpp">
-			<Option virtualFolder="ui/" />
+		<Unit filename="ui\ui_label.cpp">
+			<Option virtualFolder="ui\" />
 			<Option target="ui" />
 		</Unit>
-		<Unit filename="ui/ui_structs.cpp">
-			<Option virtualFolder="ui/" />
+		<Unit filename="ui\ui_structs.cpp">
+			<Option virtualFolder="ui\" />
 			<Option target="ui" />
 		</Unit>
-		<Unit filename="ui/ui_textinput.cpp">
-			<Option virtualFolder="ui/" />
+		<Unit filename="ui\ui_textinput.cpp">
+			<Option virtualFolder="ui\" />
 			<Option target="ui" />
 		</Unit>
-		<Unit filename="ui/ui_window.cpp">
-			<Option virtualFolder="ui/" />
+		<Unit filename="ui\ui_window.cpp">
+			<Option virtualFolder="ui\" />
 			<Option target="ui" />
 		</Unit>
-		<Unit filename="../include/sincamera.h">
-			<Option virtualFolder="camera/" />
+		<Unit filename="..\include\sincamera.h">
+			<Option virtualFolder="camera\" />
 			<Option target="&lt;{~None~}&gt;" />
 		</Unit>
-		<Unit filename="../include/sincurve.h">
-			<Option virtualFolder="curve/" />
+		<Unit filename="..\include\sincurve.h">
+			<Option virtualFolder="curve\" />
 			<Option target="&lt;{~None~}&gt;" />
 		</Unit>
-		<Unit filename="../include/sinfont.h">
-			<Option virtualFolder="font/" />
+		<Unit filename="..\include\sinfont.h">
+			<Option virtualFolder="font\" />
 			<Option target="font" />
 		</Unit>
-		<Unit filename="../include/sinlight.h">
-			<Option virtualFolder="light/" />
+		<Unit filename="..\include\sinlight.h">
+			<Option virtualFolder="light\" />
 			<Option target="&lt;{~None~}&gt;" />
 		</Unit>
-		<Unit filename="../include/sinprim.h">
-			<Option virtualFolder="prim/" />
+		<Unit filename="..\include\sinprim.h">
+			<Option virtualFolder="prim\" />
 			<Option target="&lt;{~None~}&gt;" />
 		</Unit>
-		<Unit filename="../include/sinsocket.h">
-			<Option virtualFolder="socket/" />
+		<Unit filename="..\include\sinsocket.h">
+			<Option virtualFolder="socket\" />
 			<Option target="socket" />
 			<Option target="socket - linux" />
 		</Unit>
-		<Unit filename="../include/sinsqlite.h">
-			<Option virtualFolder="sql/" />
+		<Unit filename="..\include\sinsqlite.h">
+			<Option virtualFolder="sql\" />
+			<Option target="sqlite" />
+		</Unit>
+		<Unit filename="..\include\sintimer.h">
+			<Option virtualFolder="timer\" />
 			<Option target="&lt;{~None~}&gt;" />
 		</Unit>
-		<Unit filename="../include/sintimer.h">
-			<Option virtualFolder="timer/" />
-			<Option target="&lt;{~None~}&gt;" />
-		</Unit>
-		<Unit filename="../include/sinui.h">
-			<Option virtualFolder="ui/" />
+		<Unit filename="..\include\sinui.h">
+			<Option virtualFolder="ui\" />
 			<Option target="ui" />
 			<Option target="socket" />
 			<Option target="socket - linux" />
 		</Unit>
-		<Unit filename="../include/sinzutil.h">
-			<Option virtualFolder="zutil/" />
+		<Unit filename="..\include\sinzutil.h">
+			<Option virtualFolder="zutil\" />
 			<Option target="&lt;{~None~}&gt;" />
+		</Unit>
+		<Unit filename="..\include\sqlite3.c">
+			<Option compilerVar="CC" />
+			<Option virtualFolder="sql\" />
+			<Option target="sqlite" />
 		</Unit>
 		<Extensions>
 			<code_completion />

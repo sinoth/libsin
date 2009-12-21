@@ -8,11 +8,12 @@ typedef struct packet_data_s {
     int data_size;
     int current_loc;
     char *data;
+    //
+    packet_data_s(void *indata, int size=0);
+    ~packet_data_s();
     void getChunk(void *output, int size);
     void setChunk(void *input, int size);
     int size();
-    packet_data_s(void *indata, int size=0);
-    ~packet_data_s();
 } packet_data;
 
 ///////////////

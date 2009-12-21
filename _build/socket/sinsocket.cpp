@@ -7,6 +7,7 @@
 #include <string.h>
 #include <sys/types.h>
 #include <signal.h>
+#include <assert.h>
 
 #ifdef _WIN32_WINNT
  #include <ws2tcpip.h>
@@ -26,9 +27,10 @@ int sinsocket::socket_count = 0;
 
 packet_data_s::packet_data_s(void *indata, int insize)
         : data_size(insize), current_loc(0), data((char*)indata) {}
-packet_data_s::~packet_data_s() { if (data!=NULL) free(data); else printf("WTF? ~packet_data data is null\n"); }
+packet_data_s::~packet_data_s() { assert(data==NULL); free(data); }
 int packet_data_s::size() { return data_size; }
 void packet_data_s::getChunk(void *output, int insize) {
+    assert(current_loc+insize <= data_size);
     memcpy(output, data+current_loc, insize);
     current_loc += insize; }
 void packet_data_s::setChunk(void *input, int insize) {
@@ -51,21 +53,21 @@ const char *inet_ntop(int af, const void *__restrict__ src, char *__restrict__ d
 {
         if (af == AF_INET)
         {
-                struct sockaddr_in in;
-                memset(&in, 0, sizeof(in));
-                in.sin_family = AF_INET;
-                memcpy(&in.sin_addr, src, sizeof(struct in_addr));
-                getnameinfo((struct sockaddr *)&in, sizeof(struct sockaddr_in), dst, cnt, NULL, 0, NI_NUMERICHOST);
-                return dst;
+            struct sockaddr_in in;
+            memset(&in, 0, sizeof(in));
+            in.sin_family = AF_INET;
+            memcpy(&in.sin_addr, src, sizeof(struct in_addr));
+            getnameinfo((struct sockaddr *)&in, sizeof(struct sockaddr_in), dst, cnt, NULL, 0, NI_NUMERICHOST);
+            return dst;
         }
         else if (af == AF_INET6)
         {
-                struct sockaddr_in6 in;
-                memset(&in, 0, sizeof(in));
-                in.sin6_family = AF_INET6;
-                memcpy(&in.sin6_addr, src, sizeof(struct in_addr6));
-                getnameinfo((struct sockaddr *)&in, sizeof(struct sockaddr_in6), dst, cnt, NULL, 0, NI_NUMERICHOST);
-                return dst;
+            struct sockaddr_in6 in;
+            memset(&in, 0, sizeof(in));
+            in.sin6_family = AF_INET6;
+            memcpy(&in.sin6_addr, src, sizeof(struct in_addr6));
+            getnameinfo((struct sockaddr *)&in, sizeof(struct sockaddr_in6), dst, cnt, NULL, 0, NI_NUMERICHOST);
+            return dst;
         }
         return NULL;
 }
@@ -277,6 +279,10 @@ int sinsocket::send( const void *indata, const int &inlength ) {
     int bytes_left = inlength;
     int temp_sent = 0;
 
+    if ( !ready_for_action ) {
+        fprintf(stderr, "ERROR: sinsocket.send: socket not ready to send\n");
+        return -1; }
+
     while ( bytes_sent < inlength ) {
         temp_sent = ::send(my_socket, (char*)indata+bytes_sent, bytes_left, 0);
         if ( temp_sent == -1 ) break; //something bad happened
@@ -286,8 +292,8 @@ int sinsocket::send( const void *indata, const int &inlength ) {
 
     if ( temp_sent == -1 ) { perror("ERROR: sinsocket.send"); }
 
-    //return 1 if something messed up, 0 otherwise
-    return ( temp_sent==-1?1:0 );
+    //return -1 if something messed up, 0 otherwise
+    return ( temp_sent==-1?-1:0 );
 }
 
 
@@ -325,7 +331,7 @@ int sinsocket::recv( const void *indata, const int &inlength ) {
         return -1; }
 
     //everything seems fine
-    return inlength;
+    return 0;
 }
 
 
@@ -491,28 +497,21 @@ void sinsocket::spawnThreads() {
 //
 void *sinsocket::sinRecvThread(void *inself) {
     sinsocket *myself = (sinsocket *)inself;
-    int amount_received;
+    int rc;
     int packet_size;
-    int bytes_left;
     packet_data *current_packet;
 
     while (true) {
 
-        amount_received = ::recv(myself->my_socket, (char*)&packet_size, 4, 0 ); //MSG_WAITALL = 0x8
-        if ( amount_received == 0 || amount_received == -1 ) break;
+        rc = myself->recv(&packet_size, 4);
+        if ( rc != 0 ) break;
 
         //printf("asyncRecvThread: got packet size %d ... ", packet_size);
 
         current_packet = new packet_data(malloc(packet_size), packet_size);
 
-        bytes_left = packet_size;
-        while ( bytes_left ) {
-            amount_received = ::recv(myself->my_socket, current_packet->data+(packet_size-bytes_left), bytes_left, 0 );
-            if ( amount_received == 0 || amount_received == -1 ) break;
-            bytes_left -= amount_received;
-        }
-
-        if ( amount_received == 0 || amount_received == -1 ) break;
+        rc = myself->recv(current_packet->data, packet_size);
+        if ( rc != 0 ) break;
 
         pthread_mutex_lock(&myself->recv_mutex);
             //printf("pushing size %d\n", current_packet->data_size);
@@ -525,14 +524,14 @@ void *sinsocket::sinRecvThread(void *inself) {
     //if we're here, something has gone wrong
 
     //error
-    if ( amount_received == -1 ) {
+    if ( rc == -2 ) {
         #ifdef _WIN32_WINNT
         printf("WSAError: %d\n", WSAGetLastError());
         #endif
         perror("ERROR: sinsocket.recv"); }
 
     //peer disconnected
-    if ( amount_received == 0 ) {
+    if ( rc == -1 ) {
         fprintf(stderr, "ERROR: sinsocket.recv: peer has disconnected\n");
         myself->ready_for_action = false; }
 
@@ -567,11 +566,11 @@ void *sinsocket::sinSendThread(void *inself) {
         //printf("asyncSendThread of size %d\n", current_packet->data_size);
 
         if ( myself->send(&current_packet->data_size, 4) )
-            //returns 1 if error, so something bad happened
+            //returns -1 if error, so something bad happened
             break;
 
         if ( myself->send(current_packet->data, current_packet->data_size) )
-            //returns 1 if error, so something bad happened
+            //returns -1 if error, so something bad happened
             break;
 
 

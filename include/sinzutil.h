@@ -8,7 +8,6 @@
 #include <zlib.h>
 
 // chunks don't make sense when the input is already in memory
-//
 //#define CHUNK 128
 //#define CHUNK 16384
 //#define CHUNK 2097152
@@ -26,7 +25,7 @@ struct sinz {
                      uint8_t *dest, int &dest_size, const int comp_level=6) {
 
             int ret;
-	    int orig_dest_size = dest_size;
+            int orig_dest_size;
             z_stream strm;
 
             // allocate deflate state
@@ -40,14 +39,16 @@ struct sinz {
                 return ret;
             }
 
-
             strm.avail_in = source_size;
             strm.next_in = source;
 
-            if ( dest_size == 0 )
+            if ( dest_size == 0 ) {
+                orig_dest_size = source_size;
             	strm.avail_out = source_size;
-            else
+            } else {
+                orig_dest_size = dest_size;
                 strm.avail_out = dest_size;
+            }
             strm.next_out = dest;
 
             dest_size = 0;
@@ -90,8 +91,8 @@ struct sinz {
             }
 
             strm.avail_in = source_size;
-
             strm.next_in = source;
+
             strm.avail_out = dest_size;
             strm.next_out = dest;
 
