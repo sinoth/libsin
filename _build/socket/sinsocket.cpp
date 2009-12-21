@@ -27,7 +27,7 @@ int sinsocket::socket_count = 0;
 
 packet_data_s::packet_data_s(void *indata, int insize)
         : data_size(insize), current_loc(0), data((char*)indata) {}
-packet_data_s::~packet_data_s() { assert(data==NULL); free(data); }
+packet_data_s::~packet_data_s() { assert(data!=NULL); free(data); }
 int packet_data_s::size() { return data_size; }
 void packet_data_s::getChunk(void *output, int insize) {
     if (insize==0) return;
