@@ -518,7 +518,7 @@ void *sinsocket::sinRecvThread(void *inself) {
         pthread_mutex_lock(&myself->recv_mutex);
             //printf("pushing size %d\n", current_packet->data_size);
             myself->received_data.push(current_packet);
-            printf("sinRecvThread: pushing a packet of size %d\n", current_packet->size());
+            //printf("sinRecvThread: pushing a packet of size %d\n", current_packet->size());
             pthread_cond_signal(&myself->recv_condition);
         pthread_mutex_unlock(&myself->recv_mutex);
 
@@ -564,7 +564,7 @@ void *sinsocket::sinSendThread(void *inself) {
 
         current_packet = myself->sending_data.front();
         myself->sending_data.pop();
-        printf("sinSendThread: sending a packet of size %d\n", current_packet->size());
+        //printf("sinSendThread: sending a packet of size %d\n", current_packet->size());
         pthread_mutex_unlock(&myself->send_mutex);
 
         //printf("asyncSendThread of size %d\n", current_packet->data_size);
@@ -607,7 +607,7 @@ void sinsocket::asyncSend(packet_data *inpacket) {
     pthread_mutex_lock(&send_mutex);
         //printf("asyncSend: pushing packet size %d\n", inpacket->data_size);
         sending_data.push(inpacket);
-        printf("asyncSend: pushing a packet of size %d\n", inpacket->size());
+        //printf("asyncSend: pushing a packet of size %d\n", inpacket->size());
         pthread_cond_signal(&send_condition);
     pthread_mutex_unlock(&send_mutex);
 
@@ -623,7 +623,7 @@ packet_data *sinsocket::asyncRecv() {
     pthread_mutex_lock(&recv_mutex);
         if ( received_data.size() ) {
             current_packet = received_data.front();
-            printf("asyncRecv: popped a packet of size %d\n", current_packet->size());
+            //printf("asyncRecv: popped a packet of size %d\n", current_packet->size());
             received_data.pop();
         }
     pthread_mutex_unlock(&recv_mutex);
@@ -643,7 +643,7 @@ packet_data *sinsocket::asyncRecvWait() {
             pthread_cond_wait(&recv_condition, &recv_mutex);
 
         current_packet = received_data.front();
-        printf("asyncRecvWait: popped a packet of size %d\n", current_packet->size());
+        //printf("asyncRecvWait: popped a packet of size %d\n", current_packet->size());
         received_data.pop();
     pthread_mutex_unlock(&recv_mutex);
 
