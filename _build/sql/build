@@ -1,4 +1,4 @@
-gcc -c sinsqlite.cpp -I../../include
+gcc -DSQLITE_THREADSAFE -c sinsqlite.cpp -I../../include
 gcc -c ../../include/sqlite3.c -I../../include
 ar -rcs libsinsqlite.a sinsqlite.o sqlite3.o
 rm *.o
