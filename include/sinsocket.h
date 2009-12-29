@@ -20,32 +20,6 @@ typedef struct packet_data_s {
 
 class sinsocket
 {
-private:
-
-    bool ready_for_action;
-    bool spawned_threads;
-    int my_socket;
-    char my_port[6];
-
-    //thread goodies
-    std::queue<packet_data*> received_data;
-    std::queue<packet_data*> sending_data;
-    pthread_mutex_t recv_mutex;
-    pthread_mutex_t send_mutex;
-    pthread_mutex_t error_mutex;
-    pthread_cond_t send_condition;
-    pthread_cond_t recv_condition;
-    pthread_t send_thread_id;
-    pthread_t recv_thread_id;
-    int socket_error;
-
-    //to know if the program-wide init has been run
-    static bool done_init;
-    static int socket_count;
-
-    //to associate data with the socket
-    void *user_data;
-
 
 public:
 
@@ -66,6 +40,32 @@ public:
     int endDisconnect();
     int closeSinsocket();
 
+    //utility functions
+    void setUserData(void* in);
+    void *getUserData();
+
+private:
+
+    bool ready_for_action;
+    int my_socket;
+    char my_port[6];
+
+    //to know if the program-wide init has been run
+    static bool done_init;
+    static int socket_count;
+
+    //to associate data with the socket
+    void *user_data;
+
+
+//////////////////
+// thread stuff //
+//////////////////
+
+#ifndef SINSOCKET_NO_THREADS
+
+public:
+
     //async thread stuff
     static void *sinRecvThread(void*);
     static void *sinSendThread(void*);
@@ -77,9 +77,22 @@ public:
     packet_data* asyncRecvWait();
     int checkErrors();
 
-    //utility functions
-    void setUserData(void* in);
-    void *getUserData();
+private:
+
+    //thread goodies
+    std::queue<packet_data*> received_data;
+    std::queue<packet_data*> sending_data;
+    pthread_mutex_t recv_mutex;
+    pthread_mutex_t send_mutex;
+    pthread_mutex_t error_mutex;
+    pthread_cond_t send_condition;
+    pthread_cond_t recv_condition;
+    pthread_t send_thread_id;
+    pthread_t recv_thread_id;
+    bool spawned_threads;
+    int socket_error;
+
+#endif
 
 };
 

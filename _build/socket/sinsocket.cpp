@@ -102,8 +102,12 @@ int inet_pton(int af, const char *src, void *__restrict__ dst)
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-sinsocket::sinsocket(int in_fd) : ready_for_action(false), spawned_threads(false),
-                                  my_socket(in_fd), socket_error(0), user_data(NULL) {
+sinsocket::sinsocket(int in_fd) : ready_for_action(false),
+                                  my_socket(in_fd),  user_data(NULL)
+                                  #ifndef SINSOCKET_NO_THREADS
+                                  , spawned_threads(false), socket_error(0)
+                                  #endif
+{
 
     if ( in_fd != -1 ) ready_for_action = true;
 
@@ -149,6 +153,7 @@ sinsocket::~sinsocket() {
 
     socket_count--;
 
+#ifndef SINSOCKET_NO_THREADS
     if ( spawned_threads ) {
         pthread_cancel(send_thread_id);
         pthread_cancel(recv_thread_id);
@@ -156,10 +161,16 @@ sinsocket::~sinsocket() {
         pthread_join(send_thread_id, &status);
         pthread_join(recv_thread_id, &status);
     }
+#endif
 
     if ( user_data != NULL ) { free(user_data); }
 }
 
+
+///////////////////////////////////////////////////////////////////////////////
+
+void sinsocket::setUserData(void *in) { user_data = in; }
+void *sinsocket::getUserData() { return user_data; }
 
 ///////////////////////////////////////////////////////////////////////////////
 //
@@ -475,6 +486,8 @@ int sinsocket::connect(const char* inaddress, const int &inport ) {
 
 
 
+#ifndef SINSOCKET_NO_THREADS
+
 ///////////////////////////////////////////////////////////////////////////////
 //
 void sinsocket::spawnThreads() {
@@ -664,5 +677,4 @@ int sinsocket::checkErrors() {
     return check_errors;
 }
 
-void sinsocket::setUserData(void *in) { user_data = in; }
-void *sinsocket::getUserData() { return user_data; }
+#endif
