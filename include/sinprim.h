@@ -19,6 +19,11 @@ struct vec3f
     void  operator +=(const vec3f &in) { x += in.x; y += in.y; z += in.z; }
     void  operator -=(const vec3f &in) { x -= in.x; y -= in.y; z -= in.z; }
     void  operator *=(const float &in) { x *= in; y *= in; z *= in; }
+    void  operator *=(const float *in) { float x2,y2,z2;
+                                         x2 = x*in[0] + y*in[4] + z*in[8];
+                                         y2 = x*in[1] + y*in[5] + z*in[9];
+                                         z2 = x*in[2] + y*in[6] + z*in[10];
+                                         x=x2; y=y2; z=z2; }
     void  operator /=(const float &in) { x /= in; y /= in; z /= in; }
 
     vec3f operator +(const vec3f &in) const { return vec3f(x+in.x, y+in.y, z+in.z); }
@@ -59,6 +64,12 @@ struct vec3f
                                      y2 = x*in[1] + y*in[5] + z*in[9];
                                      z2 = x*in[2] + y*in[6] + z*in[10];
                                      x=x2; y=y2; z=z2; }
+
+    void inv_mult_by_matrix(float *in) { float x2,y2,z2;
+                                         x2 = x*in[0] + y*in[4] + z*in[8];
+                                         y2 = x*in[1] + y*in[5] + z*in[9];
+                                         z2 = x*in[2] + y*in[6] + z*in[10];
+                                         x=x2; y=y2; z=z2; }
 
     void ray_point_distance( vec3f , vec3f , vec3f * );
     float ray_point_distance( vec3f , vec3f );

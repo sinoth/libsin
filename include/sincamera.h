@@ -47,13 +47,19 @@ private:
     float arc_radius;
     quaternion q_arc_rotation;
 
+    //so we can translate mouse coords into world coords
+    float f_window_width;
+    float f_window_height;
+
     //frustum funstuff
     float f_fov_angle;
     float f_nearP;
     float f_farP;
     float f_ratio;
-    float f_width;
-    float f_height;
+    float f_near_width;
+    float f_near_height;
+    float f_far_width;
+    float f_far_height;
     float f_tang;
     float f_sphereFactorX;
     float f_sphereFactorY;
@@ -73,6 +79,9 @@ public:
             f_strafe_velocity = 0.0f;
             p_position.set(0,0,0);
 
+            f_window_width = 0;
+            f_window_height = 0;
+
             for ( int i = 0; i < 15; i++ ) {
                 af_Matrix_rot[i] = 0.0f;
                 af_Matrix_pos[i] = 0.0f;
@@ -90,6 +99,7 @@ public:
     void setStrafeVelocity(const float &velocity) { f_strafe_velocity = velocity; }
     void setPitch(const float &degrees) { f_pitch_degrees = degrees; }
     void setHeading(const float &degrees) { f_heading_degrees = degrees; }
+    void setWindowWH(const float &inw, const float &inh) { f_window_width = inw; f_window_height = inh; }
 
 
 ///////////////////////////
@@ -259,15 +269,31 @@ public:
             f_nearP = innear;
             f_farP  = infar;
             f_fov_angle = inangle * ANG2RAD;
-            // compute width and height of te near section
-            f_tang = (float)tan(f_fov_angle) ;
-            f_height = innear * f_tang;
-            f_width = f_height * inratio;
+            // compute width and height of the frustum
+            f_tang = (float)tan(f_fov_angle);
+            f_near_height = 2 * innear * (float)tan(f_fov_angle/2);
+            f_near_width = f_near_height * inratio;
+            f_far_height = 2 * infar * (float)tan(f_fov_angle/2);
+            f_far_width = f_far_height * inratio;
             // compute sphere factor for picking
             f_sphereFactorY = 1.0/cos(f_fov_angle);
             f_sphereFactorX = 1.0/cos(atan(f_tang*inratio));
         }
 
+///////////////////////////////////////////////////////////////////////////////////////////
+    void getMouseRay(const float &inx, const float &iny, vec3f &out_pos, vec3f &out_dir ) {
+
+            out_pos.set( inx/f_window_width*f_near_width - f_near_width/2,
+                         -iny/f_window_height*f_near_height + f_near_height/2,
+                         f_nearP );
+
+            printf("mouseRay point: %f, %f, %f\n", out_pos.x, out_pos.y, out_pos.z );
+
+            out_pos *= af_Matrix_rot;
+
+            printf("mouseRay point proj: %f, %f, %f\n", out_pos.x, out_pos.y, out_pos.z );
+
+        }
 
 ///////////////////////////////////////////////
 // arcball-esque stuff ////////////////////////
