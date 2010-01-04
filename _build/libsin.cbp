@@ -41,7 +41,7 @@
 			</Target>
 			<Target title="socket">
 				<Option platforms="Windows;" />
-				<Option output="..\lib\libsinsocket_mt" prefix_auto="1" extension_auto="1" />
+				<Option output="..\lib\libsinsocket" prefix_auto="1" extension_auto="1" />
 				<Option working_dir="" />
 				<Option object_output="obj\Release_mt\" />
 				<Option type="2" />
@@ -58,7 +58,7 @@
 			</Target>
 			<Target title="socket - nothread">
 				<Option platforms="Windows;" />
-				<Option output="..\lib\libsinsocket" prefix_auto="1" extension_auto="1" />
+				<Option output="..\lib\libsinsocket_nt" prefix_auto="1" extension_auto="1" />
 				<Option working_dir="" />
 				<Option object_output="obj\Release\" />
 				<Option type="2" />
