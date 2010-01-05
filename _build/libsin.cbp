@@ -8,6 +8,7 @@
 		<Option virtualFolders="font\;timer\;ui\;zutil\;camera\;prim\;curve\;light\;sql\;socket\;" />
 		<Build>
 			<Target title="font">
+				<Option platforms="Windows;" />
 				<Option output="..\lib\libsinfont" prefix_auto="1" extension_auto="1" />
 				<Option working_dir="" />
 				<Option object_output="obj\Release\" />
@@ -24,6 +25,7 @@
 				</Linker>
 			</Target>
 			<Target title="ui">
+				<Option platforms="Windows;" />
 				<Option output="..\lib\libsinui" prefix_auto="1" extension_auto="1" />
 				<Option working_dir="" />
 				<Option object_output="obj\Release\" />
@@ -90,6 +92,7 @@
 				</Linker>
 			</Target>
 			<Target title="sqlite">
+				<Option platforms="Windows;" />
 				<Option output="..\lib\libsinsqlite" prefix_auto="1" extension_auto="1" />
 				<Option working_dir="" />
 				<Option object_output="obj\Release\" />
@@ -124,7 +127,7 @@
 			</Target>
 		</Build>
 		<VirtualTargets>
-			<Add alias="all" targets="ui;font;" />
+			<Add alias="all" targets="font;ui;socket;socket - nothread;sqlite;" />
 		</VirtualTargets>
 		<Compiler>
 			<Add option="-Wextra" />

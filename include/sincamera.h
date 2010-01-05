@@ -285,13 +285,13 @@ public:
 
             out_pos.set( inx/f_window_width*f_near_width - f_near_width/2,
                          -iny/f_window_height*f_near_height + f_near_height/2,
-                         f_nearP );
+                         -f_nearP );
 
-            printf("mouseRay point: %f, %f, %f\n", out_pos.x, out_pos.y, out_pos.z );
+            //printf("mouseRay point: %f, %f, %f\n", out_pos.x, out_pos.y, out_pos.z );
 
-            out_pos *= af_Matrix_rot;
+            out_pos.inv_mult_by_matrix(af_Matrix_rot);
 
-            printf("mouseRay point proj: %f, %f, %f\n", out_pos.x, out_pos.y, out_pos.z );
+            //printf("mouseRay point proj: %f, %f, %f\n", out_pos.x, out_pos.y, out_pos.z );
 
         }
 

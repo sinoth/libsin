@@ -33,6 +33,7 @@ struct vec3f
     vec3f operator /(const float &in) const { return vec3f(x/in, y/in, z/in); }
 
     float dot(const vec3f &in) const { return x*in.x + y*in.y + z*in.z; }
+    float operator *(const vec3f &in) const { return x*in.x + y*in.y + z*in.z; }
 
     void setBySubtract(const vec3f &in1, const vec3f &in2) { x=in1.x-in2.x; y=in1.y-in2.y; z=in1.z-in2.z; }
 
@@ -66,9 +67,9 @@ struct vec3f
                                      x=x2; y=y2; z=z2; }
 
     void inv_mult_by_matrix(float *in) { float x2,y2,z2;
-                                         x2 = x*in[0] + y*in[4] + z*in[8];
-                                         y2 = x*in[1] + y*in[5] + z*in[9];
-                                         z2 = x*in[2] + y*in[6] + z*in[10];
+                                         x2 = x*in[0] + y*in[1] + z*in[2];
+                                         y2 = x*in[4] + y*in[5] + z*in[6];
+                                         z2 = x*in[8] + y*in[9] + z*in[10];
                                          x=x2; y=y2; z=z2; }
 
     void ray_point_distance( vec3f , vec3f , vec3f * );
@@ -83,7 +84,36 @@ bool SpherePrimitive::intersect(const Ray& ray, float* t)
 
 };
 
+//quick ray stuff
+struct ray3f (
+   struct vec3f pos;
+   struct vec3f dir;
 
+   ray3f( const struct vec3f &inpos, const struct vec3f &indir ) { pos = inpos; dir = indir; }
+   bool collideWithCube( const struct vec3f &incenter, const float &cube_radius, const float &sphere_radius=0 ) {
+        //if we're given a bounding sphere, try it first
+        //we might be able to early-out
+        //http://www.devmaster.net/wiki/Ray-sphere_intersection
+        /*
+        if ( sphere_radius > 0 ) {
+            float len_sq = (incenter - pos) * (incenter - pos);
+            float t = (incenter - pos) * dir;
+            //sphere is behind ray
+            if ( t < 0 ) return 0;
+            float half_coord = (sphere_radius*sphere_radius - len_sq) + t*t;
+            //misses sphere
+            if ( half_coord < 0 ) return 0;
+        }
+        */
+
+        //check collision with each of the 6 faces
+        //http://www.siggraph.org/education/materials/HyperGraph/raytrace/rayplane_intersection.htm
+
+        //left side
+        if (
+
+
+        }
 
 //////////////////////////////////////////
 // Quaternion camera code from Vic Hollis
