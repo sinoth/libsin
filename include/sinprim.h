@@ -84,36 +84,52 @@ bool SpherePrimitive::intersect(const Ray& ray, float* t)
 
 };
 
-//quick ray stuff
-struct ray3f (
+
+////////////////////////////////////////////////////////////////////////////////
+// castin them rays
+////////////////////////////////////////////////////////////////////////////////
+//
+struct ray3f {
    struct vec3f pos;
    struct vec3f dir;
 
    ray3f( const struct vec3f &inpos, const struct vec3f &indir ) { pos = inpos; dir = indir; }
+   ray3f() {}
+
    bool collideWithCube( const struct vec3f &incenter, const float &cube_radius, const float &sphere_radius=0 ) {
-        //if we're given a bounding sphere, try it first
-        //we might be able to early-out
-        //http://www.devmaster.net/wiki/Ray-sphere_intersection
-        /*
-        if ( sphere_radius > 0 ) {
-            float len_sq = (incenter - pos) * (incenter - pos);
-            float t = (incenter - pos) * dir;
-            //sphere is behind ray
-            if ( t < 0 ) return 0;
-            float half_coord = (sphere_radius*sphere_radius - len_sq) + t*t;
-            //misses sphere
-            if ( half_coord < 0 ) return 0;
+            //if we're given a bounding sphere, try it first
+            //we might be able to early-out
+            //http://www.devmaster.net/wiki/Ray-sphere_intersection
+            /*
+            if ( sphere_radius > 0 ) {
+                float len_sq = (incenter - pos) * (incenter - pos);
+                float t = (incenter - pos) * dir;
+                //sphere is behind ray
+                if ( t < 0 ) return 0;
+                float half_coord = (sphere_radius*sphere_radius - len_sq) + t*t;
+                //misses sphere
+                if ( half_coord < 0 ) return 0;
+            }
+            */
+
+            //check collision with each of the 6 faces
+            //http://www.siggraph.org/education/materials/HyperGraph/raytrace/rayplane_intersection.htm
+
+            //left side
+            float d = cube_radius;
+            float Vd = vec3f(-1,0,0) * dir;
+            float Vo = -(vec3f(-1,0,0) * pos + d);
+            if ( Vd == 0 ) {//parallel, no intersect
+            } else {
+                float t = Vo / Vd;
+                if ( t >= 0 ) return 1;
+            }
+
+            return 0;
+
         }
-        */
+};
 
-        //check collision with each of the 6 faces
-        //http://www.siggraph.org/education/materials/HyperGraph/raytrace/rayplane_intersection.htm
-
-        //left side
-        if (
-
-
-        }
 
 //////////////////////////////////////////
 // Quaternion camera code from Vic Hollis
