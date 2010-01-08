@@ -275,6 +275,7 @@ public:
             f_near_width = f_near_height * inratio;
             f_far_height = 2 * infar * (float)tan(f_fov_angle/2);
             f_far_width = f_far_height * inratio;
+            //printf("near w/h: %f, %f  far w/h: %f, %f\n", f_near_width, f_near_height, f_far_width, f_far_height);
             // compute sphere factor for picking
             f_sphereFactorY = 1.0/cos(f_fov_angle);
             f_sphereFactorX = 1.0/cos(atan(f_tang*inratio));
@@ -288,21 +289,22 @@ public:
                          -f_nearP );
             //printf("mouseRay point: %f, %f, %f\n", out_pos.x, out_pos.y, out_pos.z );
 
-            out_pos += p_position;
             out_pos.inv_mult_by_matrix(af_Matrix_rot);
+            out_pos += p_position;
             //printf("mouseRay point proj: %f, %f, %f\n", out_pos.x, out_pos.y, out_pos.z );
+
 
             vec3f temp_far_pos( inx/f_window_width*f_far_width - f_far_width/2,
                                 -iny/f_window_height*f_far_height + f_far_height/2,
                                 -f_farP );
 
-            temp_far_pos += p_position;
             temp_far_pos.inv_mult_by_matrix(af_Matrix_rot);
+            temp_far_pos += p_position;
 
             out_dir = (temp_far_pos - out_pos);
             out_dir.normalize();
 
-            printf("mouseRay pos: %.3f, %.3f, %.3f dir: %.3f, %.3f, %.3f\n", out_pos.x, out_pos.y, out_pos.z, out_dir.x, out_dir.y, out_dir.z );
+            //printf("pos: %.3f, %.3f, %.3f, fpos: %.3f, %.3f, %.3f, dir: %.3f, %.3f, %.3f\n", out_pos.x, out_pos.y, out_pos.z, temp_far_pos.x, temp_far_pos.y, temp_far_pos.z, out_dir.x, out_dir.y, out_dir.z );
 
 
         }
