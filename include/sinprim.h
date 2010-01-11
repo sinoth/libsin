@@ -115,6 +115,7 @@ struct ray3f {
             //check collision with each of the 6 faces
             //http://www.siggraph.org/education/materials/HyperGraph/raytrace/rayplane_intersection.htm
 
+/*
             //left side
             float d = cube_radius;
             float Vd = vec3f(-1,0,0) * dir;
@@ -122,10 +123,66 @@ struct ray3f {
             if ( Vd == 0 ) {//parallel, no intersect
             } else {
                 float t = Vo / Vd;
-                if ( t >= 0 ) return 1;
+                if ( t < 0 ) return 0;
+            }
+*/
+            //http://www.siggraph.org/education/materials/HyperGraph/raytrace/rtinter3.htm
+
+            vec3f low_point(incenter.x - cube_radius, incenter.y - cube_radius, incenter.z - cube_radius);
+            vec3f high_point(incenter.x + cube_radius, incenter.y + cube_radius, incenter.z + cube_radius);
+            float t1, t2, tt, tNear = -1000000, tFar = 1000000;
+
+
+            //check the x slab
+            if ( dir.x == 0 ) { //parallel to plane, so check if it is inside slab
+                if ( pos.x < low_point.x || pos.x > high_point.x ) return 0;
+            } else {
+                t1 = (low_point.x - pos.x) / dir.x;
+                t2 = (high_point.x - pos.x) / dir.x;
+                if ( t1 > t2 ) //swap them
+                    { tt=t1; t1=t2; t2=tt; }
+                if ( t1 > tNear ) tNear = t1;
+                if ( t2 < tFar ) tFar = t2;
+                if ( tNear > tFar ) //missed
+                    return 0;
+                if ( tFar < 0 ) //box behind ray
+                    return 0;
             }
 
-            return 0;
+            //check the y slab
+            if ( dir.y == 0 ) { //parallel to plane, so check if it is inside slab
+                if ( pos.y < low_point.y || pos.y > high_point.y ) return 0;
+            } else {
+                t1 = (low_point.y - pos.y) / dir.y;
+                t2 = (high_point.y - pos.y) / dir.y;
+                if ( t1 > t2 ) //swap them
+                    { tt=t1; t1=t2; t2=tt; }
+                if ( t1 > tNear ) tNear = t1;
+                if ( t2 < tFar ) tFar = t2;
+                if ( tNear > tFar ) //missed
+                    return 0;
+                if ( tFar < 0 ) //box behind ray
+                    return 0;
+            }
+
+            //check the z slab
+            if ( dir.z == 0 ) { //parallel to plane, so check if it is inside slab
+                if ( pos.z < low_point.z || pos.z > high_point.z ) return 0;
+            } else {
+                t1 = (low_point.z - pos.z) / dir.z;
+                t2 = (high_point.z - pos.z) / dir.z;
+                if ( t1 > t2 ) //swap them
+                    { tt=t1; t1=t2; t2=tt; }
+                if ( t1 > tNear ) tNear = t1;
+                if ( t2 < tFar ) tFar = t2;
+                if ( tNear > tFar ) //missed
+                    return 0;
+                if ( tFar < 0 ) //box behind ray
+                    return 0;
+            }
+
+            //if we're here, it's a hit!
+            return 1;
 
         }
 };
