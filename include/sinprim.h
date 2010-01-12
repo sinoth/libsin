@@ -85,10 +85,17 @@ bool SpherePrimitive::intersect(const Ray& ray, float* t)
 };
 
 
+
 ////////////////////////////////////////////////////////////////////////////////
 // castin them rays
 ////////////////////////////////////////////////////////////////////////////////
 //
+//for colliding :P
+struct collision3f {
+    vec3f pos;
+    float dist;
+};
+//////////////
 struct ray3f {
    struct vec3f pos;
    struct vec3f dir;
@@ -96,14 +103,15 @@ struct ray3f {
    ray3f( const struct vec3f &inpos, const struct vec3f &indir ) { pos = inpos; dir = indir; }
    ray3f() {}
 
-   bool collideWithCube( const struct vec3f &incenter, const float &cube_radius, const float &sphere_radius=0 ) {
+   //bool collideWithCube( const struct vec3f &incenter, const float &cube_radius, const float &sphere_radius=0, float &return_dist ) {
+   bool collideWithCube( struct collision3f &incollision, const float &cube_radius, const float &sphere_radius=0 ) {
             //if we're given a bounding sphere, try it first
             //we might be able to early-out
             //http://www.devmaster.net/wiki/Ray-sphere_intersection
             /*
             if ( sphere_radius > 0 ) {
-                float len_sq = (incenter - pos) * (incenter - pos);
-                float t = (incenter - pos) * dir;
+                float len_sq = (incollision.pos - pos) * (incollision.pos - pos);
+                float t = (incollision.pos - pos) * dir;
                 //sphere is behind ray
                 if ( t < 0 ) return 0;
                 float half_coord = (sphere_radius*sphere_radius - len_sq) + t*t;
@@ -128,11 +136,12 @@ struct ray3f {
 */
             //http://www.siggraph.org/education/materials/HyperGraph/raytrace/rtinter3.htm
 
-            vec3f low_point(incenter.x - cube_radius, incenter.y - cube_radius, incenter.z - cube_radius);
-            vec3f high_point(incenter.x + cube_radius, incenter.y + cube_radius, incenter.z + cube_radius);
+            vec3f low_point(incollision.pos.x - cube_radius, incollision.pos.y - cube_radius, incollision.pos.z - cube_radius);
+            vec3f high_point(incollision.pos.x + cube_radius, incollision.pos.y + cube_radius, incollision.pos.z + cube_radius);
             float t1, t2, tt, tNear, tFar;
 
             //printf("checking ray pos %.2f %.2f %.2f , dir %.2f %.2f %.2f\n", pos.x,pos.y,pos.z, dir.x,dir.y,dir.z);
+            //printf("low %.2f %.2f %.2f , high %.2f %.2f %.2f\n", low_point.x,low_point.y,low_point.z, high_point.x,high_point.y,high_point.z);
 
             //check the x slab
             tNear = -1000000; tFar = 1000000;
@@ -178,17 +187,23 @@ struct ray3f {
                 if ( t1 > tNear ) tNear = t1;
                 if ( t2 < tFar ) tFar = t2;
                 if ( tNear > tFar ) //missed
-                    return 0;
+                    {
+                        //printf("tNear > tFar\n");
+                        return 0; }
                 if ( tFar < 0 ) //box behind ray
-                    return 0;
+                    {
+                        //printf("box behind ray\n");
+                        return 0; }
             }
 
             //if we're here, it's a hit!
             //printf("hit dist: %f\n", tNear);
+            incollision.dist = tNear;
             return 1;
 
         }
 };
+
 
 
 //////////////////////////////////////////

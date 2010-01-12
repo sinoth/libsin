@@ -7,7 +7,7 @@
 
 #include "sinprim.h"
 
-#define ANG2RAD (3.14159265358979323846/360.0)
+#define ANG2RAD (3.14159265358979323846/180.0)
 
 //////////////////////////////////////////////////////////////////////////////////
 // frustum code courtesy of:
@@ -288,6 +288,9 @@ public:
                          -iny/f_window_height*f_near_height + f_near_height/2,
                          -f_nearP );
             //printf("mouseRay point: %f, %f, %f\n", out_pos.x, out_pos.y, out_pos.z );
+            //printf("x: %f, y: %f\n", inx, iny);
+            //printf("winx: %f, winy: %f\n", f_window_width, f_window_height);
+            //printf("nearw,h: %f,%f : far: %f,%f\n", f_near_width, f_near_height, f_far_width, f_far_height);
 
             out_pos.inv_mult_by_matrix(af_Matrix_rot);
             out_pos += p_position;
