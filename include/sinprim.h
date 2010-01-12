@@ -130,10 +130,12 @@ struct ray3f {
 
             vec3f low_point(incenter.x - cube_radius, incenter.y - cube_radius, incenter.z - cube_radius);
             vec3f high_point(incenter.x + cube_radius, incenter.y + cube_radius, incenter.z + cube_radius);
-            float t1, t2, tt, tNear = -1000000, tFar = 1000000;
+            float t1, t2, tt, tNear, tFar;
 
+            //printf("checking ray pos %.2f %.2f %.2f , dir %.2f %.2f %.2f\n", pos.x,pos.y,pos.z, dir.x,dir.y,dir.z);
 
             //check the x slab
+            tNear = -1000000; tFar = 1000000;
             if ( dir.x == 0 ) { //parallel to plane, so check if it is inside slab
                 if ( pos.x < low_point.x || pos.x > high_point.x ) return 0;
             } else {
@@ -182,6 +184,7 @@ struct ray3f {
             }
 
             //if we're here, it's a hit!
+            //printf("hit dist: %f\n", tNear);
             return 1;
 
         }
