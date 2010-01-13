@@ -94,6 +94,7 @@ bool SpherePrimitive::intersect(const Ray& ray, float* t)
 struct collision3f {
     vec3f pos;
     float dist;
+    char face;
 };
 //////////////
 struct ray3f {
@@ -140,6 +141,7 @@ struct ray3f {
             vec3f high_point(incollision.pos.x + cube_radius, incollision.pos.y + cube_radius, incollision.pos.z + cube_radius);
             float t1, t2, tt, tNear, tFar;
 
+            //printf("checking ray dir %.2f %.2f %.2f\n", dir.x,dir.y,dir.z);
             //printf("checking ray pos %.2f %.2f %.2f , dir %.2f %.2f %.2f\n", pos.x,pos.y,pos.z, dir.x,dir.y,dir.z);
             //printf("low %.2f %.2f %.2f , high %.2f %.2f %.2f\n", low_point.x,low_point.y,low_point.z, high_point.x,high_point.y,high_point.z);
 
@@ -187,18 +189,18 @@ struct ray3f {
                 if ( t1 > tNear ) tNear = t1;
                 if ( t2 < tFar ) tFar = t2;
                 if ( tNear > tFar ) //missed
-                    {
-                        //printf("tNear > tFar\n");
-                        return 0; }
+                    return 0;
                 if ( tFar < 0 ) //box behind ray
-                    {
-                        //printf("box behind ray\n");
-                        return 0; }
+                    return 0;
             }
 
             //if we're here, it's a hit!
             //printf("hit dist: %f\n", tNear);
             incollision.dist = tNear;
+
+            //determine which side it was hit on
+            //if ( tNear
+
             return 1;
 
         }
