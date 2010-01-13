@@ -43,7 +43,7 @@ private:
 
     //arcball-esque vars
     vec3f arc_center;
-    vec3f arc_facing;
+    //vec3f arc_facing;
     float arc_radius;
     quaternion q_arc_rotation;
 
@@ -66,6 +66,9 @@ private:
 
 
 public:
+
+    //for testing
+    vec3f arc_facing;
 
     sinCamera() {
             f_heading_degrees = 0;
@@ -348,6 +351,8 @@ public:
                 arc_facing.x = -af_Matrix_rot[2];
                 arc_facing.y = -af_Matrix_rot[6];
                 arc_facing.z = -af_Matrix_rot[10];
+
+                printf("facing: %f, %f, %f\n", arc_facing.x, arc_facing.y, arc_facing.z );
 
                 p_position = (-arc_facing * arc_radius + arc_center);
             }
