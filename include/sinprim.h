@@ -94,7 +94,11 @@ bool SpherePrimitive::intersect(const Ray& ray, float* t)
 struct collision3f {
     vec3f pos;
     float dist;
-    char face;
+    bool operator < (const collision3f &in) const { return (dist < in.dist); }
+    static bool greaterThan(const collision3f &ina, const collision3f &inb) { return (ina.dist > inb.dist); }
+    collision3f() {}
+    collision3f(const vec3f &in, const float &ind ) { pos = in; dist = ind; }
+
 };
 //////////////
 struct ray3f {
@@ -109,7 +113,7 @@ struct ray3f {
             //if we're given a bounding sphere, try it first
             //we might be able to early-out
             //http://www.devmaster.net/wiki/Ray-sphere_intersection
-            /*
+
             if ( sphere_radius > 0 ) {
                 float len_sq = (incollision.pos - pos) * (incollision.pos - pos);
                 float t = (incollision.pos - pos) * dir;
@@ -119,7 +123,7 @@ struct ray3f {
                 //misses sphere
                 if ( half_coord < 0 ) return 0;
             }
-            */
+
 
             //check collision with each of the 6 faces
             //http://www.siggraph.org/education/materials/HyperGraph/raytrace/rayplane_intersection.htm

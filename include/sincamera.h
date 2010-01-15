@@ -30,7 +30,7 @@ private:
     float f_strafe_velocity;
     float f_max_strafe_velocity;
 
-    float af_Matrix_rot[16];
+    //float af_Matrix_rot[16];
     float af_Matrix_pos[16];
 
     quaternion q_pitch;
@@ -69,6 +69,7 @@ public:
 
     //for testing
     vec3f arc_facing;
+    float af_Matrix_rot[16];
 
     sinCamera() {
             f_heading_degrees = 0;
@@ -97,6 +98,7 @@ public:
 
 
     float getMaxPitch() { return f_max_pitch; }
+    vec3f getPosition() { return p_position; }
     void setMaxPitch(const float &degrees) { f_max_pitch = degrees; }
     void setVelocity(const float &velocity) { f_velocity = velocity; }
     void setStrafeVelocity(const float &velocity) { f_strafe_velocity = velocity; }
@@ -352,7 +354,7 @@ public:
                 arc_facing.y = -af_Matrix_rot[6];
                 arc_facing.z = -af_Matrix_rot[10];
 
-                printf("facing: %f, %f, %f\n", arc_facing.x, arc_facing.y, arc_facing.z );
+                //printf("facing: %f, %f, %f\n", arc_facing.x, arc_facing.y, arc_facing.z );
 
                 p_position = (-arc_facing * arc_radius + arc_center);
             }
