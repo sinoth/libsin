@@ -1,5 +1,5 @@
-#ifndef PRIM_H
-#define PRIM_H
+#ifndef SINPRIM_H
+#define SINPRIM_H
 
 #include <math.h>
 
