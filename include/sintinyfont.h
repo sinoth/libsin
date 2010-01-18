@@ -23,14 +23,14 @@ typedef struct color_s {
 class tinyfont {
 public:
     tinyfont() {}
-    static void init();
+    static bool init();
     static void beginRender();
     static void endRender();
-    static void createText(tinytext &intext, const char *inphrase, tinycolor const&incolor, vec3f const&inpos);
+    static void createText(tinytext &intext, const char *inphrase, const tinycolor &incolor, const vec3f &inpos);
     static void render(tinytext &in);
 
 private:
-    GLuint texture;
+    static GLuint texture;
 
 };
 

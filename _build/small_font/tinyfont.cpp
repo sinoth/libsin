@@ -2,6 +2,8 @@
 #include <string.h>
 #include "sintinyfont.h"
 
+GLuint tinyfont::texture;
+
 
 void tinyfont::createText(tinytext &intext, const char *inphrase, const tinycolor &incolor, const vec3f &inpos) {
 
@@ -27,30 +29,30 @@ void tinyfont::createText(tinytext &intext, const char *inphrase, const tinycolo
         //top left
         intext.vec_texture.push_back(tex_left);
         intext.vec_texture.push_back(tex_top);
-        intext.vec_vertex.push_back(pos_x+x_offset);
-        intext.vec_vertex.push_back(pos_y);
-        intext.vec_vertex.push_back(pos_z);
+        intext.vec_vertex.push_back(inpos.x+x_offset);
+        intext.vec_vertex.push_back(inpos.y);
+        intext.vec_vertex.push_back(inpos.z);
 
         //top right
         intext.vec_texture.push_back(tex_right);
         intext.vec_texture.push_back(tex_top);
-        intext.vec_vertex.push_back(pos_x+8+x_offset);
-        intext.vec_vertex.push_back(pos_y);
-        intext.vec_vertex.push_back(pos_z);
+        intext.vec_vertex.push_back(inpos.x+8+x_offset);
+        intext.vec_vertex.push_back(inpos.y);
+        intext.vec_vertex.push_back(inpos.z);
 
         //bottom left
         intext.vec_texture.push_back(tex_left);
         intext.vec_texture.push_back(tex_bottom);
-        intext.vec_vertex.push_back(pos_x+x_offset);
-        intext.vec_vertex.push_back(pos_y-8);
-        intext.vec_vertex.push_back(pos_z);
+        intext.vec_vertex.push_back(inpos.x+x_offset);
+        intext.vec_vertex.push_back(inpos.y-8);
+        intext.vec_vertex.push_back(inpos.z);
 
         //bottom right
         intext.vec_texture.push_back(tex_right);
         intext.vec_texture.push_back(tex_bottom);
-        intext.vec_vertex.push_back(pos_x+8+x_offset);
-        intext.vec_vertex.push_back(pos_y-8);
-        intext.vec_vertex.push_back(pos_z);
+        intext.vec_vertex.push_back(inpos.x+8+x_offset);
+        intext.vec_vertex.push_back(inpos.y-8);
+        intext.vec_vertex.push_back(inpos.z);
 
         x_offset += 8;
 
@@ -1148,7 +1150,7 @@ static const struct {
 };
 
 
-void tinyfont::init() {
+bool tinyfont::init() {
     GLubyte raw_data[128*128*4];
     GIMP_RUN_LENGTH_DECODE(raw_data, terminal_image.rle_pixel_data, 128*128, 4);
     glGenTextures( 1, &texture );
@@ -1156,5 +1158,6 @@ void tinyfont::init() {
     glTexImage2D( GL_TEXTURE_2D, 0, GL_RGBA, 128, 128, 0, GL_RGBA, GL_UNSIGNED_BYTE, raw_data );
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+    return 0;
 }
 

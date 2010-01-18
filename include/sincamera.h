@@ -108,7 +108,7 @@ public:
 
 
 ///////////////////////////
-    void setPerspective() {
+    void doPerspective() {
             // Let OpenGL set our new prespective on the world!
             glMultMatrixf(af_Matrix_rot);
             // Translate to our new position.
