@@ -322,7 +322,7 @@ public:
 ///////////////////////////////////////////////
 
 
-    void arcZoom(const float &in) { arc_radius += in; arcRecalculate(); }
+    void arcZoom(const float &in) { arc_radius += in; if ( arc_radius < 1.0 ) arc_radius = 1.0; arcRecalculate(); }
     void arcSetRadius(const float &in) { arc_radius = in; }
     void arcSetCenter(const vec3f &in) { arc_center = in; }
     void arcSetFacing(const vec3f &in) { arc_facing = in; }

@@ -2,6 +2,7 @@
 #define _SINLIGHT_H
 
 #include <GL/glfw.h>
+#include <sinprim.h>
 
 typedef struct sinlight_s
 {
@@ -49,8 +50,8 @@ public:
     void disable() { enabled = false; }
     void disableGlobalAmbient() { glLightModelfv(GL_LIGHT_MODEL_AMBIENT, none); }
     void enableGlobalAmbient() { glLightModelfv(GL_LIGHT_MODEL_AMBIENT, global_ambient_color); }
-    void enableLight(const int &l) { glEnable(GL_LIGHT0+l); }
-    void disableLight(const int &l) { glDisable(GL_LIGHT0+l); }
+    void enableLight(const int &l) { glEnable(GL_LIGHT0+l); lights_enabled[l] = true; }
+    void disableLight(const int &l) { glDisable(GL_LIGHT0+l); lights_enabled[l] = false; }
 
 /////////////////
     void init() {
@@ -105,6 +106,7 @@ public:
             glLightfv(GL_LIGHT0+l, GL_SPECULAR, lights[l].specular); }
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
+    vec3f getPosition(const int &l) { return vec3f(lights[l].position[0], lights[l].position[1], lights[l].position[2] ); }
     void setPosition(const int &l, const float &a, const float &b, const float &c, const float &d=-1.0) {
             lights[l].position[0] = a;
             lights[l].position[1] = b;
