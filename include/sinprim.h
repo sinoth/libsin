@@ -26,6 +26,8 @@ struct vec3f
                                          x=x2; y=y2; z=z2; }
     void  operator /=(const float &in) { x /= in; y /= in; z /= in; }
 
+    bool  operator ==(const vec3f &in) const { return ( x==in.x && y==in.y && z==in.z); }
+
     vec3f operator +(const vec3f &in) const { return vec3f(x+in.x, y+in.y, z+in.z); }
     vec3f operator -(const vec3f &in) const { return vec3f(x-in.x, y-in.y, z-in.z); }
     vec3f operator -() const { return vec3f(-x, -y, -z); }
