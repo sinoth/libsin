@@ -59,6 +59,9 @@ struct vec3f
     void normalize() { float ln; ln = sqrt( x*x + y*y + z*z );
                        if (ln == 0) return; x /= ln; y /= ln; z /= ln; }
 
+    vec3f norm() { float ln; ln = sqrt( x*x + y*y + z*z );
+                   if (ln == 0) return vec3f(x,y,z); return vec3f(x/ln, y/ln, z/ln); }
+
     void createFromPoints( const vec3f &a, const vec3f &b) { x = b.x - a.x;
                                                              y = b.y - a.y;
                                                              z = b.z - a.z; }
