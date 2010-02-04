@@ -217,6 +217,34 @@ struct ray3f {
 
 
 
+////////////////////////////////////////////////////////////////////////////////
+// some stuff to make algorithms easier
+////////////////////////////////////////////////////////////////////////////////
+//
+struct edge {
+    vec3f p1, p2;
+    bool operator==(const edge &in) const { return (p1 == in.p1 && p2 == in.p2) ||
+                                                   (p1 == in.p2 && p2 == in.p1);   }
+};
+
+struct triangle {
+    vec3f p1, p2, p3;
+    vec3f t1, t2, t3;
+    vec3f norm;
+    triangle(const vec3f &inp1, const vec3f &inp2, const vec3f &inp3,
+             const vec3f &int1, const vec3f &int2, const vec3f &int3,
+             const vec3f &innorm) { p1=inp1; p2=inp2; p3=inp3; t1=int1; t2=int2; t3=int3; norm=innorm; }
+    bool operator==(const triangle &in) const { return (p1 == in.p1 && p2 == in.p2 && p3 == in.p3 ) ||
+                                                       (p1 == in.p2 && p2 == in.p3 && p3 == in.p1 ) ||
+                                                       (p1 == in.p3 && p2 == in.p1 && p3 == in.p2 ) ||
+                                                       (p1 == in.p1 && p2 == in.p3 && p3 == in.p2 ) ||
+                                                       (p1 == in.p2 && p2 == in.p1 && p3 == in.p3 ) ||
+                                                       (p1 == in.p3 && p2 == in.p2 && p3 == in.p1 ); }
+};
+
+
+
+
 //////////////////////////////////////////
 // Quaternion camera code from Vic Hollis
 // http://nehe.gamedev.net/data/lessons/lesson.asp?lesson=Quaternion_Camera_Class
@@ -383,8 +411,6 @@ void quaternion::createFromAxisAngle(float xin, float yin, float zin, float degr
 	d_z = float(zin * result);
 }
 */
-
-
 /*
     bool sphereIntersect(const vec3f &startp, const float &radius, float &dist) {
 

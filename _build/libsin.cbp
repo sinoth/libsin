@@ -5,7 +5,7 @@
 		<Option title="libsin" />
 		<Option pch_mode="2" />
 		<Option compiler="gcc" />
-		<Option virtualFolders="font\;timer\;ui\;zutil\;camera\;prim\;curve\;light\;sql\;socket\;small font\;" />
+		<Option virtualFolders="font\;timer\;ui\;zutil\;camera\;prim\;curve\;light\;sql\;socket\;small font\;shadow\;" />
 		<Build>
 			<Target title="font">
 				<Option platforms="Windows;" />
@@ -141,9 +141,14 @@
 					<Add option="-s" />
 				</Linker>
 			</Target>
+			<Target title="headers_only">
+				<Option output="libsin" prefix_auto="1" extension_auto="1" />
+				<Option type="0" />
+				<Option compiler="gcc" />
+			</Target>
 		</Build>
 		<VirtualTargets>
-			<Add alias="all" targets="font;ui;socket;socket - nothread;sqlite;" />
+			<Add alias="all" targets="font;ui;socket;socket - nothread;sqlite;tinyfont;" />
 		</VirtualTargets>
 		<Compiler>
 			<Add option="-Wextra" />
@@ -240,6 +245,10 @@
 		<Unit filename="..\include\sinprim.h">
 			<Option virtualFolder="prim\" />
 			<Option target="&lt;{~None~}&gt;" />
+		</Unit>
+		<Unit filename="..\include\sinshadow.h">
+			<Option virtualFolder="shadow\" />
+			<Option target="headers_only" />
 		</Unit>
 		<Unit filename="..\include\sinsocket.h">
 			<Option virtualFolder="socket\" />
