@@ -25,6 +25,7 @@ typedef struct shadow_volume_s {
     bool dupe;
     int front_off_1, front_off_2, back_off_1, back_off_2;
 
+    /////////////////////////////////////////////////////////////////////////////////////////////////////////
     void generate_edges(const vec3f &light_pos, const std::vector<GLfloat> &in_data, const float &infinity) {
             if ( in_data.size() < 9 ) return;
             edges.clear();
@@ -101,8 +102,6 @@ typedef struct shadow_volume_s {
             }
 
         }
-
-
 
 
     /////////////////////
