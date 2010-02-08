@@ -2,7 +2,8 @@
 #include <vector>
 #include <sinprim.h>
 
-
+//we assume 8 max lights
+#define MAX_LIGHTS 8
 
 typedef struct shadow_volume_s {
     //general shadow stuff
@@ -15,11 +16,12 @@ typedef struct shadow_volume_s {
     GLfloat infinite_matrix[16];
 
     //volume stuff
+    std::vector<GLfloat> triangles[MAX_LIGHTS];
+
     std::list<edge> edges;
     std::list<edge>::iterator it;
     std::list<int> edges_index;
     std::list<int>::iterator iti;
-    std::vector<GLfloat> triangles;
     edge temp_edges[3];
     vec3f temp_point;
     bool dupe;
