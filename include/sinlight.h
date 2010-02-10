@@ -73,6 +73,12 @@ public:
             }
         }
 
+
+///////////////////
+    void flipOn() { for (int i=0; i<8; i++) if ( lights_enabled[i] ) glEnable(GL_LIGHT0+i); }
+    void flipOff() { for (int i=0; i<8; i++) glDisable(GL_LIGHT0+i); }
+    bool isDirectional(const int &l) { return ( lights[l].position[3] == 1 ? false : true ); }
+
 ///////////////////////////////////////////////////////////////////////////////////////////////
     void setGlobalAmbient(const float &a, const float &b,const float &c, const float &d=-1.0) {
             global_ambient_color[0] = a;
@@ -90,6 +96,7 @@ public:
             glLightfv(GL_LIGHT0+l, GL_AMBIENT, lights[l].ambient); }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
+    vec3f getDiffuse(const int &l) { return vec3f(lights[l].diffuse[0], lights[l].diffuse[1], lights[l].diffuse[2] ); }
     void setDiffuse(const int &l, const float &a, const float &b, const float &c, const float &d=-1.0) {
             lights[l].diffuse[0] = a;
             lights[l].diffuse[1] = b;

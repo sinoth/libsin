@@ -2,7 +2,8 @@
 #define SINPRIM_H
 
 #include <math.h>
-
+#include <list>
+#include <vector>
 
 ////////////////////////////////////////////////////////////////////////////////
 // vector shizzle
@@ -216,7 +217,6 @@ struct ray3f {
 };
 
 
-
 ////////////////////////////////////////////////////////////////////////////////
 // some stuff to make algorithms easier
 ////////////////////////////////////////////////////////////////////////////////
@@ -242,7 +242,72 @@ struct triangle {
                                                        (p1 == in.p3 && p2 == in.p2 && p3 == in.p1 ); }
 };
 
+struct box {
+    std::vector<GLfloat> vert;
+    std::vector<GLfloat> norm;
+    std::vector<GLfloat> tex;
+    std::list<triangle>  tri;
 
+    ///////////////////////////////////////////////////////////////
+    void draw(float x, float y, float z, float s) {
+            //top
+            tri.push_back( triangle( vec3f(x-s,y+s,z+s), vec3f(x-s,y+s,z-s), vec3f(x+s,y+s,z-s),
+                                     vec3f(0,0,-1), vec3f(0,1,-1), vec3f(1,1,-1), vec3f(0,1,0) ) );
+            tri.push_back( triangle( vec3f(x+s,y+s,z-s), vec3f(x+s,y+s,z+s), vec3f(x-s,y+s,z+s),
+                                     vec3f(1,1,-1), vec3f(1,0,-1), vec3f(0,0,-1), vec3f(0,1,0) ) );
+            //bottom
+            tri.push_back( triangle( vec3f(x+s,y-s,z-s), vec3f(x-s,y-s,z-s), vec3f(x-s,y-s,z+s),
+                                     vec3f(1,0,-1), vec3f(1,1,-1), vec3f(0,1,-1), vec3f(0,-1,0) ) );
+            tri.push_back( triangle( vec3f(x-s,y-s,z+s), vec3f(x+s,y-s,z+s), vec3f(x+s,y-s,z-s),
+                                     vec3f(0,1,-1), vec3f(0,0,-1), vec3f(1,0,-1), vec3f(0,-1,0) ) );
+            //left
+            tri.push_back( triangle( vec3f(x-s,y-s,z+s), vec3f(x-s,y-s,z-s), vec3f(x-s,y+s,z-s),
+                                     vec3f(1,0,-1), vec3f(0,0,-1), vec3f(0,1,-1), vec3f(-1,0,0) ) );
+            tri.push_back( triangle( vec3f(x-s,y+s,z-s), vec3f(x-s,y+s,z+s), vec3f(x-s,y-s,z+s),
+                                     vec3f(0,1,-1), vec3f(1,1,-1), vec3f(1,0,-1), vec3f(-1,0,0) ) );
+            //right
+            tri.push_back( triangle( vec3f(x+s,y+s,z-s), vec3f(x+s,y-s,z-s), vec3f(x+s,y-s,z+s),
+                                     vec3f(1,1,-1), vec3f(0,1,-1), vec3f(0,0,-1), vec3f(1,0,0) ) );
+            tri.push_back( triangle( vec3f(x+s,y-s,z+s), vec3f(x+s,y+s,z+s), vec3f(x+s,y+s,z-s),
+                                     vec3f(0,0,-1), vec3f(1,0,-1), vec3f(1,1,-1), vec3f(1,0,0) ) );
+            //front
+            tri.push_back( triangle( vec3f(x+s,y-s,z-s), vec3f(x+s,y+s,z-s), vec3f(x-s,y+s,z-s),
+                                     vec3f(1,0,-1), vec3f(1,1,-1), vec3f(0,1,-1), vec3f(0,0,-1) ) );
+            tri.push_back( triangle( vec3f(x-s,y+s,z-s), vec3f(x-s,y-s,z-s), vec3f(x+s,y-s,z-s),
+                                     vec3f(0,1,-1), vec3f(0,0,-1), vec3f(1,0,-1), vec3f(0,0,-1) ) );
+            //back
+            tri.push_back( triangle( vec3f(x-s,y+s,z+s), vec3f(x+s,y+s,z+s), vec3f(x+s,y-s,z+s),
+                                     vec3f(0,0,-1), vec3f(0,1,-1), vec3f(1,1,-1), vec3f(0,0,1) ) );
+            tri.push_back( triangle( vec3f(x+s,y-s,z+s), vec3f(x-s,y-s,z+s), vec3f(x-s,y+s,z+s),
+                                     vec3f(1,1,-1), vec3f(1,0,-1), vec3f(0,0,-1), vec3f(0,0,1) ) );
+        }
+
+    /////////////////////////
+    void optimize() {
+            std::list<triangle>::iterator itt;
+            //now optimize the triangle list
+            for ( std::list<triangle>::iterator it=tri.begin(); it != tri.end(); ++it ) {
+                itt=it;
+                for ( ++itt; itt != tri.end(); ++itt) {
+                    if ( (*it) == (*itt) ) { it = tri.erase(it); it--; tri.erase(itt); break; }
+                }
+            }
+            //dump the triangle list into the box lists
+            for ( std::list<triangle>::iterator it=tri.begin(); it != tri.end(); ++it ) {
+                vert.push_back((*it).p1.x); vert.push_back((*it).p1.y); vert.push_back((*it).p1.z);
+                vert.push_back((*it).p2.x); vert.push_back((*it).p2.y); vert.push_back((*it).p2.z);
+                vert.push_back((*it).p3.x); vert.push_back((*it).p3.y); vert.push_back((*it).p3.z);
+                norm.push_back((*it).norm.x); norm.push_back((*it).norm.y); norm.push_back((*it).norm.z);
+                norm.push_back((*it).norm.x); norm.push_back((*it).norm.y); norm.push_back((*it).norm.z);
+                norm.push_back((*it).norm.x); norm.push_back((*it).norm.y); norm.push_back((*it).norm.z);
+                tex.push_back((*it).t1.x); tex.push_back((*it).t1.y);
+                tex.push_back((*it).t2.x); tex.push_back((*it).t2.y);
+                tex.push_back((*it).t3.x); tex.push_back((*it).t3.y);
+            }
+            //clear the triangle list
+            tri.clear();
+        }
+};
 
 
 //////////////////////////////////////////
@@ -439,4 +504,45 @@ void quaternion::createFromAxisAngle(float xin, float yin, float zin, float degr
                     }
                     //shouldn't be here
                     return 0;
+*/
+
+
+
+
+
+/*
+////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////
+void drawBox(float x, float y, float z, float s, bool tex) {
+    //topperspectiveProjectionMatrix
+    if (tex) glTexCoord2f(0,0); glNormal3f(0,1,0); glVertex3f(x-s,y+s,z+s);
+    if (tex) glTexCoord2f(0,1); glNormal3f(0,1,0); glVertex3f(x-s,y+s,z-s);
+    if (tex) glTexCoord2f(1,1); glNormal3f(0,1,0); glVertex3f(x+s,y+s,z-s);
+    if (tex) glTexCoord2f(1,0); glNormal3f(0,1,0); glVertex3f(x+s,y+s,z+s);
+    //bottom
+    if (tex) glTexCoord2f(1,0); glNormal3f(0,-1,0); glVertex3f(x+s,y-s,z+s);
+    if (tex) glTexCoord2f(1,1); glNormal3f(0,-1,0); glVertex3f(x+s,y-s,z-s);
+    if (tex) glTexCoord2f(0,1); glNormal3f(0,-1,0); glVertex3f(x-s,y-s,z-s);
+    if (tex) glTexCoord2f(0,0); glNormal3f(0,-1,0); glVertex3f(x-s,y-s,z+s);
+    //left
+    if (tex) glTexCoord2f(1,0); glNormal3f(-1,0,0); glVertex3f(x-s,y-s,z+s);
+    if (tex) glTexCoord2f(0,0); glNormal3f(-1,0,0); glVertex3f(x-s,y-s,z-s);
+    if (tex) glTexCoord2f(0,1); glNormal3f(-1,0,0); glVertex3f(x-s,y+s,z-s);
+    if (tex) glTexCoord2f(1,1); glNormal3f(-1,0,0); glVertex3f(x-s,y+s,z+s);
+    //right
+    if (tex) glTexCoord2f(1,1); glNormal3f(1,0,0); glVertex3f(x+s,y+s,z+s);
+    if (tex) glTexCoord2f(0,1); glNormal3f(1,0,0); glVertex3f(x+s,y+s,z-s);
+    if (tex) glTexCoord2f(0,0); glNormal3f(1,0,0); glVertex3f(x+s,y-s,z-s);
+    if (tex) glTexCoord2f(1,0); glNormal3f(1,0,0); glVertex3f(x+s,y-s,z+s);
+    //front
+    if (tex) glTexCoord2f(1,0); glNormal3f(0,0,-1); glVertex3f(x+s,y-s,z-s);
+    if (tex) glTexCoord2f(1,1); glNormal3f(0,0,-1); glVertex3f(x+s,y+s,z-s);
+    if (tex) glTexCoord2f(0,1); glNormal3f(0,0,-1); glVertex3f(x-s,y+s,z-s);
+    if (tex) glTexCoord2f(0,0); glNormal3f(0,0,-1); glVertex3f(x-s,y-s,z-s);
+    //back
+    if (tex) glTexCoord2f(0,0); glNormal3f(0,0,1); glVertex3f(x-s,y-s,z+s);
+    if (tex) glTexCoord2f(0,1); glNormal3f(0,0,1); glVertex3f(x-s,y+s,z+s);
+    if (tex) glTexCoord2f(1,1); glNormal3f(0,0,1); glVertex3f(x+s,y+s,z+s);
+    if (tex) glTexCoord2f(1,0); glNormal3f(0,0,1); glVertex3f(x+s,y-s,z+s);
+}
 */

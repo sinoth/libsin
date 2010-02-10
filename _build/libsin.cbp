@@ -5,7 +5,7 @@
 		<Option title="libsin" />
 		<Option pch_mode="2" />
 		<Option compiler="gcc" />
-		<Option virtualFolders="font\;timer\;ui\;zutil\;camera\;prim\;curve\;light\;sql\;socket\;small font\;shadow\;" />
+		<Option virtualFolders="font\;ui\;sql\;socket\;small font\;headers\;" />
 		<Build>
 			<Target title="font">
 				<Option platforms="Windows;" />
@@ -227,11 +227,11 @@
 			<Option target="ui" />
 		</Unit>
 		<Unit filename="..\include\sincamera.h">
-			<Option virtualFolder="camera\" />
+			<Option virtualFolder="headers\" />
 			<Option target="&lt;{~None~}&gt;" />
 		</Unit>
 		<Unit filename="..\include\sincurve.h">
-			<Option virtualFolder="curve\" />
+			<Option virtualFolder="headers\" />
 			<Option target="&lt;{~None~}&gt;" />
 		</Unit>
 		<Unit filename="..\include\sinfont.h">
@@ -239,15 +239,19 @@
 			<Option target="font" />
 		</Unit>
 		<Unit filename="..\include\sinlight.h">
-			<Option virtualFolder="light\" />
+			<Option virtualFolder="headers\" />
 			<Option target="&lt;{~None~}&gt;" />
 		</Unit>
+		<Unit filename="..\include\sinopengl.h">
+			<Option virtualFolder="headers\" />
+			<Option target="headers_only" />
+		</Unit>
 		<Unit filename="..\include\sinprim.h">
-			<Option virtualFolder="prim\" />
+			<Option virtualFolder="headers\" />
 			<Option target="&lt;{~None~}&gt;" />
 		</Unit>
 		<Unit filename="..\include\sinshadow.h">
-			<Option virtualFolder="shadow\" />
+			<Option virtualFolder="headers\" />
 			<Option target="headers_only" />
 		</Unit>
 		<Unit filename="..\include\sinsocket.h">
@@ -262,7 +266,7 @@
 			<Option target="sqlite - linux" />
 		</Unit>
 		<Unit filename="..\include\sintimer.h">
-			<Option virtualFolder="timer\" />
+			<Option virtualFolder="headers\" />
 			<Option target="&lt;{~None~}&gt;" />
 		</Unit>
 		<Unit filename="..\include\sintinyfont.h">
@@ -277,7 +281,7 @@
 			<Option target="socket - nothread" />
 		</Unit>
 		<Unit filename="..\include\sinzutil.h">
-			<Option virtualFolder="zutil\" />
+			<Option virtualFolder="headers\" />
 			<Option target="&lt;{~None~}&gt;" />
 		</Unit>
 		<Unit filename="..\include\sqlite3.c">
