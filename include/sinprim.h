@@ -309,6 +309,17 @@ struct box {
         }
 };
 
+int draw_circle ( vec3f &inpos, vec3f &incolor, int detail, std::vector<float> *vec_vert, std::vector<float> *vec_color ) {
+
+    //start with straight up vector
+    //start at angle of 90 degrees
+    //based on detail factor divide 90 to be smaller
+    //return number of points added
+
+}
+
+
+}
 
 //////////////////////////////////////////
 // Quaternion camera code from Vic Hollis
