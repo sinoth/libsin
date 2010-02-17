@@ -57,6 +57,10 @@ struct vec3f
                                             float ty = (x * sinf(rad)) + (y * cosf(rad));
                                             x = tx; y = ty; }
 
+    void rotate2Dr(const float &inrad) { float tx = (x * cosf(inrad)) - (y * sinf(inrad));
+                                         float ty = (x * sinf(inrad)) + (y * cosf(inrad));
+                                         x = tx; y = ty; }
+
     void normalize() { float ln; ln = sqrt( x*x + y*y + z*z );
                        if (ln == 0) return; x /= ln; y /= ln; z /= ln; }
 
@@ -90,7 +94,12 @@ bool SpherePrimitive::intersect(const Ray& ray, float* t)
 
 };
 
-
+struct vec4f
+{
+    float x, y, z, w;
+    vec4f() { x=0.0; y=0.0; z=0.0; w=1.0; }
+    vec4f(const float &inx, const float &iny, const float &inz, const float &inw=1.0) { x=inx; y=iny; z=inz; w=inw; }
+};
 
 ////////////////////////////////////////////////////////////////////////////////
 // castin them rays
@@ -309,17 +318,43 @@ struct box {
         }
 };
 
-int draw_circle ( vec3f &inpos, vec3f &incolor, int detail, std::vector<float> *vec_vert, std::vector<float> *vec_color ) {
+int draw_circle ( const vec3f &inpos, const vec4f &incolor, const int &inradius, const int &indetail, std::vector<float> *vec_vert, std::vector<float> *vec_color ) {
 
     //start with straight up vector
     //start at angle of 90 degrees
     //based on detail factor divide 90 to be smaller
     //return number of points added
 
+    vec3f prev_point(0,1,0), next_point(0,1,0);
+    prev_point *= inradius; next_point *= inradius;
+    float angle_between = -3.141592653589;
+    int total_points = 1;
+
+    for (int i=0; i<indetail; ++i) {
+        total_points = total_points*2+1;
+        angle_between /= 2;
+    }
+
+    for (int i=0; i<=total_points; ++i) {
+        //rotate the leading point
+        next_point.rotate2Dr(angle_between);
+        //add leading point
+        vec_vert->push_back( next_point.x + inpos.x ); vec_vert->push_back(next_point.y + inpos.y ); vec_vert->push_back( next_point.z + inpos.z );
+        vec_color->push_back(incolor.x); vec_color->push_back(incolor.y); vec_color->push_back(incolor.z); vec_color->push_back(incolor.w);
+        //printf("%f, %f\n", next_point.x, next_point.y);
+        //center
+        vec_vert->push_back( inpos.x ); vec_vert->push_back( inpos.y ); vec_vert->push_back( inpos.z );
+        vec_color->push_back(incolor.x); vec_color->push_back(incolor.y); vec_color->push_back(incolor.z); vec_color->push_back(incolor.w);
+        //add trailing point
+        vec_vert->push_back( prev_point.x + inpos.x ); vec_vert->push_back(prev_point.y + inpos.y ); vec_vert->push_back( prev_point.z + inpos.z );
+        vec_color->push_back(incolor.x); vec_color->push_back(incolor.y); vec_color->push_back(incolor.z); vec_color->push_back(incolor.w);
+        //rotate the trailing point
+        prev_point.rotate2Dr(angle_between);
+    }
+
+    return total_points;
 }
 
-
-}
 
 //////////////////////////////////////////
 // Quaternion camera code from Vic Hollis
@@ -516,11 +551,6 @@ void quaternion::createFromAxisAngle(float xin, float yin, float zin, float degr
                     //shouldn't be here
                     return 0;
 */
-
-
-
-
-
 /*
 ////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////
