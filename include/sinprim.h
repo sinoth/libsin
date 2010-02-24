@@ -318,7 +318,8 @@ struct box {
         }
 };
 
-int draw_circle ( const vec3f &inpos, const vec4f &incolor, const int &inradius, const int &indetail, std::vector<float> *vec_vert, std::vector<float> *vec_color ) {
+struct util {
+static int draw_circle ( const vec3f &inpos, const vec4f &incolor, const int &inradius, const int &indetail, std::vector<float> *vec_vert, std::vector<float> *vec_color ) {
 
     //start with straight up vector
     //start at angle of 90 degrees
@@ -354,6 +355,7 @@ int draw_circle ( const vec3f &inpos, const vec4f &incolor, const int &inradius,
 
     return total_points;
 }
+};
 
 
 //////////////////////////////////////////
