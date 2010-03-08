@@ -20,7 +20,6 @@ struct sinz {
        level is supplied, Z_VERSION_ERROR if the version of zlib.h and the
        version of the library linked do not match, or Z_ERRNO if there is
        an error reading or writing the files. */
-
     static int zDef( uint8_t *source, int source_size,
                      uint8_t *dest, int &dest_size, const int comp_level=6) {
 

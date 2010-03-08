@@ -230,6 +230,10 @@
 			<Option virtualFolder="headers\" />
 			<Option target="&lt;{~None~}&gt;" />
 		</Unit>
+		<Unit filename="..\include\sincrc.h">
+			<Option virtualFolder="headers\" />
+			<Option target="headers_only" />
+		</Unit>
 		<Unit filename="..\include\sincurve.h">
 			<Option virtualFolder="headers\" />
 			<Option target="&lt;{~None~}&gt;" />
@@ -241,6 +245,10 @@
 		<Unit filename="..\include\sinlight.h">
 			<Option virtualFolder="headers\" />
 			<Option target="&lt;{~None~}&gt;" />
+		</Unit>
+		<Unit filename="..\include\sinmysql.h">
+			<Option virtualFolder="headers\" />
+			<Option target="headers_only" />
 		</Unit>
 		<Unit filename="..\include\sinopengl.h">
 			<Option virtualFolder="headers\" />
@@ -279,6 +287,10 @@
 			<Option target="socket" />
 			<Option target="socket - linux" />
 			<Option target="socket - nothread" />
+		</Unit>
+		<Unit filename="..\include\sinxdelta.h">
+			<Option virtualFolder="headers\" />
+			<Option target="headers_only" />
 		</Unit>
 		<Unit filename="..\include\sinzutil.h">
 			<Option virtualFolder="headers\" />
