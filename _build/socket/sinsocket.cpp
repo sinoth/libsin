@@ -250,7 +250,7 @@ int sinsocket::listen(const int &inport, const int &hint) {
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-sinsocket* sinsocket::accept() {
+sinsocket* sinsocket::accept(char *store_ip) {
 
     int new_fd;  // listen on sock_fd, new connection on new_fd
     struct sockaddr_storage their_addr; // connector's address information
@@ -271,6 +271,10 @@ sinsocket* sinsocket::accept() {
               get_in_addr((struct sockaddr_storage *)&their_addr),
               connection_name,
               sizeof connection_name);
+
+    if ( store_ip != NULL ) {
+        strcpy(store_ip, connection_name);
+    }
 
     #ifdef _DEBUG
     printf("sinsocket.accept: got connection from %s\n", connection_name);

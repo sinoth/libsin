@@ -28,7 +28,7 @@ public:
 
     //server functions
     int listen(const int &port, const int &hint=0); //eventually add sockets_per_thread and threads inits
-    sinsocket* accept();
+    sinsocket* accept(char *store_ip=NULL);
 
     //client functions
     int connect(const char* address, const int &port);
