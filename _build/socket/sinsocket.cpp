@@ -20,13 +20,18 @@
 #endif
 
 #include "sinsocket.h"
+#include "sinzutil.h"
 
 
 bool sinsocket::done_init = false;
 int sinsocket::socket_count = 0;
 
 packet_data_s::packet_data_s(void *indata, int insize)
-        : data_size(insize), current_loc(0), data((char*)indata) {}
+        : data_size(insize), data_size_compressed(-1), current_loc(0), data((char*)indata) {}
+packet_data_s::packet_data_s(const std::string &in_string)
+        : data_size(in_string.size()), data_size_compressed(-1), current_loc(0) {
+        data = (char*)malloc( in_string.size() );
+        memcpy(data,in_string.c_str(),in_string.size()); }
 packet_data_s::~packet_data_s() { assert(data!=NULL); free(data); }
 int packet_data_s::size() { return data_size; }
 void packet_data_s::getChunk(void *output, int insize) {
@@ -38,6 +43,11 @@ void packet_data_s::setChunk(void *input, int insize) {
     if (insize==0) return;
     memcpy(data+data_size, input, insize);
     data_size += insize; }
+void packet_data_s::setAll(void *input) {
+    memcpy(data, input, data_size); }
+void packet_data_s::compress() {
+    data_size_compressed = 0;
+}
 
 ///////////////////////////////////////////////////////////////////////////////
 //helper to get the right address
@@ -339,11 +349,12 @@ int sinsocket::recv( const void *indata, const int inlength ) {
         printf("WSAError: %d\n", WSAGetLastError());
         #endif
         perror("ERROR: sinsocket.recv");
-        return -2; }
+        return -2;
+    }
 
     //peer disconnected
     if ( temp_recv == 0 ) {
-        fprintf(stderr, "ERROR: sinsocket.recv: peer has disconnected\n");
+        if (!spawned_threads) fprintf(stderr, "INFO: sinsocket.recv: peer has gracefully disconnected\n");
         ready_for_action = false;
         return -1; }
 
@@ -365,6 +376,16 @@ int sinsocket::closeSinsocket() {
 // returns 0 on success, 1 on error
 //
 int sinsocket::beginDisconnect() {
+    //first, see if we've got threads spawned
+    if ( spawned_threads ) {
+        //if so, wait till they are done sending, then clean em up
+        pthread_mutex_lock(&send_mutex);
+        if ( sending_data.size() )
+            pthread_cond_wait(&empty_condition, &send_mutex);
+        //should mean we're in the clear now
+        pthread_mutex_unlock(&send_mutex);
+    }
+
     //tell the client we are done
     #ifdef _WIN32_WINNT
     shutdown(my_socket, SD_SEND);
@@ -378,17 +399,17 @@ int sinsocket::beginDisconnect() {
 
     if ( temp_recv == 0 ) {
         //we're done here
-        closeSinsocket();
+        //closeSinsocket();
         return 0;
     } else if ( temp_recv == -1 ) {
         //ah well, report it and close anyway
         fprintf(stderr, "ERROR: sinsocket.beginDisconnect: recv returned -1\n");
-        closeSinsocket();
+        //closeSinsocket();
         return 1;
     } else {
         //who knows! lets just report and move on..
         fprintf(stderr, "ERROR: sinsocket.beginDisconnect: recv returned %d\n", temp_recv);
-        closeSinsocket();
+        //closeSinsocket();
         return 1;
     }
 
@@ -413,18 +434,18 @@ int sinsocket::endDisconnect() {
         temp_recv = ::recv(my_socket,NULL,0,0);
         if ( temp_recv == -1 ) {
             //other side is down, let us end as well
-            closeSinsocket();
+            //closeSinsocket();
             return 0;
         }
     } else if ( temp_recv == -1 ) {
         //ah well, close and move on
         fprintf(stderr, "ERROR: sinsocket.endDisconnect: recv returned -1\n");
-        closeSinsocket();
+        //closeSinsocket();
         return 1;
     } else {
         //wtf, who knows!
         fprintf(stderr, "ERROR: sinsocket.endDisconnect: recv returned %d\n",temp_recv);
-        closeSinsocket();
+        //closeSinsocket();
         return 1;
     }
 
@@ -503,6 +524,7 @@ void sinsocket::spawnThreads() {
     pthread_mutex_init(&error_mutex, NULL);
     pthread_cond_init (&send_condition, NULL);
     pthread_cond_init (&recv_condition, NULL);
+    pthread_cond_init (&empty_condition, NULL);
 
     socket_error = pthread_create(&recv_thread_id, NULL, sinRecvThread, this);
     socket_error = pthread_create(&send_thread_id, NULL, sinSendThread, this);
@@ -518,19 +540,34 @@ void *sinsocket::sinRecvThread(void *inself) {
     sinsocket *myself = (sinsocket *)inself;
     int rc;
     int packet_size;
+    int packet_compressed_size;
+    char *compressed_data;
     packet_data *current_packet;
+    uint8_t compression_check;
 
     while (true) {
 
-        rc = myself->recv(&packet_size, 4);
-        if ( rc != 0 ) break;
+        //peek to see if we're compressed.  if so, decomress it
+        rc = myself->recv(&compression_check, 1); if ( rc != 0 ) break;
 
-        //printf("asyncRecvThread: got packet size %d ... ", packet_size);
-
-        current_packet = new packet_data(malloc(packet_size), packet_size);
-
-        rc = myself->recv(current_packet->data, packet_size);
-        if ( rc != 0 ) break;
+        if ( compression_check ) {
+            //decompress this sucker
+            rc = myself->recv(&packet_compressed_size, 4); if ( rc != 0 ) break;
+            rc = myself->recv(&packet_size, 4); if ( rc != 0 ) break;
+            printf("INFO: got compressed packet, size: %d, actual: %d\n", packet_size, packet_compressed_size);
+            compressed_data = (char*)malloc(packet_compressed_size);
+            current_packet = new packet_data(malloc(packet_size), packet_size);
+            rc = myself->recv(compressed_data, packet_compressed_size); if ( rc != 0 ) break;
+            rc = sinz::zInf(compressed_data, packet_compressed_size, current_packet->data, packet_size);
+            if ( rc ) { printf("* ERROR: zInf in sinRecvThread: %d\n", rc); /*myself->closeSinsocket();*/ break; }
+            free(compressed_data);
+        } else {
+            //not compressed
+            rc = myself->recv(&packet_size, 4); if ( rc != 0 ) break;
+            //printf("asyncRecvThread: got packet size %d ... ", packet_size);
+            current_packet = new packet_data(malloc(packet_size), packet_size);
+            rc = myself->recv(current_packet->data, packet_size); if ( rc != 0 ) break;
+        }
 
         pthread_mutex_lock(&myself->recv_mutex);
             //printf("pushing size %d\n", current_packet->data_size);
@@ -548,12 +585,14 @@ void *sinsocket::sinRecvThread(void *inself) {
         #ifdef _WIN32_WINNT
         printf("WSAError: %d\n", WSAGetLastError());
         #endif
-        perror("ERROR: sinsocket.recv"); }
+        perror("ERROR: sinsocket.recv");
+    }
 
     //peer disconnected
     if ( rc == -1 ) {
-        fprintf(stderr, "ERROR: sinsocket.recv: peer has disconnected\n");
-        myself->ready_for_action = false; }
+        fprintf(stderr, "INFO: sinsocket.recvThread: peer gracefully disconnected\n");
+        myself->endDisconnect();
+     }
 
     pthread_mutex_lock(&myself->error_mutex);
     myself->socket_error = 1;
@@ -572,12 +611,16 @@ void *sinsocket::sinRecvThread(void *inself) {
 void *sinsocket::sinSendThread(void *inself) {
     sinsocket *myself = (sinsocket *)inself;
     packet_data *current_packet;
+    uint8_t compressed = 1;
+    uint8_t not_compressed = 0;
 
     while (true) {
 
         pthread_mutex_lock(&myself->send_mutex);
-        if ( !myself->sending_data.size() )
+        if ( !myself->sending_data.size() ) {
+            pthread_cond_signal(&myself->empty_condition);
             pthread_cond_wait(&myself->send_condition, &myself->send_mutex);
+        }
 
         current_packet = myself->sending_data.front();
         myself->sending_data.pop();
@@ -586,17 +629,29 @@ void *sinsocket::sinSendThread(void *inself) {
 
         //printf("asyncSendThread of size %d\n", current_packet->data_size);
 
-        if ( myself->send(&current_packet->data_size, 4) )
-            //returns -1 if error, so something bad happened
-            break;
-
-        if ( myself->send(current_packet->data, current_packet->data_size) )
-            //returns -1 if error, so something bad happened
-            break;
-
+        if ( current_packet->data_size_compressed == 0 ) {
+            //we need to compress it before sending
+            char *old_data = current_packet->data;
+            current_packet->data_size_compressed = current_packet->data_size+6;
+            char *deflated_data = (char*)malloc( current_packet->data_size_compressed );
+            sinz::zDef(current_packet->data, current_packet->data_size, deflated_data, current_packet->data_size_compressed);
+            current_packet->data = deflated_data;
+            free(old_data);
+            //now send a 1 indicating we are compressed
+            if ( myself->send(&compressed, 1) ) break;
+            //send the uncompressed size, followed by the compressed size
+            if ( myself->send(&current_packet->data_size_compressed, 4) ) break;
+            if ( myself->send(&current_packet->data_size, 4) ) break;
+            if ( myself->send(current_packet->data, current_packet->data_size_compressed) ) break;
+        } else {
+            //not a compressed packet
+            if ( myself->send(&not_compressed, 1) ) break;
+            //just send the normal size
+            if ( myself->send(&current_packet->data_size, 4) ) break;
+            if ( myself->send(current_packet->data, current_packet->data_size) ) break;
+        }
 
         delete current_packet;
-
     }
 
     //if we're here, something has gone wrong
@@ -615,8 +670,7 @@ void *sinsocket::sinSendThread(void *inself) {
 ///////////////////////////////////////////////////////////////////////////////
 //
 void sinsocket::asyncSend(const void *indata, const int inlength) {
-    packet_data *current_packet = new packet_data((char*)indata, inlength);
-    asyncSend(current_packet);
+    asyncSend(new packet_data((char*)indata, inlength));
 }
 //
 void sinsocket::asyncSend(packet_data *inpacket) {

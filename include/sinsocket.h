@@ -2,17 +2,22 @@
 #define _SINSOCKET_H
 
 #include <pthread.h>
+#include <string>
 #include <queue>
 
 typedef struct packet_data_s {
     int data_size;
+    int data_size_compressed;
     int current_loc;
     char *data;
     //
     packet_data_s(void *indata, int size=0);
+    packet_data_s(const std::string &in_string);
     ~packet_data_s();
     void getChunk(void *output, int size);
     void setChunk(void *input, int size);
+    void setAll(void* input);
+    void compress();
     int size();
 } packet_data;
 
@@ -86,6 +91,7 @@ private:
     pthread_mutex_t send_mutex;
     pthread_mutex_t error_mutex;
     pthread_cond_t send_condition;
+    pthread_cond_t empty_condition;
     pthread_cond_t recv_condition;
     pthread_t send_thread_id;
     pthread_t recv_thread_id;

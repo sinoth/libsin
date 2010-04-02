@@ -85,6 +85,9 @@ struct vec3f
     void ray_point_distance( vec3f , vec3f , vec3f * );
     float ray_point_distance( vec3f , vec3f );
 
+
+    vec3f midpoint( const vec3f &in) const { return vec3f( (x + in.x)/2.0, (y + in.y)/2.0, (z + in.z)/2.0 ); }
+
 /*
 bool SpherePrimitive::intersect(const Ray& ray, float* t)
 {

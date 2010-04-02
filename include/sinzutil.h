@@ -20,8 +20,8 @@ struct sinz {
        level is supplied, Z_VERSION_ERROR if the version of zlib.h and the
        version of the library linked do not match, or Z_ERRNO if there is
        an error reading or writing the files. */
-    static int zDef( uint8_t *source, int source_size,
-                     uint8_t *dest, int &dest_size, const int comp_level=6) {
+    static int zDef( char *source, int source_size,
+                     char *dest, int &dest_size, const int comp_level=6) {
 
             int ret;
             int orig_dest_size;
@@ -32,14 +32,15 @@ struct sinz {
             strm.zfree = Z_NULL;
             strm.opaque = Z_NULL;
 
-            ret = deflateInit(&strm, comp_level);
+            //ret = deflateInit(&strm, comp_level);
+            ret = deflateInit2(&strm, comp_level, Z_DEFLATED, -15, 8, Z_DEFAULT_STRATEGY);
             if (ret != Z_OK) {
                 printf("zLib: error on deflateInit\n");
                 return ret;
             }
 
             strm.avail_in = source_size;
-            strm.next_in = source;
+            strm.next_in = (uint8_t*)source;
 
             if ( dest_size == 0 ) {
                 orig_dest_size = source_size;
@@ -48,7 +49,7 @@ struct sinz {
                 orig_dest_size = dest_size;
                 strm.avail_out = dest_size;
             }
-            strm.next_out = dest;
+            strm.next_out = (uint8_t*)dest;
 
             dest_size = 0;
 
@@ -56,7 +57,9 @@ struct sinz {
             assert(ret != Z_STREAM_ERROR);  // state not clobbered
 
             assert(strm.avail_in == 0);     // all input will be used
+            //printf("ret = %d\n", ret);
             assert(ret == Z_STREAM_END);    // stream will be complete
+            //if you get the error above you probably need to allow more space for compression
 
             dest_size = orig_dest_size - strm.avail_out;
 
@@ -72,7 +75,7 @@ struct sinz {
        invalid or incomplete, Z_VERSION_ERROR if the version of zlib.h and
        the version of the library linked do not match, or Z_ERRNO if there
        is an error reading or writing the files. */
-    static int zInf(uint8_t *source, int source_size, uint8_t *dest, int &dest_size)
+    static int zInf(char *source, int source_size, char *dest, int &dest_size)
         {
             int ret;
             int expected_dest_size = dest_size;
@@ -83,17 +86,18 @@ struct sinz {
             strm.zfree = Z_NULL;
             strm.opaque = Z_NULL;
 
-            ret = inflateInit(&strm);
+            //ret = inflateInit(&strm);
+            ret = inflateInit2(&strm,-15);
             if (ret != Z_OK) {
                 printf("zLib: error on inflateInit\n");
                 return ret;
             }
 
             strm.avail_in = source_size;
-            strm.next_in = source;
+            strm.next_in = (uint8_t*)source;
 
             strm.avail_out = dest_size;
-            strm.next_out = dest;
+            strm.next_out = (uint8_t*)dest;
 
             dest_size = 0;
 
