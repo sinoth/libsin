@@ -26,6 +26,8 @@
 bool sinsocket::done_init = false;
 int sinsocket::socket_count = 0;
 
+
+///////////////////////////////////////////////////////////////////////////////
 packet_data_s::packet_data_s(void *indata, int insize)
         : data_size(insize), data_size_compressed(-1), current_loc(0), data((char*)indata) {}
 packet_data_s::packet_data_s(const std::string &in_string)
@@ -48,6 +50,35 @@ void packet_data_s::setAll(void *input) {
 void packet_data_s::compress() {
     data_size_compressed = 0;
 }
+
+
+///////////////////////////////////////////////////////////////////////////////////////////////////
+void sinbits::vector_to_bits( const std::vector<uint8_t> &in_vec, uint8_t **in_data, int &in_size ) {
+    if ( in_vec.size() < 8 ) in_size = 1;
+    else if ( in_vec.size() % 8 == 0 ) in_size = in_vec.size()/8;
+    else in_size = in_vec.size()/8+1;
+    (*in_data) = (uint8_t*) malloc(in_size);
+    uint8_t bit_count = 0, byte_count = 0;
+    (*in_data)[0] = 0;
+    for ( uint32_t i=0; i < in_vec.size(); ++i,++bit_count ) {
+        if ( bit_count == 8 ) { bit_count = 0; ++byte_count; (*in_data)[byte_count]=0; }
+        if ( in_vec[i] ) (*in_data)[byte_count] += ( 1 << bit_count );
+    }
+}
+void sinbits::bits_to_vector( const uint8_t *in_data, const int &in_size, std::vector<uint8_t> &in_vec ) {
+    in_vec.resize( in_size * 8 );
+    uint8_t bit_count=0, byte_count=0;
+    for ( uint32_t i=0; i < in_vec.size(); ++i, ++bit_count ) {
+        if ( bit_count == 8 ) { bit_count = 0; ++byte_count; }
+        in_vec[i] = (in_data[byte_count] >> bit_count) & 1;
+    }
+}
+void sinbits::vector_to_bits( const std::vector<uint8_t> &in_vec, packet_data &in_packet ) {
+    sinbits::vector_to_bits( in_vec, (uint8_t**)&in_packet.data, in_packet.data_size ); }
+void sinbits::bits_to_vector( const packet_data &in_packet, std::vector<uint8_t> &in_vec ) {
+    sinbits::bits_to_vector( (uint8_t*)in_packet.data, in_packet.data_size, in_vec); }
+
+
 
 ///////////////////////////////////////////////////////////////////////////////
 //helper to get the right address

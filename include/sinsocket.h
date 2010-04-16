@@ -1,9 +1,15 @@
-#ifndef _SINSOCKET_H
-#define _SINSOCKET_H
+#ifndef SINSOCKET_H
+#define SINSOCKET_H
 
 #include <pthread.h>
 #include <string>
 #include <queue>
+
+
+
+
+
+//////////////////////////////
 
 typedef struct packet_data_s {
     int data_size;
@@ -22,6 +28,16 @@ typedef struct packet_data_s {
 } packet_data;
 
 ///////////////
+
+struct sinbits {
+    static void vector_to_bits( const std::vector<uint8_t> &in_vec, uint8_t **in_data, int &in_size );
+    static void vector_to_bits( const std::vector<uint8_t> &in_vec, packet_data &in_packet );
+    static void bits_to_vector( const uint8_t *in_data, const int &in_size, std::vector<uint8_t> &in_vec );
+    static void bits_to_vector( const packet_data &in_packet, std::vector<uint8_t> &in_vec );
+};
+
+//////////////////////////////
+
 
 class sinsocket
 {
@@ -112,3 +128,49 @@ private:
 
 
 #endif
+
+
+
+
+/*
+
+struct sinbits {
+
+    ///////////////////////////////////////////////////////////////////////////////////////////////////
+    static void vector_to_bits( const std::vector<uint8_t> &in_vec, uint8_t **in_data, int &in_size ) {
+            if ( in_vec.size() < 8 ) in_size = 1;
+            else if ( in_vec.size() % 8 == 0 ) in_size = in_vec.size()/8;
+            else in_size = in_vec.size()/8+1;
+            (*in_data) = (uint8_t*) malloc(in_size);
+            uint8_t bit_count = 0, byte_count = 0;
+            (*in_data)[0] = 0;
+            for ( uint32_t i=0; i < in_vec.size(); ++i,++bit_count ) {
+                if ( bit_count == 8 ) { bit_count = 0; ++byte_count; (*in_data)[byte_count]=0; }
+                if ( in_vec[i] ) (*in_data)[byte_count] += ( 1 << bit_count );
+            }
+        }
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////
+    static void bits_to_vector( const uint8_t *in_data, const int &in_size, std::vector<uint8_t> &in_vec ) {
+            in_vec.resize( in_size * 8 );
+            uint8_t bit_count=0, byte_count=0;
+            for ( uint32_t i=0; i < in_vec.size(); ++i, ++bit_count ) {
+                if ( bit_count == 8 ) { bit_count = 0; ++byte_count; }
+                in_vec[i] = (in_data[byte_count] >> bit_count) & 1;
+            }
+        }
+
+    #ifdef SINSOCKET_H
+    //////////////////////////////////////////////////////////////////////////////////////
+    static void vector_to_bits( const std::vector<uint8_t> &in, packet_data &in_packet ) {
+            vector_to_bits( in, &in_packet.data, in_packet.size );
+        }
+
+    static void bits_to_vector( const packet_data &in_packet, std::vector<uint8_t> &in_vec ) {
+            bits_to_vector( in_packet.data, in_packet.size, in_vec);
+        }
+    #endif
+
+};
+
+*/
