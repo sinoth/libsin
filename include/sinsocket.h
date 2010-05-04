@@ -6,18 +6,22 @@
 #include <queue>
 
 
-
+#define SINSOCKET_ERROR_ZLIB            -4
+#define SINSOCKET_ERROR_NOT_READY       -3
+#define SINSOCKET_ERROR_UNRECOVERABLE   -2
+#define SINSOCKET_ERROR_DISCONNECT      -1
+#define SINSOCKET_OK                     0
 
 
 //////////////////////////////
 
 typedef struct packet_data_s {
     int data_size;
-    int data_size_compressed;
+    int data_size_uncompressed;
     int current_loc;
     char *data;
     //
-    packet_data_s(void *indata, int size=0);
+    packet_data_s(void *indata=NULL, int size=0);
     packet_data_s(const std::string &in_string);
     ~packet_data_s();
     void getChunk(void *output, int size);
@@ -55,11 +59,15 @@ public:
     int connect(const char* address, const int &port);
 
     //shared functions
-    int send( const void *indata, const int inlength ); //blocking
-    int recv( const void *indata, const int inlength ); //blocking
+    int sendRaw( const void *indata, const int inlength ); //blocking
+    int sendPacket( packet_data *inpacket, bool compressed = false ); //blocking
+    int sendPacket( packet_data &inpacket, bool compressed = false ); //blocking
+    int recvRaw( const void *indata, const int inlength ); //blocking
+    int recvPacket( packet_data * &outpacket, bool compressed = false ); //blocking
+    int recvPacket( packet_data &outpacket, bool compressed = false ); //blocking
     int beginDisconnect();
     int endDisconnect();
-    int closeSinsocket();
+    void closeSinsocket();
 
     //utility functions
     void setUserData(void* in);
@@ -91,7 +99,7 @@ public:
     static void *sinRecvThread(void*);
     static void *sinSendThread(void*);
     //
-    void spawnThreads();
+    int spawnThreads();
     void asyncSend( const void *indata, const int inlength );
     void asyncSend( packet_data *inpacket );
     packet_data* asyncRecv();
@@ -107,11 +115,11 @@ private:
     pthread_mutex_t send_mutex;
     pthread_mutex_t error_mutex;
     pthread_cond_t send_condition;
-    pthread_cond_t empty_condition;
     pthread_cond_t recv_condition;
     pthread_t send_thread_id;
     pthread_t recv_thread_id;
     bool spawned_threads;
+    bool stop_threads;
     int socket_error;
 
 #endif

@@ -53,6 +53,7 @@
 					<Add option="-O2" />
 					<Add option="-D_WIN32_WINNT=0x501" />
 					<Add option="-DPTW32_STATIC_LIB" />
+					<Add option="-D_DEBUG" />
 				</Compiler>
 				<Linker>
 					<Add option="-s" />
@@ -287,10 +288,6 @@
 			<Option target="socket" />
 			<Option target="socket - linux" />
 			<Option target="socket - nothread" />
-		</Unit>
-		<Unit filename="..\include\sinxdelta.h">
-			<Option virtualFolder="headers\" />
-			<Option target="headers_only" />
 		</Unit>
 		<Unit filename="..\include\sinzutil.h">
 			<Option virtualFolder="headers\" />
