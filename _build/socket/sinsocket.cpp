@@ -645,7 +645,7 @@ int sinsocket::endDisconnect() {
         #ifdef _DEBUG
         printf("* INFO: endDisconnect: waiting for other side to shut down... ");
         #endif
-        do { temp_recv = ::recv(my_socket,NULL,0,0);
+        do { temp_recv = ::recv(my_socket,NULL,1,0);
         } while ( temp_recv != 0 && temp_recv != -1 );
         #ifdef _DEBUG
         printf("done.\n");
