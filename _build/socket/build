@@ -1,4 +1,4 @@
-gcc -c sinsocket.cpp -I../../include
+gcc -D_LINUX -c sinsocket.cpp -I../../include
 ar -rcs libsinsocket.a sinsocket.o
 rm *.o
 mv libsinsocket.a ../../lib_linux
