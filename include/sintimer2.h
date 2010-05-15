@@ -2,6 +2,7 @@
 #ifdef _WIN32_WINNT
  #include <windows.h>
 #elif _LINUX
+ #include <inttypes.h>
  #include <sys/time.h>
 #endif
 
@@ -19,7 +20,7 @@ public:
             old_tick_count = new_tick_count;
             return 0;
           #elif _LINUX
-            gettimeofday(&current_time);
+            gettimeofday(&current_time,NULL);
             old_tick_count = current_time.tv_sec*1000000 + current_time.tv_usec;
             interval = ( 1000000.0 / (double)in );
             return 0;
@@ -35,9 +36,9 @@ public:
                 return 1; }
             return 0;
           #elif _LINUX
-            gettimeofday(&current_time);
+            gettimeofday(&current_time, NULL);
             if ( (current_time.tv_sec*1000000 + current_time.tv_usec) - old_tick_count >= interval ) {
-                old_tick_count += new_tick_count;
+                old_tick_count += interval;
                 return 1; }
             return 0;
           #endif
@@ -51,7 +52,7 @@ public:
                 return 1; }
             return 0;
           #elif _LINUX
-            gettimeofday(&current_time);
+            gettimeofday(&current_time, NULL);
             if ( (current_time.tv_sec*1000000 + current_time.tv_usec) - old_tick_count >= interval ) {
                 old_tick_count = (current_time.tv_sec*1000000 + current_time.tv_usec);
                 return 1; }
@@ -64,7 +65,7 @@ public:
             QueryPerformanceCounter( (LARGE_INTEGER *)&new_tick_count );
             old_tick_count = new_tick_count;
           #elif _LINUX
-            gettimeofday(&current_time);
+            gettimeofday(&current_time, NULL);
             old_tick_count = (current_time.tv_sec*1000000 + current_time.tv_usec);
           #endif
         }
