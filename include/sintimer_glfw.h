@@ -7,7 +7,7 @@
 // timer declaration
 //
 
-class sinTimer {
+class sinTimerGLFW {
 public:
 
     void init(int in) {
@@ -37,8 +37,8 @@ public:
     void catchup() { d_previousTime = glfwGetTime(); }
     void reset() { d_previousTime = glfwGetTime(); }
 
-    sinTimer() {}
-    sinTimer(int in) { init(in); }
+    sinTimerGLFW() {}
+    sinTimerGLFW(int in) { init(in); }
 
 private:
 
@@ -54,7 +54,7 @@ private:
 // counter declaration
 //
 
-class sinTimerCounter {
+class sinCounterGLFW {
 public:
 
     double timeSinceLastCall() {
@@ -62,7 +62,7 @@ public:
             d_currentTime = glfwGetTime();
             return d_elapsedTime; }
 
-    sinTimerCounter() { d_currentTime = glfwGetTime(); }
+    sinCounterGLFW() { d_currentTime = glfwGetTime(); }
 
 private:
 

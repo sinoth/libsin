@@ -274,13 +274,13 @@
 			<Option target="sqlite" />
 			<Option target="sqlite - linux" />
 		</Unit>
-		<Unit filename="..\include\sintimer.h">
-			<Option virtualFolder="headers\" />
-			<Option target="&lt;{~None~}&gt;" />
-		</Unit>
 		<Unit filename="..\include\sintimer2.h">
 			<Option virtualFolder="headers\" />
 			<Option target="headers_only" />
+		</Unit>
+		<Unit filename="..\include\sintimer_glfw.h">
+			<Option virtualFolder="headers\" />
+			<Option target="&lt;{~None~}&gt;" />
 		</Unit>
 		<Unit filename="..\include\sintinyfont.h">
 			<Option virtualFolder="small font\" />

@@ -102,12 +102,13 @@ public:
     packet_data* asyncRecvWait();
     int checkErrors();
 
-    void calculatePercentage(const bool in);
-    void calculateSpeed(const bool in);
+    void setCalculatePercentage(const bool in);
+    void setCalculateSpeed(const bool in);
     int getTransferTotalBytes();
     int getTransferBytes();
     float getTransferPercent();
-    int getBps();
+    int getAverageBps();
+    int getPreviousBps();
 
 private:
 
@@ -131,12 +132,15 @@ private:
 
     bool calculate_percentage;
     bool calculate_speed;
-    int bytes_per_second;
+    int average_bytes_per_second;
+    int previous_transfer_bps;
+    int bps_history[10];
     int current_transfer_total_bytes;
     int current_transfer_bytes;
     float current_transfer_percent;
     pthread_mutex_t bps_mutex;
     pthread_mutex_t percent_mutex;
+    sinTimer bps_timer;
 
 #endif
 

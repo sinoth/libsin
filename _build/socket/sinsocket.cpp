@@ -871,4 +871,27 @@ int sinsocket::checkErrors() {
     return check_errors;
 }
 
+
+
+
+//////////
+// yay stats stuff
+
+void sinsocket::setCalculatePercentage(const bool in) {}
+void sinsocket::setCalculateSpeed(const bool in) {}
+int sinsocket::getTransferTotalBytes() {}
+int sinsocket::getTransferBytes() {}
+float sinsocket::getTransferPercent() {}
+int sinsocket::getAverageBps() {}
+int sinsocket::getPreviousBps() {}
+
+
+
+
+
+
+
+
+
+
 #endif
