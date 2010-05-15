@@ -150,9 +150,9 @@ sinsocket::sinsocket(int in_fd) : ready_for_action(false),
                                   my_socket(in_fd),  user_data(NULL)
                                   #ifndef SINSOCKET_NO_THREADS
                                   , spawned_threads(false), stop_threads(false), socket_error(0),
-                                  calculate_percentage(false), calculate_speed(false), average_bytes_per_second(0),
+                                  snoop_enabled(false), calculate_percentage(false), calculate_speed(false),
                                   previous_transfer_bps(0), current_transfer_total_bytes(0),
-                                  current_transfer_bytes(0), current_transfer_percent(0.0), bps_timer(10)
+                                  current_transfer_bytes(0), current_transfer_percent(0.0)
                                   #endif
 {
 
@@ -178,7 +178,11 @@ sinsocket::sinsocket(int in_fd) : ready_for_action(false),
     socket_count++;
 
     for (int i=0; i<10; ++i)
-        bps_history[i] = 0;
+        bps_history.push_back(0);
+
+    bps_timer.init(10);
+    previous_bps_counter.init();
+    average_bps_counter.init();
 }
 
 
@@ -214,6 +218,11 @@ sinsocket::~sinsocket() {
         pthread_mutex_destroy(&error_mutex);
         pthread_cond_destroy (&send_condition);
         pthread_cond_destroy (&recv_condition);
+    }
+    if ( snoop_enabled ) {
+        pthread_mutex_destroy(&bps_mutex);
+        pthread_mutex_destroy(&percent_mutex);
+        snoop_enabled = false;
     }
 #endif
 
@@ -441,17 +450,52 @@ int sinsocket::recvRaw( const void *indata, const int inlength ) {
     int bytes_left = inlength;
     int temp_recv = 0;
 
+    if ( snoop_enabled ) {
+        if ( calculate_speed ) {
+            previous_bps_counter.start();
+            average_bps_counter.start();
+            bps_timer.reset();
+            average_bytes_accumulator = 0;
+        }
+        if ( calculate_percentage ) {
+            pthread_mutex_lock(&percent_mutex);
+              current_transfer_total_bytes = inlength;
+              current_transfer_bytes = 0;
+              current_transfer_percent = 0.0;
+            pthread_mutex_unlock(&percent_mutex);
+        }
+    }
+
     while ( bytes_left ) {
         temp_recv = ::recv(my_socket, (char*)indata+(inlength-bytes_left), bytes_left, 0 ); //MSG_WAITALL = 0x8
         if ( temp_recv == -1 || temp_recv == 0 ) break; //something bad happened or disconnect
         bytes_left -= temp_recv;
 
-        if ( spawned_threads && calculate_speed ) {
-            if (
-
-
+        if ( snoop_enabled ) {
+            if ( calculate_speed ) {
+                average_bytes_accumulator += temp_recv;
+                if ( bps_timer.needUpdateNoCarry() ) {
+                    pthread_mutex_lock(&bps_mutex);
+                      bps_history.push_front((double)average_bytes_accumulator/average_bps_counter.elapsed());
+                      bps_history.pop_back();
+                    pthread_mutex_unlock(&bps_mutex);
+                    average_bytes_accumulator = 0;
+                    average_bps_counter.start();
+                }
+            }
+            if ( calculate_percentage ) {
+                pthread_mutex_lock(&percent_mutex);
+                  current_transfer_bytes += temp_recv;
+                  current_transfer_percent = (float)current_transfer_bytes / (float)current_transfer_total_bytes;
+                pthread_mutex_unlock(&percent_mutex);
+            }
         }
+    }
 
+    if ( snoop_enabled && calculate_speed ) {
+        pthread_mutex_lock(&bps_mutex);
+          previous_transfer_bps = (double)inlength/previous_bps_counter.elapsed();
+        pthread_mutex_unlock(&bps_mutex);
     }
 
     //error
@@ -691,8 +735,7 @@ int sinsocket::spawnThreads() {
     pthread_mutex_init(&send_mutex, NULL);
     pthread_mutex_init(&recv_mutex, NULL);
     pthread_mutex_init(&error_mutex, NULL);
-    pthread_mutex_init(&bps_mutex, NULL);
-    pthread_mutex_init(&percent_mutex, NULL);
+
     pthread_cond_init (&send_condition, NULL);
     pthread_cond_init (&recv_condition, NULL);
 
@@ -702,8 +745,6 @@ int sinsocket::spawnThreads() {
         pthread_mutex_destroy(&send_mutex);
         pthread_mutex_destroy(&recv_mutex);
         pthread_mutex_destroy(&error_mutex);
-        pthread_mutex_destroy(&bps_mutex);
-        pthread_mutex_destroy(&percent_mutex);
         pthread_cond_destroy (&send_condition);
         pthread_cond_destroy (&recv_condition);
         return result;
@@ -894,13 +935,55 @@ int sinsocket::checkErrors() {
 //////////
 // yay stats stuff
 
-void sinsocket::setCalculatePercentage(const bool in) {}
-void sinsocket::setCalculateSpeed(const bool in) {}
-int sinsocket::getTransferTotalBytes() {}
-int sinsocket::getTransferBytes() {}
-float sinsocket::getTransferPercent() {}
-int sinsocket::getAverageBps() {}
-int sinsocket::getPreviousBps() {}
+void sinsocket::setCalculatePercentage(const bool in) { calculate_percentage = in; if (snoop_enabled) enableSnoop(); }
+void sinsocket::setCalculateSpeed(const bool in) { calculate_speed = in; if (snoop_enabled) enableSnoop(); }
+
+int sinsocket::getTransferTotalBytes() {
+    int temp_bytes;
+    pthread_mutex_lock(&percent_mutex);
+        temp_bytes = current_transfer_total_bytes;
+    pthread_mutex_unlock(&percent_mutex);
+    return temp_bytes;
+}
+int sinsocket::getTransferBytes() {
+    int temp_bytes;
+    pthread_mutex_lock(&percent_mutex);
+        temp_bytes = current_transfer_bytes;
+    pthread_mutex_unlock(&percent_mutex);
+    return temp_bytes;
+}
+float sinsocket::getTransferPercent() {
+    float temp_percent;
+    pthread_mutex_lock(&percent_mutex);
+        temp_percent = current_transfer_percent;
+    pthread_mutex_unlock(&percent_mutex);
+    return temp_percent;
+}
+int sinsocket::getAverageBps() {
+    int temp_add=0;
+    int total=0;
+    pthread_mutex_lock(&bps_mutex);
+        for (std::list<unsigned int>::iterator i=bps_history.begin(); i!=bps_history.end(); ++i)
+            if ( (*i) != 0 )
+                { total++; temp_add+=(*i); }
+    pthread_mutex_unlock(&bps_mutex);
+    return temp_add/total;
+}
+int sinsocket::getPreviousBps() {
+    int temp_bps;
+    pthread_mutex_lock(&bps_mutex);
+        temp_bps = previous_transfer_bps;
+    pthread_mutex_unlock(&bps_mutex);
+    return temp_bps;
+}
+void sinsocket::enableSnoop() {
+    if ( !snoop_enabled ) {
+        pthread_mutex_init(&bps_mutex, NULL);
+        pthread_mutex_init(&percent_mutex, NULL);
+        snoop_enabled = true;
+    }
+}
+
 
 
 

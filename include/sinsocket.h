@@ -4,6 +4,8 @@
 #include <pthread.h>
 #include <string>
 #include <queue>
+#include <list>
+#include <sintimer.h>
 
 
 #define SINSOCKET_ERROR_ZLIB            -4
@@ -102,6 +104,7 @@ public:
     packet_data* asyncRecvWait();
     int checkErrors();
 
+    void enableSnoop();
     void setCalculatePercentage(const bool in);
     void setCalculateSpeed(const bool in);
     int getTransferTotalBytes();
@@ -130,17 +133,21 @@ private:
     bool stop_threads;
     int socket_error;
 
+    bool snoop_enabled;
     bool calculate_percentage;
     bool calculate_speed;
-    int average_bytes_per_second;
-    int previous_transfer_bps;
-    int bps_history[10];
-    int current_transfer_total_bytes;
-    int current_transfer_bytes;
+    //unsigned int average_bytes_per_second;
+    unsigned int average_bytes_accumulator;
+    unsigned int previous_transfer_bps;
+    std::list<unsigned int> bps_history;
+    unsigned int current_transfer_total_bytes;
+    unsigned int current_transfer_bytes;
     float current_transfer_percent;
     pthread_mutex_t bps_mutex;
     pthread_mutex_t percent_mutex;
     sinTimer bps_timer;
+    sinCounter previous_bps_counter;
+    sinCounter average_bps_counter;
 
 #endif
 
