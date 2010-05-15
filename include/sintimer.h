@@ -87,3 +87,53 @@ private:
 
 };
 
+
+
+class sinCounter {
+public:
+
+    bool init() {
+          #ifdef _WIN32_WINNT
+            __int64 freq;
+            if( !QueryPerformanceFrequency( (LARGE_INTEGER *)&freq ) ) {
+                //too bad, no counter for you
+                return 1; }
+            resolution = ( 1.0 / (double)freq );
+            return 0;
+          #elif _LINUX
+          #endif
+        }
+
+    void start() {
+          #ifdef _WIN32_WINNT
+            QueryPerformanceCounter( (LARGE_INTEGER *)&old_tick_count );
+          #elif _LINUX
+            gettimeofday(&current_time, NULL);
+            old_tick_count = (current_time.tv_sec*1000000 + current_time.tv_usec);
+          #endif
+        }
+
+    double elapsed() {
+          #ifdef _WIN32_WINNT
+            QueryPerformanceCounter( (LARGE_INTEGER *)&new_tick_count );
+            return (double)(new_tick_count-old_tick_count)*resolution;
+          #elif _LINUX
+            gettimeofday(&current_time, NULL);
+            return (double)((current_time.tv_sec*1000000 + current_time.tv_usec) - old_tick_count)/1000000.0;
+          #endif
+        }
+
+    sinCounter() {}
+
+private:
+
+    #ifdef _WIN32_WINNT
+      __int64 old_tick_count;
+      __int64 new_tick_count;
+      double  resolution;
+    #elif _LINUX
+      timeval current_time;
+      uint64_t old_tick_count;
+    #endif
+
+};

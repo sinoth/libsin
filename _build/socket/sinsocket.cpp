@@ -149,7 +149,10 @@ int inet_pton(int af, const char *src, void *__restrict__ dst)
 sinsocket::sinsocket(int in_fd) : ready_for_action(false),
                                   my_socket(in_fd),  user_data(NULL)
                                   #ifndef SINSOCKET_NO_THREADS
-                                  , spawned_threads(false), stop_threads(false), socket_error(0)
+                                  , spawned_threads(false), stop_threads(false), socket_error(0),
+                                  calculate_percentage(false), calculate_speed(false), average_bytes_per_second(0),
+                                  previous_transfer_bps(0), current_transfer_total_bytes(0),
+                                  current_transfer_bytes(0), current_transfer_percent(0.0), bps_timer(10)
                                   #endif
 {
 
@@ -173,6 +176,9 @@ sinsocket::sinsocket(int in_fd) : ready_for_action(false),
     }
 
     socket_count++;
+
+    for (int i=0; i<10; ++i)
+        bps_history[i] = 0;
 }
 
 
@@ -439,6 +445,13 @@ int sinsocket::recvRaw( const void *indata, const int inlength ) {
         temp_recv = ::recv(my_socket, (char*)indata+(inlength-bytes_left), bytes_left, 0 ); //MSG_WAITALL = 0x8
         if ( temp_recv == -1 || temp_recv == 0 ) break; //something bad happened or disconnect
         bytes_left -= temp_recv;
+
+        if ( spawned_threads && calculate_speed ) {
+            if (
+
+
+        }
+
     }
 
     //error
@@ -678,6 +691,8 @@ int sinsocket::spawnThreads() {
     pthread_mutex_init(&send_mutex, NULL);
     pthread_mutex_init(&recv_mutex, NULL);
     pthread_mutex_init(&error_mutex, NULL);
+    pthread_mutex_init(&bps_mutex, NULL);
+    pthread_mutex_init(&percent_mutex, NULL);
     pthread_cond_init (&send_condition, NULL);
     pthread_cond_init (&recv_condition, NULL);
 
@@ -687,6 +702,8 @@ int sinsocket::spawnThreads() {
         pthread_mutex_destroy(&send_mutex);
         pthread_mutex_destroy(&recv_mutex);
         pthread_mutex_destroy(&error_mutex);
+        pthread_mutex_destroy(&bps_mutex);
+        pthread_mutex_destroy(&percent_mutex);
         pthread_cond_destroy (&send_condition);
         pthread_cond_destroy (&recv_condition);
         return result;
