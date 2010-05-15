@@ -372,11 +372,61 @@ int sinsocket::sendRaw( const void *indata, const int inlength ) {
     int bytes_left = inlength;
     int temp_sent = 0;
 
+
+    if ( snoop_enabled ) {
+        if ( calculate_speed ) {
+            previous_bps_counter.start();
+            average_bps_counter.start();
+            bps_timer.reset();
+            average_bytes_accumulator = 0;
+        }
+        if ( calculate_percentage ) {
+            pthread_mutex_lock(&percent_mutex);
+              current_transfer_total_bytes = inlength;
+              current_transfer_bytes = 0;
+              current_transfer_percent = 0.0;
+            pthread_mutex_unlock(&percent_mutex);
+        }
+    }
+
     while ( bytes_sent < inlength ) {
         temp_sent = ::send(my_socket, (char*)indata+bytes_sent, bytes_left, 0);
         if ( temp_sent == -1 ) break; //something bad happened
         bytes_sent += temp_sent;
         bytes_left -= temp_sent;
+
+        if ( snoop_enabled ) {
+            if ( calculate_speed ) {
+                average_bytes_accumulator += temp_sent;
+                if ( bps_timer.needUpdateNoCarry() ) {
+                    pthread_mutex_lock(&bps_mutex);
+                      bps_history.push_front((double)average_bytes_accumulator/average_bps_counter.elapsed());
+                      bps_history.pop_back();
+                    pthread_mutex_unlock(&bps_mutex);
+                    average_bytes_accumulator = 0;
+                    average_bps_counter.start();
+                }
+            }
+            if ( calculate_percentage ) {
+                pthread_mutex_lock(&percent_mutex);
+                  current_transfer_bytes += temp_sent;
+                  current_transfer_percent = (float)current_transfer_bytes / (float)current_transfer_total_bytes;
+                pthread_mutex_unlock(&percent_mutex);
+            }
+        }
+    }
+
+    if ( snoop_enabled ) {
+        if ( calculate_speed ) {
+            pthread_mutex_lock(&bps_mutex);
+              previous_transfer_bps = (double)inlength/previous_bps_counter.elapsed();
+            pthread_mutex_unlock(&bps_mutex);
+        }
+        if ( calculate_percentage ) {
+            pthread_mutex_lock(&percent_mutex);
+              current_transfer_percent=1.0;
+            pthread_mutex_unlock(&percent_mutex);
+        }
     }
 
     if ( temp_sent == -1 ) {
