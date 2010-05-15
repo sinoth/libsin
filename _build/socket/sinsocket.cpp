@@ -374,7 +374,6 @@ int sinsocket::sendRaw( const void *indata, const int inlength ) {
 
     while ( bytes_sent < inlength ) {
         temp_sent = ::send(my_socket, (char*)indata+bytes_sent, bytes_left, 0);
-        printf("temp_sent: %d\n", temp_sent);
         if ( temp_sent == -1 ) break; //something bad happened
         bytes_sent += temp_sent;
         bytes_left -= temp_sent;
