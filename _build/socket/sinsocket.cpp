@@ -209,10 +209,11 @@ sinsocket::~sinsocket() {
 
 #ifndef SINSOCKET_NO_THREADS
     if ( spawned_threads ) {
+        //if ( !stop_threads ) {
         pthread_cancel(send_thread_id);
         pthread_join(send_thread_id, NULL);
         pthread_join(recv_thread_id, NULL);
-
+        //}
         pthread_mutex_destroy(&send_mutex);
         pthread_mutex_destroy(&recv_mutex);
         pthread_mutex_destroy(&error_mutex);
@@ -226,6 +227,8 @@ sinsocket::~sinsocket() {
 #endif
 
     if ( user_data != NULL ) { free(user_data); }
+
+
 }
 
 
@@ -621,7 +624,7 @@ int sinsocket::beginDisconnect() {
 
     //wait for recv to return a 0 or -1, meaning client has disconnected
     int temp_recv;
-    do { temp_recv = ::recv(my_socket,NULL,0,0);
+    do { temp_recv = ::recv(my_socket,NULL,1,0);
     } while ( temp_recv != 0 && temp_recv != -1 );
 
     if ( temp_recv == -1 )
@@ -660,7 +663,7 @@ int sinsocket::endDisconnect() {
         shutdown(my_socket, SHUT_WR);
         #endif
 
-        do { temp_recv = ::recv(my_socket,NULL,0,0);
+        do { temp_recv = ::recv(my_socket,NULL,1,0);
         } while ( temp_recv != -1 && temp_recv != -0);
         //other side is down, let us end as well
         closeSinsocket();

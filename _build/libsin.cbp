@@ -53,7 +53,7 @@
 					<Add option="-O2" />
 					<Add option="-D_WIN32_WINNT=0x501" />
 					<Add option="-DPTW32_STATIC_LIB" />
-					<Add option="-D_DEBUG" />
+					<Add option="-D_DEBUGx" />
 				</Compiler>
 				<Linker>
 					<Add option="-s" />
