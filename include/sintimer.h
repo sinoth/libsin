@@ -6,7 +6,7 @@
  #include <sys/time.h>
 #endif
 
-class sinTimer2 {
+class sinTimer {
 public:
 
     bool init(int in) {
@@ -70,8 +70,8 @@ public:
           #endif
         }
 
-    sinTimer2() {}
-    sinTimer2(int in) { init(in); }
+    sinTimer() {}
+    sinTimer(int in) { init(in); }
 
 private:
 

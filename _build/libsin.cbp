@@ -274,7 +274,7 @@
 			<Option target="sqlite" />
 			<Option target="sqlite - linux" />
 		</Unit>
-		<Unit filename="..\include\sintimer2.h">
+		<Unit filename="..\include\sintimer.h">
 			<Option virtualFolder="headers\" />
 			<Option target="headers_only" />
 		</Unit>
