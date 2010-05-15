@@ -95,10 +95,6 @@ private:
 
 public:
 
-    //async thread stuff
-    static void *sinRecvThread(void*);
-    static void *sinSendThread(void*);
-    //
     int spawnThreads();
     void asyncSend( const void *indata, const int inlength );
     void asyncSend( packet_data *inpacket );
@@ -106,8 +102,19 @@ public:
     packet_data* asyncRecvWait();
     int checkErrors();
 
+    void calculatePercentage(const bool in);
+    void calculateSpeed(const bool in);
+    int getTransferTotalBytes();
+    int getTransferBytes();
+    float getTransferPercent();
+    int getBps();
+
 private:
 
+
+    //async thread stuff
+    static void *sinRecvThread(void*);
+    static void *sinSendThread(void*);
     //thread goodies
     std::queue<packet_data*> received_data;
     std::queue<packet_data*> sending_data;
@@ -121,6 +128,15 @@ private:
     bool spawned_threads;
     bool stop_threads;
     int socket_error;
+
+    bool calculate_percentage;
+    bool calculate_speed;
+    int bytes_per_second;
+    int current_transfer_total_bytes;
+    int current_transfer_bytes;
+    float current_transfer_percent;
+    pthread_mutex_t bps_mutex;
+    pthread_mutex_t percent_mutex;
 
 #endif
 

@@ -53,7 +53,7 @@
 					<Add option="-O2" />
 					<Add option="-D_WIN32_WINNT=0x501" />
 					<Add option="-DPTW32_STATIC_LIB" />
-					<Add option="-D_DEBUG" />
+					<Add option="-D_DEBUGX" />
 				</Compiler>
 				<Linker>
 					<Add option="-s" />
@@ -277,6 +277,10 @@
 		<Unit filename="..\include\sintimer.h">
 			<Option virtualFolder="headers\" />
 			<Option target="&lt;{~None~}&gt;" />
+		</Unit>
+		<Unit filename="..\include\sintimer2.h">
+			<Option virtualFolder="headers\" />
+			<Option target="headers_only" />
 		</Unit>
 		<Unit filename="..\include\sintinyfont.h">
 			<Option virtualFolder="small font\" />

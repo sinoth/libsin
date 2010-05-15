@@ -199,10 +199,9 @@ sinsocket::~sinsocket() {
 
 #ifndef SINSOCKET_NO_THREADS
     if ( spawned_threads ) {
-        void *status;
         pthread_cancel(send_thread_id);
-        pthread_join(send_thread_id, &status);
-        pthread_join(recv_thread_id, &status);
+        pthread_join(send_thread_id, NULL);
+        pthread_join(recv_thread_id, NULL);
 
         pthread_mutex_destroy(&send_mutex);
         pthread_mutex_destroy(&recv_mutex);
@@ -542,8 +541,7 @@ int sinsocket::beginDisconnect() {
         //signal the send thread so it can die
         pthread_cond_signal(&send_condition);
         pthread_mutex_unlock(&send_mutex);
-        void *status;
-        pthread_join(send_thread_id, &status);
+        pthread_join(send_thread_id, NULL);
     }
 
     //tell the client we are done
@@ -554,8 +552,7 @@ int sinsocket::beginDisconnect() {
     #endif
 
     if ( spawned_threads ) {
-        void *status;
-        pthread_join(recv_thread_id, &status);
+        pthread_join(recv_thread_id, NULL);
         return checkErrors();
     }
 
